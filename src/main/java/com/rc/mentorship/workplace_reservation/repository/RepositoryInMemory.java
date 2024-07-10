@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class RepositoryInMemory<T, ID> {
+class RepositoryInMemory<T, ID> {
     private final Map<ID, T> storage = new HashMap<>();
 
     public List<T> findAll() {
