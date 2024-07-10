@@ -1,16 +1,22 @@
 package com.rc.mentorship.workplace_reservation.service;
 
-import com.rc.mentorship.workplace_reservation.dto.response.UserResponseDto;
-import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequestDto;
-import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequestDto;
+import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
+import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
+import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
-    List<UserResponseDto> findAll();
-    UserResponseDto findById(long id);
-    UserResponseDto create(UserCreateRequestDto toCreate);
-    UserResponseDto update(UserUpdateRequestDto toUpdate);
-    void delete(long id);
+    List<UserResponse> findAll();
+
+    UserResponse findById(UUID id);
+
+    UserResponse create(UserCreateRequest toCreate);
+
+    UserResponse update(UserUpdateRequest toUpdate);
+
+    void delete(UUID id);
+
     void deleteAll();
 }

@@ -1,16 +1,22 @@
 package com.rc.mentorship.workplace_reservation.service;
 
-import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateRequestDto;
-import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequestDto;
-import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponseDto;
+import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateRequest;
+import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequest;
+import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface WorkplaceService {
-    List<WorkplaceResponseDto> findAll();
-    WorkplaceResponseDto findById(long id);
-    WorkplaceResponseDto create(WorkplaceCreateRequestDto toCreate);
-    WorkplaceResponseDto update(WorkplaceUpdateRequestDto toUpdate);
-    void delete(long id);
+    List<WorkplaceResponse> findAll();
+
+    WorkplaceResponse findById(UUID id);
+
+    WorkplaceResponse create(WorkplaceCreateRequest toCreate);
+
+    WorkplaceResponse update(WorkplaceUpdateRequest toUpdate);
+
+    void delete(UUID id);
+
     void deleteAll();
 }

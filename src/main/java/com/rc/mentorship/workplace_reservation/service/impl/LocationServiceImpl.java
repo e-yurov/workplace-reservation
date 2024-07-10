@@ -1,8 +1,8 @@
 package com.rc.mentorship.workplace_reservation.service.impl;
 
-import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequestDto;
-import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequestDto;
-import com.rc.mentorship.workplace_reservation.dto.response.LocationResponseDto;
+import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest;
+import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
+import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Location;
 import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepositoryInMemory;
@@ -22,25 +22,25 @@ public class LocationServiceImpl implements LocationService {
     private LocationMapper locationMapper;
 
     @Override
-    public List<LocationResponseDto> findAll() {
+    public List<LocationResponse> findAll() {
         return locationRepository.findAll().stream().map(locationMapper::toDto).toList();
     }
 
     @Override
-    public LocationResponseDto findById(UUID id) {
+    public LocationResponse findById(UUID id) {
         //TODO: create custom exception
         return locationMapper.toDto(locationRepository.findById(id).orElseThrow(RuntimeException::new));
     }
 
     @Override
-    public LocationResponseDto create(LocationCreateRequestDto toCreate) {
+    public LocationResponse create(LocationCreateRequest toCreate) {
         Location location = locationMapper.toEntity(toCreate);
         locationRepository.save(location);
         return locationMapper.toDto(location);
     }
 
     @Override
-    public LocationResponseDto update(LocationUpdateRequestDto toUpdate) {
+    public LocationResponse update(LocationUpdateRequest toUpdate) {
         //TODO: create custom exception
         if (locationRepository.findById(toUpdate.getId()).isEmpty()) {
             throw new RuntimeException();

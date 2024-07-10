@@ -1,20 +1,20 @@
 package com.rc.mentorship.workplace_reservation.service;
 
-import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequestDto;
-import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequestDto;
-import com.rc.mentorship.workplace_reservation.dto.response.LocationResponseDto;
+import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest;
+import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
+import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface LocationService {
-    List<LocationResponseDto> findAll();
+    List<LocationResponse> findAll();
 
-    LocationResponseDto findById(UUID id);
+    LocationResponse findById(UUID id);
 
-    LocationResponseDto create(LocationCreateRequestDto toCreate);
+    LocationResponse create(LocationCreateRequest toCreate);
 
-    LocationResponseDto update(LocationUpdateRequestDto toUpdate);
+    LocationResponse update(LocationUpdateRequest toUpdate);
 
     void delete(UUID id);
 

@@ -1,6 +1,6 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
-import com.rc.mentorship.workplace_reservation.dto.response.LocationResponseDto;
+import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class LocationController {
     private LocationService locationService;
 
     @GetMapping
-    public ResponseEntity<List<LocationResponseDto>> findAll() {
+    public ResponseEntity<List<LocationResponse>> findAll() {
         return null;
     }
 }

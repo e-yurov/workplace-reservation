@@ -8,7 +8,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LocationResponseDto {
+public class LocationResponse {
     private UUID id;
     private String city;
     private String address;
