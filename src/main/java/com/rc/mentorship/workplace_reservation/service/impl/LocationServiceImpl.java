@@ -4,26 +4,20 @@ import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest
 import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequestDto;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponseDto;
 import com.rc.mentorship.workplace_reservation.entity.Location;
-import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
-import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
+import com.rc.mentorship.workplace_reservation.repository.LocationRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class LocationServiceImpl implements LocationService {
-    private final LocationRepository locationRepository;
-    private final LocationMapper locationMapper;
-
     @Autowired
-    public LocationServiceImpl(@Qualifier("locationRepository") LocationRepository locationRepository, LocationMapper locationMapper) {
-        this.locationRepository = locationRepository;
-        this.locationMapper = locationMapper;
-    }
+    private LocationRepositoryInMemory locationRepository;
+    @Autowired
+    private LocationMapper locationMapper;
 
     @Override
     public List<LocationResponseDto> findAll() {
@@ -56,11 +50,11 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public void delete(long id) {
-        locationRepository.removeById(id);
+        locationRepository.deleteById(id);
     }
 
     @Override
     public void deleteAll() {
-        locationRepository.removeAll();
+        locationRepository.deleteAll();
     }
 }

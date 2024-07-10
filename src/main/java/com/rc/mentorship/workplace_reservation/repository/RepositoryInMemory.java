@@ -1,4 +1,4 @@
-package com.rc.mentorship.workplace_reservation.repository.impl.in_memory;
+package com.rc.mentorship.workplace_reservation.repository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,16 +16,15 @@ public class RepositoryInMemory<T, ID> {
         return Optional.of(storage.get(id));
     }
 
-    // проверить добавление неск. элементов с одним айди
     public T add(T item, ID id) {
         return storage.put(id, item);
     }
 
-    public void removeById(ID id) {
+    public void deleteById(ID id) {
         storage.remove(id);
     }
 
-    public void removeAll() {
+    public void deleteAll() {
         storage.clear();
     }
 }

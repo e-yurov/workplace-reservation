@@ -1,6 +1,5 @@
 package com.rc.mentorship.workplace_reservation.entity;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
