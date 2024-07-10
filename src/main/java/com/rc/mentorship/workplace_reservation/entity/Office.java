@@ -4,12 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Getter
 @Setter
 public class Office {
-    private long id;
-    private long locationId;
+    private UUID id;
+    private UUID locationId;
     private LocalTime startTime;
     private LocalTime endTime;
 }

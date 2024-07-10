@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class LocationServiceImpl implements LocationService {
+    //TODO: ask about constructor
     @Autowired
     private LocationRepositoryInMemory locationRepository;
     @Autowired
@@ -25,7 +27,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationResponseDto findById(long id) {
+    public LocationResponseDto findById(UUID id) {
         //TODO: create custom exception
         return locationMapper.toDto(locationRepository.findById(id).orElseThrow(RuntimeException::new));
     }
@@ -49,7 +51,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(UUID id) {
         locationRepository.deleteById(id);
     }
 

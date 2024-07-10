@@ -5,12 +5,18 @@ import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponseDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface LocationService {
     List<LocationResponseDto> findAll();
-    LocationResponseDto findById(long id);
+
+    LocationResponseDto findById(UUID id);
+
     LocationResponseDto create(LocationCreateRequestDto toCreate);
+
     LocationResponseDto update(LocationUpdateRequestDto toUpdate);
-    void delete(long id);
+
+    void delete(UUID id);
+
     void deleteAll();
 }
