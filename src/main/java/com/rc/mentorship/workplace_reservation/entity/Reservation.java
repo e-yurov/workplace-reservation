@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class Reservation {
-    private UUID id;
+public class Reservation extends EntityInMemory {
     private UUID userId;
     private UUID workplaceId;
     private LocalDateTime startDateTime;

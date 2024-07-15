@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class Office {
-    private UUID id;
+public class Office extends EntityInMemory {
     private UUID locationId;
     private LocalTime startTime;
     private LocalTime endTime;

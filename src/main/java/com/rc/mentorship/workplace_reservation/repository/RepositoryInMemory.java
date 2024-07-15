@@ -1,26 +1,33 @@
 package com.rc.mentorship.workplace_reservation.repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.rc.mentorship.workplace_reservation.entity.EntityInMemory;
+import com.rc.mentorship.workplace_reservation.entity.Office;
 
-class RepositoryInMemory<T, ID> {
-    private final Map<ID, T> storage = new HashMap<>();
+import java.util.*;
+
+class RepositoryInMemory<T extends EntityInMemory> {
+    private final Map<UUID, T> storage = new HashMap<>();
 
     public List<T> findAll() {
         return List.copyOf(storage.values());
     }
 
-    public Optional<T> findById(ID id) {
+    public Optional<T> findById(UUID id) {
         return Optional.of(storage.get(id));
     }
 
-    public T add(T item, ID id) {
-        return storage.put(id, item);
+    public T save(T item) {
+        if (item.getId() == null) {
+            item.setId(UUID.randomUUID());
+        }
+        return storage.put(item.getId(), item);
     }
 
-    public void deleteById(ID id) {
+    public T update(T item) {
+        return storage.put(item.getId(), item);
+    }
+
+    public void deleteById(UUID id) {
         storage.remove(id);
     }
 

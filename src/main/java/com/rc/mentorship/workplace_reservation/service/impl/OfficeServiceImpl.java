@@ -41,7 +41,7 @@ public class OfficeServiceImpl implements OfficeService {
     public OfficeResponse update(OfficeUpdateRequest toUpdate) {
         officeRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
         Office office = officeMapper.toEntity(toUpdate);
-        officeRepository.save(office);
+        officeRepository.update(office);
         return officeMapper.toDto(office);
     }
 

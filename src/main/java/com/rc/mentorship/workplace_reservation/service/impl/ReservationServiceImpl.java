@@ -40,7 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse update(ReservationUpdateRequest toUpdate) {
         reservationRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
         Reservation reservation = reservationMapper.toEntity(toUpdate);
-        reservationRepository.save(reservation);
+        reservationRepository.update(reservation);
         return reservationMapper.toDto(reservation);
     }
 

@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.dto.response;
 
+import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class WorkplaceResponse {
     private UUID id;
     private UUID officeId;
     private int floor;
-    private String type;
+    private Workplace.Type type;
     private boolean computerPresent;
     private boolean available;
 }

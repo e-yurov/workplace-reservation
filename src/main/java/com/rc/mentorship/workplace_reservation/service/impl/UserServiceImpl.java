@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse update(UserUpdateRequest toUpdate) {
         userRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
         User user = userMapper.toEntity(toUpdate);
-        userRepository.save(user);
+        userRepository.update(user);
         return userMapper.toDto(user);
     }
 

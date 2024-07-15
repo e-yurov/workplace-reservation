@@ -7,8 +7,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class User extends EntityInMemory {
-    private String name;
-    private String email;
-    private String role;
+public class EntityInMemory {
+    private UUID id;
 }

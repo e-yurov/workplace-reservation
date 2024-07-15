@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.dto.request;
 
+import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class WorkplaceCreateRequest {
     private UUID officeId;
     private int floor;
-    private String type;
+    private Workplace.Type type;
     private boolean computerPresent;
     private boolean available;
 }

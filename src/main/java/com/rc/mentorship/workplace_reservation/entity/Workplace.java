@@ -7,11 +7,15 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class Workplace {
-    private UUID id;
+public class Workplace extends EntityInMemory {
     private UUID officeId;
     private int floor;
-    private String type;
+    private Type type;
     private boolean computerPresent;
     private boolean available;
+
+    public enum Type {
+        DESK,
+        ROOM
+    }
 }

@@ -40,11 +40,9 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public LocationResponse update(LocationUpdateRequest toUpdate) {
         //TODO: create custom exception
-        if (locationRepository.findById(toUpdate.getId()).isEmpty()) {
-            throw new RuntimeException();
-        }
+        locationRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
         Location location = locationMapper.toEntity(toUpdate);
-        locationRepository.save(location);
+        locationRepository.update(location);
         return locationMapper.toDto(location);
     }
 

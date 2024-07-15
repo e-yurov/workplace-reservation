@@ -7,8 +7,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class Location {
-    private UUID id;
+public class Location extends EntityInMemory {
     private String city;
     private String address;
 }

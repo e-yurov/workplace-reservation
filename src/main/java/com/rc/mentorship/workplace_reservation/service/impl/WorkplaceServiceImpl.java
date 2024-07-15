@@ -40,7 +40,7 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     public WorkplaceResponse update(WorkplaceUpdateRequest toUpdate) {
         workplaceRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
         Workplace workplace = workplaceMapper.toEntity(toUpdate);
-        workplaceRepository.save(workplace);
+        workplaceRepository.update(workplace);
         return workplaceMapper.toDto(workplace);
     }
 
