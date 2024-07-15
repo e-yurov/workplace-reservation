@@ -7,18 +7,17 @@ import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
-    @Autowired
-    private ReservationRepositoryInMemory reservationRepository;
-    @Autowired
-    private ReservationMapper reservationMapper;
+    private final ReservationRepositoryInMemory reservationRepository;
+    private final ReservationMapper reservationMapper;
 
     @Override
     public List<ReservationResponse> findAll() {

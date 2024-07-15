@@ -7,19 +7,17 @@ import com.rc.mentorship.workplace_reservation.entity.Location;
 import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {
-    //TODO: ask about constructor
-    @Autowired
-    private LocationRepositoryInMemory locationRepository;
-    @Autowired
-    private LocationMapper locationMapper;
+    private final LocationRepositoryInMemory locationRepository;
+    private final LocationMapper locationMapper;
 
     @Override
     public List<LocationResponse> findAll() {

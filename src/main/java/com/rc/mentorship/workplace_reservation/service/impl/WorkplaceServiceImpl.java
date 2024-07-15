@@ -7,18 +7,17 @@ import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class WorkplaceServiceImpl implements WorkplaceService {
-    @Autowired
-    private WorkplaceRepositoryInMemory workplaceRepository;
-    @Autowired
-    private WorkplaceMapper workplaceMapper;
+    private final WorkplaceRepositoryInMemory workplaceRepository;
+    private final WorkplaceMapper workplaceMapper;
 
     @Override
     public List<WorkplaceResponse> findAll() {

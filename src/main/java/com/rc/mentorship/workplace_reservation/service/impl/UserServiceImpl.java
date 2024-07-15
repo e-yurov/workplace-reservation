@@ -7,18 +7,17 @@ import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.mapper.UserMapper;
 import com.rc.mentorship.workplace_reservation.repository.UserRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private UserRepositoryInMemory userRepository;
-    @Autowired
-    private UserMapper userMapper;
+    private final UserRepositoryInMemory userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public List<UserResponse> findAll() {

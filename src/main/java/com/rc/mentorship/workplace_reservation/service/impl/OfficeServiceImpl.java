@@ -7,18 +7,17 @@ import com.rc.mentorship.workplace_reservation.entity.Office;
 import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class OfficeServiceImpl implements OfficeService {
-    @Autowired
-    private OfficeRepositoryInMemory officeRepository;
-    @Autowired
-    private OfficeMapper officeMapper;
+    private final OfficeRepositoryInMemory officeRepository;
+    private final OfficeMapper officeMapper;
 
 
     @Override
