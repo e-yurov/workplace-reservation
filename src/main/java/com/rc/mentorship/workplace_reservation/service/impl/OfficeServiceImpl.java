@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.OfficeCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
 import com.rc.mentorship.workplace_reservation.entity.Office;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
@@ -27,7 +29,9 @@ public class OfficeServiceImpl implements OfficeService {
 
     @Override
     public OfficeResponse findById(UUID id) {
-        return officeMapper.toDto(officeRepository.findById(id).orElseThrow(RuntimeException::new));
+        return officeMapper.toDto(officeRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundToReadException("Office")
+        ));
     }
 
     @Override
@@ -39,7 +43,9 @@ public class OfficeServiceImpl implements OfficeService {
 
     @Override
     public OfficeResponse update(OfficeUpdateRequest toUpdate) {
-        officeRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
+        officeRepository.findById(toUpdate.getId()).orElseThrow(
+                () -> new ResourceNotFoundToUpdateException("Office")
+        );
         Office office = officeMapper.toEntity(toUpdate);
         officeRepository.update(office);
         return officeMapper.toDto(office);

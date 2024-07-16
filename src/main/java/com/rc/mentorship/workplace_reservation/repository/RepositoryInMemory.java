@@ -1,9 +1,12 @@
 package com.rc.mentorship.workplace_reservation.repository;
 
 import com.rc.mentorship.workplace_reservation.entity.EntityInMemory;
-import com.rc.mentorship.workplace_reservation.entity.Office;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 class RepositoryInMemory<T extends EntityInMemory> {
     private final Map<UUID, T> storage = new HashMap<>();
@@ -13,7 +16,7 @@ class RepositoryInMemory<T extends EntityInMemory> {
     }
 
     public Optional<T> findById(UUID id) {
-        return Optional.of(storage.get(id));
+        return Optional.ofNullable(storage.get(id));
     }
 
     public T save(T item) {

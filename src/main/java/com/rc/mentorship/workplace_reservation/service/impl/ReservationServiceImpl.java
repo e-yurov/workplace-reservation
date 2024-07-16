@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequ
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
@@ -26,7 +28,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationResponse findById(UUID id) {
-        return reservationMapper.toDto(reservationRepository.findById(id).orElseThrow(RuntimeException::new));
+        return reservationMapper.toDto(reservationRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundToReadException("Reservation")
+        ));
     }
 
     @Override
@@ -38,7 +42,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationResponse update(ReservationUpdateRequest toUpdate) {
-        reservationRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
+        reservationRepository.findById(toUpdate.getId()).orElseThrow(
+                () -> new ResourceNotFoundToUpdateException("Reservation")
+        );
         Reservation reservation = reservationMapper.toEntity(toUpdate);
         reservationRepository.update(reservation);
         return reservationMapper.toDto(reservation);

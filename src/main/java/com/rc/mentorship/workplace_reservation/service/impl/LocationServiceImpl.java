@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest
 import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Location;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
@@ -26,8 +28,9 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse findById(UUID id) {
-        //TODO: create custom exception
-        return locationMapper.toDto(locationRepository.findById(id).orElseThrow(RuntimeException::new));
+        return locationMapper.toDto(locationRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundToReadException("Location")
+        ));
     }
 
     @Override
@@ -39,8 +42,9 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse update(LocationUpdateRequest toUpdate) {
-        //TODO: create custom exception
-        locationRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
+        locationRepository.findById(toUpdate.getId()).orElseThrow(
+                () -> new ResourceNotFoundToUpdateException("Location")
+        );
         Location location = locationMapper.toEntity(toUpdate);
         locationRepository.update(location);
         return locationMapper.toDto(location);

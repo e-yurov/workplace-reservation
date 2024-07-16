@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateReques
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepositoryInMemory;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
@@ -26,7 +28,9 @@ public class WorkplaceServiceImpl implements WorkplaceService {
 
     @Override
     public WorkplaceResponse findById(UUID id) {
-        return workplaceMapper.toDto(workplaceRepository.findById(id).orElseThrow(RuntimeException::new));
+        return workplaceMapper.toDto(workplaceRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundToReadException("Workplace")
+        ));
     }
 
     @Override
@@ -38,7 +42,9 @@ public class WorkplaceServiceImpl implements WorkplaceService {
 
     @Override
     public WorkplaceResponse update(WorkplaceUpdateRequest toUpdate) {
-        workplaceRepository.findById(toUpdate.getId()).orElseThrow(RuntimeException::new);
+        workplaceRepository.findById(toUpdate.getId()).orElseThrow(
+                () -> new ResourceNotFoundToUpdateException("Workplace")
+        );
         Workplace workplace = workplaceMapper.toEntity(toUpdate);
         workplaceRepository.update(workplace);
         return workplaceMapper.toDto(workplace);
