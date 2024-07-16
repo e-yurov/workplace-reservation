@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/locations")
+@RequestMapping("/api/v1/locations")
 @RequiredArgsConstructor
 public class LocationController {
     private final LocationService locationService;
@@ -44,8 +44,8 @@ public class LocationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") UUID id){
+    public ResponseEntity<Void> delete(@PathVariable("id") UUID id){
         locationService.delete(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok().build();
     }
 }
