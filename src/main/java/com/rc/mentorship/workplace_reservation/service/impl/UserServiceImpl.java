@@ -4,13 +4,13 @@ import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.entity.User;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
 import com.rc.mentorship.workplace_reservation.mapper.UserMapper;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,18 +22,21 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserResponse> findAll() {
         return userRepository.findAll().stream().map(userMapper::toDto).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponse findById(UUID id) {
         return userMapper.toDto(userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundToReadException("User")
+                () -> new ResourceNotFoundException("User", id)
         ));
     }
 
     @Override
+    @Transactional
     public UserResponse create(UserCreateRequest toCreate) {
         User user = userMapper.toEntity(toCreate);
         userRepository.save(user);
@@ -41,9 +44,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse update(UserUpdateRequest toUpdate) {
         userRepository.findById(toUpdate.getId()).orElseThrow(
-                () -> new ResourceNotFoundToUpdateException("User")
+                () -> new ResourceNotFoundException("User", toUpdate.getId())
         );
         User user = userMapper.toEntity(toUpdate);
         userRepository.save(user);
@@ -51,11 +55,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         userRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public void deleteAll() {
         userRepository.deleteAll();
     }

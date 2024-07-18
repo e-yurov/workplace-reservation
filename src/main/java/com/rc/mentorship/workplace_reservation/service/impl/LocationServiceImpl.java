@@ -4,13 +4,13 @@ import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest
 import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Location;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
 import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,18 +22,21 @@ public class LocationServiceImpl implements LocationService {
     private final LocationMapper locationMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<LocationResponse> findAll() {
         return locationRepository.findAll().stream().map(locationMapper::toDto).toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public LocationResponse findById(UUID id) {
         return locationMapper.toDto(locationRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundToReadException("Location")
+                () -> new ResourceNotFoundException("Location", id)
         ));
     }
 
     @Override
+    @Transactional
     public LocationResponse create(LocationCreateRequest toCreate) {
         Location location = locationMapper.toEntity(toCreate);
         locationRepository.save(location);
@@ -41,9 +44,10 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    @Transactional
     public LocationResponse update(LocationUpdateRequest toUpdate) {
         locationRepository.findById(toUpdate.getId()).orElseThrow(
-                () -> new ResourceNotFoundToUpdateException("Location")
+                () -> new ResourceNotFoundException("Location", toUpdate.getId())
         );
         Location location = locationMapper.toEntity(toUpdate);
         locationRepository.save(location);
@@ -51,11 +55,13 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         locationRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public void deleteAll() {
         locationRepository.deleteAll();
     }

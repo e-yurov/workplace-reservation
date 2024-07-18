@@ -1,7 +1,6 @@
 package com.rc.mentorship.workplace_reservation.exception.handler;
 
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
+import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +10,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({ResourceNotFoundToReadException.class, ResourceNotFoundToUpdateException.class})
-    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(RuntimeException ex) {
+    @ExceptionHandler({ResourceNotFoundException.class})
+    public ResponseEntity<ErrorDetails> handleResourceNotFoundException(ResourceNotFoundException ex) {
         HttpStatus status = HttpStatus.NOT_FOUND;
         ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
         return ResponseEntity.status(status).body(details);

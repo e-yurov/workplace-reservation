@@ -21,6 +21,7 @@ public class Workplace {
     private int floor;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     @Column(name = "computer_present")
