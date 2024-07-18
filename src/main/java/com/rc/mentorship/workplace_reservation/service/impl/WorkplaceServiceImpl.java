@@ -7,6 +7,7 @@ import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
+import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class WorkplaceServiceImpl implements WorkplaceService {
     private final WorkplaceRepository workplaceRepository;
+    private final OfficeRepository officeRepository;
     private final WorkplaceMapper workplaceMapper;
 
     @Override
@@ -36,6 +38,8 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     @Override
     public WorkplaceResponse create(WorkplaceCreateRequest toCreate) {
         Workplace workplace = workplaceMapper.toEntity(toCreate);
+        workplace.setOffice(officeRepository.findById(toCreate.getOfficeId())
+                .orElseThrow(() -> new ResourceNotFoundToReadException("Office")));
         workplaceRepository.save(workplace);
         return workplaceMapper.toDto(workplace);
     }
@@ -46,6 +50,8 @@ public class WorkplaceServiceImpl implements WorkplaceService {
                 () -> new ResourceNotFoundToUpdateException("Workplace")
         );
         Workplace workplace = workplaceMapper.toEntity(toUpdate);
+        workplace.setOffice(officeRepository.findById(toUpdate.getOfficeId())
+                .orElseThrow(() -> new ResourceNotFoundToReadException("Office")));
         workplaceRepository.save(workplace);
         return workplaceMapper.toDto(workplace);
     }

@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OfficeResponse {
     private UUID id;
-    private UUID locationId;
     private LocalTime startTime;
     private LocalTime endTime;
+    @JsonProperty(value = "location")
+    private LocationResponse locationResponse;
 }

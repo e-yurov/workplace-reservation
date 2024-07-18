@@ -8,6 +8,8 @@ import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadE
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
+import com.rc.mentorship.workplace_reservation.repository.UserRepository;
+import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,8 +21,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
+    private final UserRepository userRepository;
+    private final WorkplaceRepository workplaceRepository;
     private final ReservationMapper reservationMapper;
 
+    //TODO: add Transactional
     @Override
     public List<ReservationResponse> findAll() {
         return reservationRepository.findAll().stream().map(reservationMapper::toDto).toList();
@@ -36,6 +41,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponse create(ReservationCreateRequest toCreate) {
         Reservation reservation = reservationMapper.toEntity(toCreate);
+        fillReservation(reservation, toCreate.getUserId(), toCreate.getWorkplaceId());
         reservationRepository.save(reservation);
         return reservationMapper.toDto(reservation);
     }
@@ -46,6 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
                 () -> new ResourceNotFoundToUpdateException("Reservation")
         );
         Reservation reservation = reservationMapper.toEntity(toUpdate);
+        fillReservation(reservation, toUpdate.getUserId(), toUpdate.getWorkplaceId());
         reservationRepository.save(reservation);
         return reservationMapper.toDto(reservation);
     }
@@ -58,5 +65,12 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void deleteAll() {
         reservationRepository.deleteAll();
+    }
+
+    private void fillReservation(Reservation reservation, UUID userId, UUID workplaceId) {
+        reservation.setUser(userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundToReadException("User")));
+        reservation.setWorkplace(workplaceRepository.findById(workplaceId)
+                .orElseThrow(() -> new ResourceNotFoundToReadException("Workplace")));
     }
 }

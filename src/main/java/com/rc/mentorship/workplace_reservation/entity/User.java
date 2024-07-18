@@ -11,8 +11,9 @@ import java.util.UUID;
 @Table(name = "user", schema = "workplace_reservation")
 @Getter
 @Setter
-public class User extends EntityInMemory {
+public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 

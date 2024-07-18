@@ -7,6 +7,7 @@ import com.rc.mentorship.workplace_reservation.entity.Office;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
+import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OfficeServiceImpl implements OfficeService {
     private final OfficeRepository officeRepository;
+    private final LocationRepository locationRepository;
     private final OfficeMapper officeMapper;
 
 
@@ -37,6 +39,8 @@ public class OfficeServiceImpl implements OfficeService {
     @Override
     public OfficeResponse create(OfficeCreateRequest toCreate) {
         Office office = officeMapper.toEntity(toCreate);
+        office.setLocation(locationRepository.findById(toCreate.getLocationId())
+                .orElseThrow(() -> new ResourceNotFoundToReadException("Location")));
         officeRepository.save(office);
         return officeMapper.toDto(office);
     }
@@ -47,6 +51,8 @@ public class OfficeServiceImpl implements OfficeService {
                 () -> new ResourceNotFoundToUpdateException("Office")
         );
         Office office = officeMapper.toEntity(toUpdate);
+        office.setLocation(locationRepository.findById(toUpdate.getLocationId())
+                .orElseThrow(() -> new ResourceNotFoundToReadException("Location")));
         officeRepository.save(office);
         return officeMapper.toDto(office);
     }
