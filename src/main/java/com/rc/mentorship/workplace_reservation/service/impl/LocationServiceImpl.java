@@ -7,7 +7,7 @@ import com.rc.mentorship.workplace_reservation.entity.Location;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
-import com.rc.mentorship.workplace_reservation.repository.LocationRepositoryInMemory;
+import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class LocationServiceImpl implements LocationService {
-    private final LocationRepositoryInMemory locationRepository;
+    private final LocationRepository locationRepository;
     private final LocationMapper locationMapper;
 
     @Override
@@ -46,7 +46,7 @@ public class LocationServiceImpl implements LocationService {
                 () -> new ResourceNotFoundToUpdateException("Location")
         );
         Location location = locationMapper.toEntity(toUpdate);
-        locationRepository.update(location);
+        locationRepository.save(location);
         return locationMapper.toDto(location);
     }
 

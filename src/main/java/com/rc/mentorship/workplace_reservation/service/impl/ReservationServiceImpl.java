@@ -7,7 +7,7 @@ import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
-import com.rc.mentorship.workplace_reservation.repository.ReservationRepositoryInMemory;
+import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
-    private final ReservationRepositoryInMemory reservationRepository;
+    private final ReservationRepository reservationRepository;
     private final ReservationMapper reservationMapper;
 
     @Override
@@ -46,7 +46,7 @@ public class ReservationServiceImpl implements ReservationService {
                 () -> new ResourceNotFoundToUpdateException("Reservation")
         );
         Reservation reservation = reservationMapper.toEntity(toUpdate);
-        reservationRepository.update(reservation);
+        reservationRepository.save(reservation);
         return reservationMapper.toDto(reservation);
     }
 

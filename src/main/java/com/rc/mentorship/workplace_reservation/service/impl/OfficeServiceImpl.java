@@ -7,7 +7,7 @@ import com.rc.mentorship.workplace_reservation.entity.Office;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToReadException;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundToUpdateException;
 import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
-import com.rc.mentorship.workplace_reservation.repository.OfficeRepositoryInMemory;
+import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class OfficeServiceImpl implements OfficeService {
-    private final OfficeRepositoryInMemory officeRepository;
+    private final OfficeRepository officeRepository;
     private final OfficeMapper officeMapper;
 
 
@@ -47,7 +47,7 @@ public class OfficeServiceImpl implements OfficeService {
                 () -> new ResourceNotFoundToUpdateException("Office")
         );
         Office office = officeMapper.toEntity(toUpdate);
-        officeRepository.update(office);
+        officeRepository.save(office);
         return officeMapper.toDto(office);
     }
 
