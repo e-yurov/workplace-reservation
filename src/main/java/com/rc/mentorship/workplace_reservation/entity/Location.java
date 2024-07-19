@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "location", schema = "workplace_reservation")
+@Table(name = "location")
 @Getter
 @Setter
 public class Location {

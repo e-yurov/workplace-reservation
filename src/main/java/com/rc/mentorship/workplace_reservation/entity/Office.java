@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "office", schema = "workplace_reservation")
+@Table(name = "office")
 @Getter
 @Setter
 public class Office {
