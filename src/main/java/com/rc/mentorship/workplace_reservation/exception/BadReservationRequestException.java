@@ -1,6 +1,5 @@
 package com.rc.mentorship.workplace_reservation.exception;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class BadReservationRequestException extends RuntimeException {

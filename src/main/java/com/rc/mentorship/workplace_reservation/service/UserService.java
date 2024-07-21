@@ -1,14 +1,15 @@
 package com.rc.mentorship.workplace_reservation.service;
 
-import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
+import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    List<UserResponse> findAll();
+    Page<UserResponse> findAll(PageRequest pageRequest);
 
     UserResponse findById(UUID id);
 

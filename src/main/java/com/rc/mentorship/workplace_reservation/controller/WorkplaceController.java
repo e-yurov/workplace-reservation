@@ -5,11 +5,12 @@ import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateReques
 import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,9 +19,13 @@ import java.util.UUID;
 public class WorkplaceController {
     private final WorkplaceService workplaceService;
 
+    //TODO: ask about validation and exception handling
     @GetMapping
-    public ResponseEntity<List<WorkplaceResponse>> findAll() {
-        return ResponseEntity.ok(workplaceService.findAll());
+    public ResponseEntity<Page<WorkplaceResponse>> findAll(
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        return ResponseEntity.ok(workplaceService.findAll(PageRequest.of(pageNumber, pageSize)));
     }
 
     @GetMapping("/{id}")

@@ -15,11 +15,12 @@ import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,8 +33,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReservationResponse> findAll() {
-        return reservationRepository.findAll().stream().map(reservationMapper::toDto).toList();
+    public Page<ReservationResponse> findAll(PageRequest pageRequest) {
+        return reservationRepository.findAll(pageRequest).map(reservationMapper::toDto);
     }
 
     @Override

@@ -5,11 +5,12 @@ import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,8 +20,11 @@ public class LocationController {
     private final LocationService locationService;
 
     @GetMapping
-    public ResponseEntity<List<LocationResponse>> findAll() {
-        return ResponseEntity.ok(locationService.findAll());
+    public ResponseEntity<Page<LocationResponse>> findAll(
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        return ResponseEntity.ok(locationService.findAll(PageRequest.of(pageNumber, pageSize)));
     }
 
     @GetMapping("/{id}")

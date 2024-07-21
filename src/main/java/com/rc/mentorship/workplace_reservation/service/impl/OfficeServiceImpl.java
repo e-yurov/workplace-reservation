@@ -10,10 +10,11 @@ import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,8 +27,8 @@ public class OfficeServiceImpl implements OfficeService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OfficeResponse> findAll() {
-        return officeRepository.findAll().stream().map(officeMapper::toDto).toList();
+    public Page<OfficeResponse> findAll(PageRequest pageRequest) {
+        return officeRepository.findAll(pageRequest).map(officeMapper::toDto);
     }
 
     @Override

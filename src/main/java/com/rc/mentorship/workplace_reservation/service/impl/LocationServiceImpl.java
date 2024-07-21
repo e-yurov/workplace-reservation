@@ -9,10 +9,11 @@ import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,8 +24,8 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<LocationResponse> findAll() {
-        return locationRepository.findAll().stream().map(locationMapper::toDto).toList();
+    public Page<LocationResponse> findAll(PageRequest pageRequest) {
+        return locationRepository.findAll(pageRequest).map(locationMapper::toDto);
     }
 
     @Override

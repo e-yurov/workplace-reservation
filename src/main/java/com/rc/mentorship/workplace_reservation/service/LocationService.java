@@ -3,12 +3,13 @@ package com.rc.mentorship.workplace_reservation.service;
 import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface LocationService {
-    List<LocationResponse> findAll();
+    Page<LocationResponse> findAll(PageRequest pageRequest);
 
     LocationResponse findById(UUID id);
 

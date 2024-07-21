@@ -1,7 +1,6 @@
 package com.rc.mentorship.workplace_reservation.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.rc.mentorship.workplace_reservation.entity.Office;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

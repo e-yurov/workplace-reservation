@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -39,13 +38,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WorkplaceNotAvailableException.class)
     public ResponseEntity<ErrorDetails> handleWorkplaceNotAvailableException(
             WorkplaceNotAvailableException ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
-        return ResponseEntity.status(status).body(details);
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorDetails> handleParameterConvertingException(MethodArgumentTypeMismatchException ex) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
         return ResponseEntity.status(status).body(details);
