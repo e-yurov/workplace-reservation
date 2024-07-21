@@ -26,8 +26,11 @@ public class LocationController {
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) Optional<String> city
     ) {
-        return ResponseEntity.ok(locationService.findAllByOptionalCity(
-                PageRequest.of(pageNumber, pageSize), city));
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        Page<LocationResponse> response = city.isPresent() ?
+                locationService.findAllByCity(pageRequest, city.get()) :
+                locationService.findAll(pageRequest);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

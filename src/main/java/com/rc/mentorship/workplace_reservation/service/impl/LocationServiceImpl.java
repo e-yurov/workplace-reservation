@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,11 +30,9 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<LocationResponse> findAllByOptionalCity(PageRequest pageRequest, Optional<String> city) {
-        Page<Location> locations = city.isPresent() ?
-                locationRepository.findByCity(city.get(), pageRequest) :
-                locationRepository.findAll(pageRequest);
-        return locations.map(locationMapper::toDto);
+    public Page<LocationResponse> findAllByCity(PageRequest pageRequest, String city) {
+        return locationRepository.findByCity(city, pageRequest)
+                .map(locationMapper::toDto);
     }
 
     @Override
