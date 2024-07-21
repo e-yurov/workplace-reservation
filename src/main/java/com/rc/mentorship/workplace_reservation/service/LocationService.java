@@ -6,10 +6,13 @@ import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface LocationService {
     Page<LocationResponse> findAll(PageRequest pageRequest);
+
+    Page<LocationResponse> findAllByOptionalCity(PageRequest pageRequest, Optional<String> city);
 
     LocationResponse findById(UUID id);
 
