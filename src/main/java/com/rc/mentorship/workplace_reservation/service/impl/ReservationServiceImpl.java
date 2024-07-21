@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequ
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
+import com.rc.mentorship.workplace_reservation.entity.Workplace;
+import com.rc.mentorship.workplace_reservation.exception.BadReservationRequestException;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,7 +46,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationResponse create(ReservationCreateRequest toCreate) {
         Reservation reservation = reservationMapper.toEntity(toCreate);
-        fillReservation(reservation, toCreate.getUserId(), toCreate.getWorkplaceId());
+        fillReservationOrThrow(reservation,
+                toCreate.getUserId(), toCreate.getWorkplaceId(),
+                toCreate.getStartDateTime(), toCreate.getEndDateTime());
         reservationRepository.save(reservation);
         return reservationMapper.toDto(reservation);
     }
@@ -55,7 +60,9 @@ public class ReservationServiceImpl implements ReservationService {
                 () -> new ResourceNotFoundException("Reservation", toUpdate.getId())
         );
         Reservation reservation = reservationMapper.toEntity(toUpdate);
-        fillReservation(reservation, toUpdate.getUserId(), toUpdate.getWorkplaceId());
+        fillReservationOrThrow(reservation,
+                toUpdate.getUserId(), toUpdate.getWorkplaceId(),
+                toUpdate.getStartDateTime(), toUpdate.getEndDateTime());
         reservationRepository.save(reservation);
         return reservationMapper.toDto(reservation);
     }
@@ -72,10 +79,23 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.deleteAll();
     }
 
-    private void fillReservation(Reservation reservation, UUID userId, UUID workplaceId) {
+    private void fillReservationOrThrow(Reservation reservation,
+                                        UUID userId, UUID workplaceId,
+                                        LocalDateTime start, LocalDateTime end) {
+        Workplace workplace = workplaceRepository.findById(workplaceId)
+                .orElseThrow(() -> new ResourceNotFoundException("Workplace", workplaceId));
+        checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, start, end);
+
         reservation.setUser(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId)));
-        reservation.setWorkplace(workplaceRepository.findById(workplaceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Workplace", workplaceId)));
+        reservation.setWorkplace(workplace);
+    }
+
+    private void checkAvailableAndNotReservedOrThrow(boolean available, UUID workplaceId,
+                                                     LocalDateTime start, LocalDateTime end) {
+        if (!available ||
+                reservationRepository.checkReserved(workplaceId, start, end)) {
+            throw new BadReservationRequestException(workplaceId);
+        }
     }
 }
