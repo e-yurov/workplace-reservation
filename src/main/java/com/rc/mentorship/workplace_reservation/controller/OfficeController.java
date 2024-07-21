@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +28,11 @@ public class OfficeController {
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam Map<String, String> filters
             ) {
-        var f = FilterParamParser.parseAllParams(filters, Set.of("pageNumber", "pageSize"));
-        return ResponseEntity.ok(officeService.findAll(PageRequest.of(pageNumber, pageSize)));
+        return ResponseEntity.ok(officeService.findAllWithFilters(
+                PageRequest.of(pageNumber, pageSize),
+                FilterParamParser.parseAllParams(filters,
+                        Set.of("pageNumber", "pageSize"))
+        ));
     }
 
     @GetMapping("{id}")

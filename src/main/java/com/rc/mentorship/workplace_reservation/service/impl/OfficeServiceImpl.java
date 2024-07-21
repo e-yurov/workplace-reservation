@@ -9,12 +9,17 @@ import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
+import com.rc.mentorship.workplace_reservation.util.filter.Filter;
+import com.rc.mentorship.workplace_reservation.util.filter.converter.impl.OfficeFilterConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -23,12 +28,21 @@ public class OfficeServiceImpl implements OfficeService {
     private final OfficeRepository officeRepository;
     private final LocationRepository locationRepository;
     private final OfficeMapper officeMapper;
-
+    private final OfficeFilterConverter officeFilterConverter;
 
     @Override
     @Transactional(readOnly = true)
     public Page<OfficeResponse> findAll(PageRequest pageRequest) {
         return officeRepository.findAll(pageRequest).map(officeMapper::toDto);
+    }
+
+    @Override
+    public Page<OfficeResponse> findAllWithFilters(PageRequest pageRequest,
+                                                   Map<String, Filter> fieldFilterMap) {
+        List<OfficeResponse> response = officeRepository.findAll().stream()
+                .filter(officeFilterConverter.convert(fieldFilterMap))
+                .map(officeMapper::toDto).toList();
+        return new PageImpl<>(response, pageRequest, response.size());
     }
 
     @Override
