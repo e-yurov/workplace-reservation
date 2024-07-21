@@ -6,7 +6,9 @@ import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.exception.BadReservationRequestException;
+import com.rc.mentorship.workplace_reservation.exception.BadReservationTimeException;
 import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
+import com.rc.mentorship.workplace_reservation.exception.WorkplaceNotAvailableException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
@@ -82,6 +84,10 @@ public class ReservationServiceImpl implements ReservationService {
     private void fillReservationOrThrow(Reservation reservation,
                                         UUID userId, UUID workplaceId,
                                         LocalDateTime start, LocalDateTime end) {
+        if (reservation.getStartDateTime().isAfter(reservation.getEndDateTime())) {
+            throw new BadReservationTimeException();
+        }
+
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Workplace", workplaceId));
         checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, start, end);
@@ -93,8 +99,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void checkAvailableAndNotReservedOrThrow(boolean available, UUID workplaceId,
                                                      LocalDateTime start, LocalDateTime end) {
-        if (!available ||
-                reservationRepository.checkReserved(workplaceId, start, end)) {
+        if (!available) {
+            throw new WorkplaceNotAvailableException(workplaceId);
+        }
+        if (reservationRepository.checkReserved(workplaceId, start, end)) {
             throw new BadReservationRequestException(workplaceId);
         }
     }
