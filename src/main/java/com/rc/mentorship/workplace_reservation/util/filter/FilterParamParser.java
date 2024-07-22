@@ -14,11 +14,11 @@ public class FilterParamParser {
         filtersMap.keySet().removeAll(paramsToRemove);
 
         Map<String, Filter> filters = new HashMap<>();
-        filtersMap.forEach((k, v) -> filters.put(k, parseParam(v)));
+        filtersMap.forEach((k, v) -> filters.put(k, parseParam(k, v)));
         return filters;
     }
 
-    public Filter parseParam(String param) {
+    public Filter parseParam(String paramName, String param) {
         String[] params = param.split("/");
 
         FilterType filterType;
@@ -29,11 +29,11 @@ public class FilterParamParser {
         } else if (params.length == 2) {
             filterType = FilterType.getByShortName(params[0]);
             if (filterType == null) {
-                throw new FiltrationParamsFormatException();
+                throw new FiltrationParamsFormatException(paramName);
             }
             value = params[1];
         } else {
-            throw new FiltrationParamsFormatException();
+            throw new FiltrationParamsFormatException(paramName);
         }
 
         return new Filter(filterType, value);

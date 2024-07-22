@@ -32,7 +32,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
         try {
             floor = Integer.parseInt(floorFilter.getValue());
         } catch (NumberFormatException ex) {
-            throw new FiltrationParamsFormatException();
+            throw new FiltrationParamsFormatException("floor");
         }
 
         FilterType filterType = floorFilter.getType();
@@ -52,7 +52,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
             case EQUALS -> {
                 return workplace -> workplace.getFloor() == floor;
             }
-            default -> throw new FiltrationParamsFormatException();
+            default -> throw new FiltrationParamsFormatException("floor");
         }
     }
 
@@ -66,7 +66,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
             workplaceType = Workplace.Type.valueOf(
                     workplaceTypeFilter.getValue().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ex) {
-            throw new FiltrationParamsFormatException();
+            throw new FiltrationParamsFormatException("type");
         }
 
         return workplace -> workplace.getType() == workplaceType;

@@ -51,7 +51,7 @@ public class OfficeFilterConverter implements FilterToPredicateConverter<Office>
             case EQUALS -> {
                 return office -> office.getStartTime().equals(startTime);
             }
-            default -> throw new FiltrationParamsFormatException();
+            default -> throw new FiltrationParamsFormatException("startTime");
         }
     }
 
@@ -74,7 +74,7 @@ public class OfficeFilterConverter implements FilterToPredicateConverter<Office>
             case EQUALS -> {
                 return office -> office.getEndTime().equals(endTime);
             }
-            default -> throw new FiltrationParamsFormatException();
+            default -> throw new FiltrationParamsFormatException("endTime");
         }
     }
 }

@@ -56,7 +56,7 @@ public class ReservationFilterConverter implements FilterToPredicateConverter<Re
             case EQUALS -> {
                 return reservation -> reservation.getStartDateTime().equals(startDateTime);
             }
-            default -> throw new FiltrationParamsFormatException();
+            default -> throw new FiltrationParamsFormatException("startDateTime");
         }
     }
 
@@ -80,7 +80,7 @@ public class ReservationFilterConverter implements FilterToPredicateConverter<Re
             case EQUALS -> {
                 return reservation -> reservation.getEndDateTime().equals(endDateTime);
             }
-            default -> throw new FiltrationParamsFormatException();
+            default -> throw new FiltrationParamsFormatException("endDateTime");
         }
     }
 }
