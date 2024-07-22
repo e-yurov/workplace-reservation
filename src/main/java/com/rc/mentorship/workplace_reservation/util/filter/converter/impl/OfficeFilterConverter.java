@@ -3,37 +3,43 @@ package com.rc.mentorship.workplace_reservation.util.filter.converter.impl;
 import com.rc.mentorship.workplace_reservation.entity.Office;
 import com.rc.mentorship.workplace_reservation.exception.FiltrationParamsFormatException;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
-import com.rc.mentorship.workplace_reservation.util.filter.FilterType;
 import com.rc.mentorship.workplace_reservation.util.filter.converter.FilterToPredicateConverter;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @Component
 public class OfficeFilterConverter implements FilterToPredicateConverter<Office> {
     @Override
     public Predicate<Office> convert(Map<String, Filter> filters) {
-        Filter startTimeFilter = filters.get("startTime");
-        Filter endTimeFilter = filters.get("endTime");
         List<Predicate<Office>> predicates = new ArrayList<>();
-        if (startTimeFilter != null) {
-             LocalTime startTime = LocalTime.parse(startTimeFilter.getValue());
-             predicates.add(filterStartTime(startTime, startTimeFilter.getType()));
-        }
-        if (endTimeFilter != null) {
-            LocalTime endTime = LocalTime.parse(endTimeFilter.getValue());
-            predicates.add(filterEndTime(endTime, endTimeFilter.getType()));
-        }
+        predicates.add(filterByStartTime(filters.get("startTime")));
+        predicates.add(filterByEndTime(filters.get("endTime")));
+        predicates.add(filterByLocationId(filters.get("locationId")));
 
+        predicates.removeIf(Objects::isNull);
         return applyAllPredicates(predicates);
     }
 
-    private Predicate<Office> filterStartTime(LocalTime startTime, FilterType filterType) {
-        switch (filterType) {
+    private Predicate<Office> filterByStartTime(Filter startTimeFilter) {
+        if (startTimeFilter == null) {
+            return null;
+        }
+
+        LocalTime startTime;
+        try {
+            startTime = LocalTime.parse(startTimeFilter.getValue());
+        } catch (DateTimeParseException ex) {
+            throw new FiltrationParamsFormatException("startTime");
+        }
+
+        switch (startTimeFilter.getType()) {
             case GREATER_THAN -> {
                 return office -> office.getStartTime().isAfter(startTime);
             }
@@ -55,8 +61,19 @@ public class OfficeFilterConverter implements FilterToPredicateConverter<Office>
         }
     }
 
-    private Predicate<Office> filterEndTime(LocalTime endTime, FilterType filterType) {
-        switch (filterType) {
+    private Predicate<Office> filterByEndTime(Filter endTimeFilter) {
+        if (endTimeFilter == null) {
+            return null;
+        }
+
+        LocalTime endTime;
+        try {
+            endTime = LocalTime.parse(endTimeFilter.getValue());
+        } catch (DateTimeParseException ex) {
+            throw new FiltrationParamsFormatException("endTime");
+        }
+
+        switch (endTimeFilter.getType()) {
             case GREATER_THAN -> {
                 return office -> office.getEndTime().isAfter(endTime);
             }
@@ -76,5 +93,14 @@ public class OfficeFilterConverter implements FilterToPredicateConverter<Office>
             }
             default -> throw new FiltrationParamsFormatException("endTime");
         }
+    }
+
+    private Predicate<Office> filterByLocationId (Filter locationFilter) {
+        if (locationFilter == null) {
+            return null;
+        }
+
+        return office -> office.getLocation().getId()
+                .toString().equals(locationFilter.getValue());
     }
 }

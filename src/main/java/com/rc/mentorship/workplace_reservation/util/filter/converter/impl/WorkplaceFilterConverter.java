@@ -3,7 +3,6 @@ package com.rc.mentorship.workplace_reservation.util.filter.converter.impl;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.exception.FiltrationParamsFormatException;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
-import com.rc.mentorship.workplace_reservation.util.filter.FilterType;
 import com.rc.mentorship.workplace_reservation.util.filter.converter.FilterToPredicateConverter;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +36,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
             throw new FiltrationParamsFormatException("floor");
         }
 
-        FilterType filterType = floorFilter.getType();
-        switch (filterType) {
+        switch (floorFilter.getType()) {
             case GREATER_THAN -> {
                 return workplace -> workplace.getFloor() > floor;
             }
@@ -101,13 +99,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
             return null;
         }
 
-        UUID officeId;
-        try {
-            officeId = UUID.fromString(officeIdFilter.getValue());
-        } catch (IllegalArgumentException ex) {
-            throw new FiltrationParamsFormatException("officeId");
-        }
-
-        return workplace -> workplace.getOffice().getId().equals(officeId);
+        return workplace -> workplace.getOffice().getId()
+                .toString().equals(officeIdFilter.getValue());
     }
 }
