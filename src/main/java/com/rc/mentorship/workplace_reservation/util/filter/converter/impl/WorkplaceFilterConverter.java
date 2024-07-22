@@ -15,15 +15,17 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
     @Override
     public Predicate<Workplace> convert(Map<String, Filter> filters) {
         List<Predicate<Workplace>> predicates = new ArrayList<>();
-        predicates.add(filterFloor(filters.get("floor")));
-        predicates.add(filterWorkplaceType(filters.get("type")));
-        predicates.add(filterComputerPresent(filters.get("computerPresent")));
-        predicates.add(filterAvailable(filters.get("available")));
+        predicates.add(filterByFloor(filters.get("floor")));
+        predicates.add(filterByWorkplaceType(filters.get("type")));
+        predicates.add(filterByComputerPresent(filters.get("computerPresent")));
+        predicates.add(filterByAvailable(filters.get("available")));
+        predicates.add(filterByOfficeId(filters.get("officeId")));
+
         predicates.removeIf(Objects::isNull);
         return applyAllPredicates(predicates);
     }
 
-    private Predicate<Workplace> filterFloor(Filter floorFilter) {
+    private Predicate<Workplace> filterByFloor(Filter floorFilter) {
         if (floorFilter == null) {
             return null;
         }
@@ -56,7 +58,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
         }
     }
 
-    private Predicate<Workplace> filterWorkplaceType(Filter workplaceTypeFilter) {
+    private Predicate<Workplace> filterByWorkplaceType(Filter workplaceTypeFilter) {
         if (workplaceTypeFilter == null) {
             return null;
         }
@@ -72,7 +74,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
         return workplace -> workplace.getType() == workplaceType;
     }
 
-    private Predicate<Workplace> filterComputerPresent(Filter computerPresentFilter) {
+    private Predicate<Workplace> filterByComputerPresent(Filter computerPresentFilter) {
         if (computerPresentFilter == null) {
             return null;
         }
@@ -83,7 +85,7 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
         return workplace -> workplace.isComputerPresent() == computerPresent;
     }
 
-    private Predicate<Workplace> filterAvailable(Filter availableFilter) {
+    private Predicate<Workplace> filterByAvailable(Filter availableFilter) {
         if (availableFilter == null) {
             return null;
         }
@@ -92,5 +94,20 @@ public class WorkplaceFilterConverter implements FilterToPredicateConverter<Work
                 availableFilter.getValue().toLowerCase(Locale.ROOT));
 
         return workplace -> workplace.isAvailable() == available;
+    }
+
+    private Predicate<Workplace> filterByOfficeId(Filter officeIdFilter) {
+        if (officeIdFilter == null) {
+            return null;
+        }
+
+        UUID officeId;
+        try {
+            officeId = UUID.fromString(officeIdFilter.getValue());
+        } catch (IllegalArgumentException ex) {
+            throw new FiltrationParamsFormatException("officeId");
+        }
+
+        return workplace -> workplace.getOffice().getId().equals(officeId);
     }
 }
