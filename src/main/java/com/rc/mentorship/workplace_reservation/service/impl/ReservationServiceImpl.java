@@ -14,13 +14,18 @@ import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
+import com.rc.mentorship.workplace_reservation.util.filter.Filter;
+import com.rc.mentorship.workplace_reservation.util.filter.converter.impl.ReservationFilterConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -30,11 +35,22 @@ public class ReservationServiceImpl implements ReservationService {
     private final UserRepository userRepository;
     private final WorkplaceRepository workplaceRepository;
     private final ReservationMapper reservationMapper;
+    private final ReservationFilterConverter reservationFilterConverter;
 
     @Override
     @Transactional(readOnly = true)
     public Page<ReservationResponse> findAll(PageRequest pageRequest) {
         return reservationRepository.findAll(pageRequest).map(reservationMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReservationResponse> findAllWithFilters(PageRequest pageRequest,
+                                                        Map<String, Filter> fieldFilterMap) {
+        List<ReservationResponse> response = reservationRepository.findAll().stream()
+                .filter(reservationFilterConverter.convert(fieldFilterMap))
+                .map(reservationMapper::toDto).toList();
+        return new PageImpl<>(response, pageRequest, response.size());
     }
 
     @Override

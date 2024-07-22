@@ -4,6 +4,7 @@ import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequ
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
+import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -22,9 +25,14 @@ public class ReservationController {
     @GetMapping
     public ResponseEntity<Page<ReservationResponse>> findAll(
             @RequestParam(defaultValue = "0") Integer pageNumber,
-            @RequestParam(defaultValue = "5") Integer pageSize
+            @RequestParam(defaultValue = "5") Integer pageSize,
+            @RequestParam Map<String, String> filters
     ) {
-        return ResponseEntity.ok(reservationService.findAll(PageRequest.of(pageNumber, pageSize)));
+        return ResponseEntity.ok(reservationService.findAllWithFilters(
+                PageRequest.of(pageNumber, pageSize),
+                FilterParamParser.parseAllParams(filters,
+                        Set.of("pageNumber", "pageSize"))
+        ));
     }
 
     @GetMapping("/{id}")

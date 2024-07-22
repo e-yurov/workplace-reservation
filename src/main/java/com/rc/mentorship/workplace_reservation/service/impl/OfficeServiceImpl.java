@@ -37,6 +37,7 @@ public class OfficeServiceImpl implements OfficeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OfficeResponse> findAllWithFilters(PageRequest pageRequest,
                                                    Map<String, Filter> fieldFilterMap) {
         List<OfficeResponse> response = officeRepository.findAll().stream()
