@@ -9,12 +9,17 @@ import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
+import com.rc.mentorship.workplace_reservation.util.filter.Filter;
+import com.rc.mentorship.workplace_reservation.util.filter.converter.impl.WorkplaceFilterConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -23,11 +28,22 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     private final WorkplaceRepository workplaceRepository;
     private final OfficeRepository officeRepository;
     private final WorkplaceMapper workplaceMapper;
+    private final WorkplaceFilterConverter workplaceFilterConverter;
 
     @Override
     @Transactional(readOnly = true)
     public Page<WorkplaceResponse> findAll(PageRequest pageRequest) {
         return workplaceRepository.findAll(pageRequest).map(workplaceMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<WorkplaceResponse> findAllWithFilters(PageRequest pageRequest,
+                                                      Map<String, Filter> fieldFilterMap) {
+        List<WorkplaceResponse> response = workplaceRepository.findAll().stream()
+                .filter(workplaceFilterConverter.convert(fieldFilterMap))
+                .map(workplaceMapper::toDto).toList();
+        return new PageImpl<>(response, pageRequest, response.size());
     }
 
     @Override

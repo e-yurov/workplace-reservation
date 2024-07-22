@@ -28,10 +28,11 @@ public class ReservationController {
             @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam Map<String, String> filters
     ) {
+        var fieldFilterMap = FilterParamParser.parseAllParams(filters,
+                Set.of("pageNumber", "pageSize"));
         return ResponseEntity.ok(reservationService.findAllWithFilters(
                 PageRequest.of(pageNumber, pageSize),
-                FilterParamParser.parseAllParams(filters,
-                        Set.of("pageNumber", "pageSize"))
+                fieldFilterMap
         ));
     }
 

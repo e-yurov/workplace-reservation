@@ -1,9 +1,6 @@
 package com.rc.mentorship.workplace_reservation.exception.handler;
 
-import com.rc.mentorship.workplace_reservation.exception.BadReservationRequestException;
-import com.rc.mentorship.workplace_reservation.exception.BadReservationTimeException;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
-import com.rc.mentorship.workplace_reservation.exception.WorkplaceNotAvailableException;
+import com.rc.mentorship.workplace_reservation.exception.*;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +35,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(WorkplaceNotAvailableException.class)
     public ResponseEntity<ErrorDetails> handleWorkplaceNotAvailableException(
             WorkplaceNotAvailableException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
+        return ResponseEntity.status(status).body(details);
+    }
+
+    @ExceptionHandler(FiltrationParamsFormatException.class)
+    public ResponseEntity<ErrorDetails> handeFiltrationParamsFormatException(
+            FiltrationParamsFormatException ex) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
         return ResponseEntity.status(status).body(details);
