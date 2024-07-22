@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -22,9 +23,15 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserResponse>> findAll(
             @RequestParam(defaultValue = "0") Integer pageNumber,
-            @RequestParam(defaultValue = "10") Integer pageSize
-    ) {
-        return ResponseEntity.ok(userService.findAll(PageRequest.of(pageNumber, pageSize)));
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) Optional<String> role
+            ) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        return ResponseEntity.ok(
+                role.isPresent() ?
+                        userService.findAllByRole(pageRequest, role.get()) :
+                        userService.findAll(pageRequest)
+        );
     }
 
     @GetMapping("/{id}")

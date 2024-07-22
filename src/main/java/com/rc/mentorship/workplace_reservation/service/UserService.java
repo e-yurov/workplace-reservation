@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface UserService {
     Page<UserResponse> findAll(PageRequest pageRequest);
 
+    Page<UserResponse> findAllByRole(PageRequest pageRequest, String role);
+
     UserResponse findById(UUID id);
 
     UserResponse create(UserCreateRequest toCreate);

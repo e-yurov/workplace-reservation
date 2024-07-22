@@ -30,6 +30,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<UserResponse> findAllByRole(PageRequest pageRequest, String role) {
+        return userRepository.findByRole(role, pageRequest).map(userMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public UserResponse findById(UUID id) {
         return userMapper.toDto(userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("User", id)
