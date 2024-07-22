@@ -23,6 +23,4 @@ public interface ReservationService {
     ReservationResponse update(ReservationUpdateRequest toUpdate);
 
     void delete(UUID id);
-
-    void deleteAll();
 }

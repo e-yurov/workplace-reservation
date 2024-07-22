@@ -84,10 +84,4 @@ public class OfficeServiceImpl implements OfficeService {
     public void delete(UUID id) {
         officeRepository.deleteById(id);
     }
-
-    @Override
-    @Transactional
-    public void deleteAll() {
-        officeRepository.deleteAll();
-    }
 }

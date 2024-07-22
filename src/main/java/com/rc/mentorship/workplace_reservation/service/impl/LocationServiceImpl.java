@@ -67,10 +67,4 @@ public class LocationServiceImpl implements LocationService {
     public void delete(UUID id) {
         locationRepository.deleteById(id);
     }
-
-    @Override
-    @Transactional
-    public void deleteAll() {
-        locationRepository.deleteAll();
-    }
 }

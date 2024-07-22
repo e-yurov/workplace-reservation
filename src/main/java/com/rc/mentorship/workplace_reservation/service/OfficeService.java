@@ -23,6 +23,4 @@ public interface OfficeService {
     OfficeResponse update(OfficeUpdateRequest toUpdate);
 
     void delete(UUID id);
-
-    void deleteAll();
 }

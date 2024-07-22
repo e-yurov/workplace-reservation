@@ -92,12 +92,6 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    @Override
-    @Transactional
-    public void deleteAll() {
-        reservationRepository.deleteAll();
-    }
-
     private void fillReservationOrThrow(Reservation reservation,
                                         UUID userId, UUID workplaceId,
                                         LocalDateTime start, LocalDateTime end) {

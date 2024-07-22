@@ -20,6 +20,4 @@ public interface LocationService {
     LocationResponse update(LocationUpdateRequest toUpdate);
 
     void delete(UUID id);
-
-    void deleteAll();
 }

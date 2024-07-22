@@ -18,6 +18,4 @@ public interface WorkplaceService {
     WorkplaceResponse update(WorkplaceUpdateRequest toUpdate);
 
     void delete(UUID id);
-
-    void deleteAll();
 }

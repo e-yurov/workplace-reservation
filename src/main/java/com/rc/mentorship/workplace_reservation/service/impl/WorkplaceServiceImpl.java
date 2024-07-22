@@ -68,10 +68,4 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     public void delete(UUID id) {
         workplaceRepository.deleteById(id);
     }
-
-    @Override
-    @Transactional
-    public void deleteAll() {
-        workplaceRepository.deleteAll();
-    }
 }
