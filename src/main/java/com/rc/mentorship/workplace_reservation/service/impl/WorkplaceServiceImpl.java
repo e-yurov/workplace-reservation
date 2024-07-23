@@ -4,7 +4,7 @@ import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateReques
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
+import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
 import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
@@ -50,7 +50,7 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     @Transactional(readOnly = true)
     public WorkplaceResponse findById(UUID id) {
         return workplaceMapper.toDto(workplaceRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Workplace", id)
+                () -> new NotFoundException("Workplace", id)
         ));
     }
 
@@ -59,7 +59,7 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     public WorkplaceResponse create(WorkplaceCreateRequest toCreate) {
         Workplace workplace = workplaceMapper.toEntity(toCreate);
         workplace.setOffice(officeRepository.findById(toCreate.getOfficeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Office",
+                .orElseThrow(() -> new NotFoundException("Office",
                         toCreate.getOfficeId())));
         workplaceRepository.save(workplace);
         return workplaceMapper.toDto(workplace);
@@ -69,11 +69,11 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     @Transactional
     public WorkplaceResponse update(WorkplaceUpdateRequest toUpdate) {
         workplaceRepository.findById(toUpdate.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Workplace", toUpdate.getId())
+                () -> new NotFoundException("Workplace", toUpdate.getId())
         );
         Workplace workplace = workplaceMapper.toEntity(toUpdate);
         workplace.setOffice(officeRepository.findById(toUpdate.getOfficeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Office",
+                .orElseThrow(() -> new NotFoundException("Office",
                         toUpdate.getOfficeId())));
         workplaceRepository.save(workplace);
         return workplaceMapper.toDto(workplace);

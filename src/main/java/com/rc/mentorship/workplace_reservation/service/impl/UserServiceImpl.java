@@ -4,7 +4,7 @@ import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.entity.User;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
+import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
 import com.rc.mentorship.workplace_reservation.mapper.UserMapper;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.service.UserService;
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponse findById(UUID id) {
         return userMapper.toDto(userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User", id)
+                () -> new NotFoundException("User", id)
         ));
     }
 
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse update(UserUpdateRequest toUpdate) {
         userRepository.findById(toUpdate.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("User", toUpdate.getId())
+                () -> new NotFoundException("User", toUpdate.getId())
         );
         User user = userMapper.toEntity(toUpdate);
         userRepository.save(user);

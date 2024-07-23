@@ -7,7 +7,7 @@ import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.exception.BadReservationRequestException;
 import com.rc.mentorship.workplace_reservation.exception.BadReservationTimeException;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
+import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
 import com.rc.mentorship.workplace_reservation.exception.WorkplaceNotAvailableException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
@@ -57,7 +57,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional(readOnly = true)
     public ReservationResponse findById(UUID id) {
         return reservationMapper.toDto(reservationRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Reservation", id)
+                () -> new NotFoundException("Reservation", id)
         ));
     }
 
@@ -76,7 +76,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationResponse update(ReservationUpdateRequest toUpdate) {
         reservationRepository.findById(toUpdate.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Reservation", toUpdate.getId())
+                () -> new NotFoundException("Reservation", toUpdate.getId())
         );
         Reservation reservation = reservationMapper.toEntity(toUpdate);
         fillReservationOrThrow(reservation,
@@ -100,11 +100,11 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
-                .orElseThrow(() -> new ResourceNotFoundException("Workplace", workplaceId));
+                .orElseThrow(() -> new NotFoundException("Workplace", workplaceId));
         checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, start, end);
 
         reservation.setUser(userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", userId)));
+                .orElseThrow(() -> new NotFoundException("User", userId)));
         reservation.setWorkplace(workplace);
     }
 

@@ -4,7 +4,7 @@ import com.rc.mentorship.workplace_reservation.dto.request.OfficeCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
 import com.rc.mentorship.workplace_reservation.entity.Office;
-import com.rc.mentorship.workplace_reservation.exception.ResourceNotFoundException;
+import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
 import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
@@ -50,7 +50,7 @@ public class OfficeServiceImpl implements OfficeService {
     @Transactional(readOnly = true)
     public OfficeResponse findById(UUID id) {
         return officeMapper.toDto(officeRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Office", id)
+                () -> new NotFoundException("Office", id)
         ));
     }
 
@@ -59,7 +59,7 @@ public class OfficeServiceImpl implements OfficeService {
     public OfficeResponse create(OfficeCreateRequest toCreate) {
         Office office = officeMapper.toEntity(toCreate);
         office.setLocation(locationRepository.findById(toCreate.getLocationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Location",
+                .orElseThrow(() -> new NotFoundException("Location",
                         toCreate.getLocationId())));
         officeRepository.save(office);
         return officeMapper.toDto(office);
@@ -69,11 +69,11 @@ public class OfficeServiceImpl implements OfficeService {
     @Transactional
     public OfficeResponse update(OfficeUpdateRequest toUpdate) {
         officeRepository.findById(toUpdate.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("Office", toUpdate.getId())
+                () -> new NotFoundException("Office", toUpdate.getId())
         );
         Office office = officeMapper.toEntity(toUpdate);
         office.setLocation(locationRepository.findById(toUpdate.getLocationId())
-                .orElseThrow(() -> new ResourceNotFoundException("Location",
+                .orElseThrow(() -> new NotFoundException("Location",
                         toUpdate.getLocationId())));
         officeRepository.save(office);
         return officeMapper.toDto(office);
