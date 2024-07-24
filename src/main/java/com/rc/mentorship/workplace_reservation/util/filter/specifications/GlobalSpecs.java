@@ -1,11 +1,15 @@
 package com.rc.mentorship.workplace_reservation.util.filter.specifications;
 
 import com.rc.mentorship.workplace_reservation.exception.FiltrationParamsFormatException;
+import com.rc.mentorship.workplace_reservation.util.filter.Filter;
 import com.rc.mentorship.workplace_reservation.util.filter.FilterType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.experimental.UtilityClass;
+
+import java.util.UUID;
 
 @UtilityClass
 class GlobalSpecs {
@@ -34,5 +38,26 @@ class GlobalSpecs {
             }
             default -> throw new FiltrationParamsFormatException(attribute);
         }
+    }
+
+    <T> Predicate buildByUuid(
+            Root<T> root,
+            CriteriaBuilder builder,
+            Filter filter,
+            String attribute
+    ) {
+        if (filter == null) {
+            return null;
+        }
+
+        UUID id;
+        try {
+            id = UUID.fromString(filter.getValue());
+        } catch (IllegalArgumentException ex) {
+            throw new FiltrationParamsFormatException(attribute + "Id");
+        }
+
+        return builder.equal(root.get(attribute)
+                .get("id"), id);
     }
 }

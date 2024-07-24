@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.UUID;
 
 @UtilityClass
 public class ReservationSpecs {
@@ -49,20 +48,7 @@ public class ReservationSpecs {
     }
 
     Specification<Reservation> filterByUuid(Filter filter, String attribute) {
-        return (root, query, builder) -> {
-            if (filter == null) {
-                return null;
-            }
-
-            UUID id;
-            try {
-                id = UUID.fromString(filter.getValue());
-            } catch (IllegalArgumentException ex) {
-                throw new FiltrationParamsFormatException(attribute);
-            }
-
-            return builder.equal(root.get(attribute)
-                    .get("id"), id);
-        };
+        return (root, query, builder) ->
+                GlobalSpecs.buildByUuid(root, builder, filter, attribute);
     }
 }

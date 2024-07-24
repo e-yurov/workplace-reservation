@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.UUID;
 
 @UtilityClass
 public class OfficeSpecs {
@@ -22,20 +21,8 @@ public class OfficeSpecs {
     }
 
     public Specification<Office> filterByLocationId(Filter filter) {
-        return (root, query, builder) -> {
-            if (filter == null) {
-                return null;
-            }
-
-            UUID locationId;
-            try {
-                locationId = UUID.fromString(filter.getValue());
-            } catch (IllegalArgumentException ex) {
-                throw new FiltrationParamsFormatException("locationId");
-            }
-
-            return builder.equal(root.get("location").get("id"), locationId);
-        };
+        return (root, query, builder) ->
+                GlobalSpecs.buildByUuid(root, builder, filter, "location");
     }
 
     Specification<Office> filterByTime(Filter filter, String attribute) {
