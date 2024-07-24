@@ -15,17 +15,18 @@ import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
-import com.rc.mentorship.workplace_reservation.util.filter.converter.impl.ReservationFilterConverter;
+import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
+import com.rc.mentorship.workplace_reservation.util.filter.specifications.ReservationSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -35,7 +36,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final UserRepository userRepository;
     private final WorkplaceRepository workplaceRepository;
     private final ReservationMapper reservationMapper;
-    private final ReservationFilterConverter reservationFilterConverter;
 
     @Override
     @Transactional(readOnly = true)
@@ -46,11 +46,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional(readOnly = true)
     public Page<ReservationResponse> findAllWithFilters(PageRequest pageRequest,
-                                                        Map<String, Filter> fieldFilterMap) {
-        List<ReservationResponse> response = reservationRepository.findAll().stream()
-                .filter(reservationFilterConverter.convert(fieldFilterMap))
-                .map(reservationMapper::toDto).toList();
-        return new PageImpl<>(response, pageRequest, response.size());
+                                                        Map<String, String> filters) {
+        Map<String, Filter> fieldFilterMap = FilterParamParser.parseAllParams(
+                filters, Set.of("pageNumber", "pageSize"));
+        Specification<Reservation> allFilters = Specification.allOf(
+                ReservationSpecs.filterByStartDateTime(fieldFilterMap.get("startDateTime")),
+                ReservationSpecs.filterByEndDateTime(fieldFilterMap.get("endDateTime")),
+                ReservationSpecs.filterByUserId(fieldFilterMap.get("userId")),
+                ReservationSpecs.filterByWorkplaceId(fieldFilterMap.get("workplaceId"))
+        );
+        return reservationRepository.findAll(allFilters, pageRequest)
+                .map(reservationMapper::toDto);
     }
 
     @Override

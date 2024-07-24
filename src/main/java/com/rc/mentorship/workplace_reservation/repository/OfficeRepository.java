@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface OfficeRepository extends JpaRepository<Office, UUID>, JpaSpecificationExecutor<Office> {
+public interface OfficeRepository extends JpaRepository<Office, UUID>,
+        JpaSpecificationExecutor<Office> {
 }

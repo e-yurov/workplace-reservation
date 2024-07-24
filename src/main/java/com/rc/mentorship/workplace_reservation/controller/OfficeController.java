@@ -4,7 +4,6 @@ import com.rc.mentorship.workplace_reservation.dto.request.OfficeCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
-import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController

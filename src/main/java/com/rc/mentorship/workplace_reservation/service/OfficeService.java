@@ -3,7 +3,6 @@ package com.rc.mentorship.workplace_reservation.service;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
-import com.rc.mentorship.workplace_reservation.util.filter.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
