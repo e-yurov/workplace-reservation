@@ -36,6 +36,6 @@ public class FilterParamParser {
             throw new FiltrationParamsFormatException(paramName);
         }
 
-        return new Filter(filterType, value);
+        return new Filter(paramName, filterType, value);
     }
 }

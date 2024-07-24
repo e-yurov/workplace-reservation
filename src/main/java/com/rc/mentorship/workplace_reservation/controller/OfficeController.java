@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -28,11 +29,9 @@ public class OfficeController {
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam Map<String, String> filters
             ) {
-        var fieldFilterMap = FilterParamParser.parseAllParams(filters,
-                Set.of("pageNumber", "pageSize"));
         return ResponseEntity.ok(officeService.findAllWithFilters(
                 PageRequest.of(pageNumber, pageSize),
-                fieldFilterMap
+                filters
         ));
     }
 

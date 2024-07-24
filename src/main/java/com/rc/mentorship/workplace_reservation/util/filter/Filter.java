@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Filter {
+    private final String key;
     private final FilterType type;
     private final String value;
 }

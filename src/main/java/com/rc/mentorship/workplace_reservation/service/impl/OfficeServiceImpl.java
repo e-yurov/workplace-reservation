@@ -10,16 +10,17 @@ import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
-import com.rc.mentorship.workplace_reservation.util.filter.converter.impl.OfficeFilterConverter;
+import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
+import com.rc.mentorship.workplace_reservation.util.filter.specifications.OfficeSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -28,7 +29,6 @@ public class OfficeServiceImpl implements OfficeService {
     private final OfficeRepository officeRepository;
     private final LocationRepository locationRepository;
     private final OfficeMapper officeMapper;
-    private final OfficeFilterConverter officeFilterConverter;
 
     @Override
     @Transactional(readOnly = true)
@@ -39,11 +39,15 @@ public class OfficeServiceImpl implements OfficeService {
     @Override
     @Transactional(readOnly = true)
     public Page<OfficeResponse> findAllWithFilters(PageRequest pageRequest,
-                                                   Map<String, Filter> fieldFilterMap) {
-        List<OfficeResponse> response = officeRepository.findAll().stream()
-                .filter(officeFilterConverter.convert(fieldFilterMap))
-                .map(officeMapper::toDto).toList();
-        return new PageImpl<>(response, pageRequest, response.size());
+                                                   Map<String, String> filters) {
+        Map<String, Filter> fieldFilterMap = FilterParamParser.parseAllParams(
+                filters, Set.of("pageNumber", "pageSize"));
+        Specification<Office> allFilters = Specification.allOf(
+                OfficeSpecs.filterByStartTime(fieldFilterMap.get("startTime")),
+                OfficeSpecs.filterByEndTime(fieldFilterMap.get("endTime")),
+                OfficeSpecs.filterByLocationId(fieldFilterMap.get("locationId"))
+        );
+        return officeRepository.findAll(allFilters, pageRequest).map(officeMapper::toDto);
     }
 
     @Override

@@ -14,7 +14,7 @@ public interface OfficeService {
     Page<OfficeResponse> findAll(PageRequest pageRequest);
 
     Page<OfficeResponse> findAllWithFilters(PageRequest pageRequest,
-                                            Map<String, Filter> fieldFilterMap);
+                                            Map<String, String> filters);
 
     OfficeResponse findById(UUID id);
 
