@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -24,13 +23,10 @@ public class LocationController {
     public ResponseEntity<Page<LocationResponse>> findAll(
             @RequestParam(defaultValue = "0") Integer pageNumber,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) Optional<String> city
+            @RequestParam(required = false) String city
     ) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-        Page<LocationResponse> response = city.isPresent() ?
-                locationService.findAllByCity(pageRequest, city.get()) :
-                locationService.findAll(pageRequest);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(locationService.findAllByCity(
+                PageRequest.of(pageNumber, pageSize), city));
     }
 
     @GetMapping("/{id}")

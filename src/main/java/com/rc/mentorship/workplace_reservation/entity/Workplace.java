@@ -3,6 +3,7 @@ package com.rc.mentorship.workplace_reservation.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,17 +19,19 @@ public class Workplace {
     private UUID id;
 
     @Column(name = "floor")
-    private int floor;
+    private Integer floor;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private Type type;
 
     @Column(name = "computer_present")
-    private boolean computerPresent;
+    @Accessors(fluent = true)
+    private Boolean isComputerPresent;
 
     @Column(name = "available")
-    private boolean available;
+    @Accessors(fluent = true)
+    private Boolean isAvailable;
 
     @ManyToOne
     @JoinColumn(name = "office_id", referencedColumnName = "id")
