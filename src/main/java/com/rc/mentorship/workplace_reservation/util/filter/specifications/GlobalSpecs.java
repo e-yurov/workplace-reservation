@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @UtilityClass
 class GlobalSpecs {
-    <T extends Comparable<? super T>> Predicate buildByFilterType(
+    <T extends Comparable<? super T>> Predicate buildWithFilterType(
             CriteriaBuilder builder,
             FilterType filterType,
             Expression<T> expr,

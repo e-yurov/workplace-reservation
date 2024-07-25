@@ -3,7 +3,6 @@ package com.rc.mentorship.workplace_reservation.service;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
-import com.rc.mentorship.workplace_reservation.util.filter.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -14,7 +13,7 @@ public interface WorkplaceService {
     Page<WorkplaceResponse> findAll(PageRequest pageRequest);
 
     Page<WorkplaceResponse> findAllWithFilters(PageRequest pageRequest,
-                                            Map<String, Filter> fieldFilterMap);
+                                            Map<String, String> fieldFilterMap);
 
     WorkplaceResponse findById(UUID id);
 

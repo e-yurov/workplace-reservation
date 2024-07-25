@@ -10,16 +10,17 @@ import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
-import com.rc.mentorship.workplace_reservation.util.filter.converter.impl.WorkplaceFilterConverter;
+import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
+import com.rc.mentorship.workplace_reservation.util.filter.specifications.WorkplaceSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -28,7 +29,6 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     private final WorkplaceRepository workplaceRepository;
     private final OfficeRepository officeRepository;
     private final WorkplaceMapper workplaceMapper;
-    private final WorkplaceFilterConverter workplaceFilterConverter;
 
     @Override
     @Transactional(readOnly = true)
@@ -39,11 +39,18 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     @Override
     @Transactional(readOnly = true)
     public Page<WorkplaceResponse> findAllWithFilters(PageRequest pageRequest,
-                                                      Map<String, Filter> fieldFilterMap) {
-        List<WorkplaceResponse> response = workplaceRepository.findAll().stream()
-                .filter(workplaceFilterConverter.convert(fieldFilterMap))
-                .map(workplaceMapper::toDto).toList();
-        return new PageImpl<>(response, pageRequest, response.size());
+                                                      Map<String, String> filters) {
+        Map<String, Filter> fieldFilterMap = FilterParamParser.parseAllParams(filters,
+                Set.of("pageNumber", "pageSize"));
+        Specification<Workplace> allFilters = Specification.allOf(
+                WorkplaceSpecs.filterByFloor(fieldFilterMap.get("floor")),
+                WorkplaceSpecs.filterByType(fieldFilterMap.get("type")),
+                WorkplaceSpecs.filterByComputerPresent(fieldFilterMap.get("computerPresent")),
+                WorkplaceSpecs.filterByAvailable(fieldFilterMap.get("available")),
+                WorkplaceSpecs.filterByOfficeId(fieldFilterMap.get("officeId"))
+        );
+        return workplaceRepository.findAll(allFilters, pageRequest)
+                .map(workplaceMapper::toDto);
     }
 
     @Override

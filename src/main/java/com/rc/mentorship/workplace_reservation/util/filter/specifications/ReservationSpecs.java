@@ -42,7 +42,7 @@ public class ReservationSpecs {
             }
 
             Expression<LocalDateTime> expr = root.get(attribute);
-            return GlobalSpecs.buildByFilterType(builder, filter.getType(),
+            return GlobalSpecs.buildWithFilterType(builder, filter.getType(),
                     expr, dateTime, attribute);
         };
     }
