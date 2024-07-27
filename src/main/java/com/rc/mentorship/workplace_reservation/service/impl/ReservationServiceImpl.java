@@ -119,7 +119,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (!available) {
             throw new WorkplaceNotAvailableException(workplaceId);
         }
-        if (reservationRepository.checkReserved(workplaceId, start, end)) {
+        if (!reservationRepository.checkReserved(workplaceId, start, end).isEmpty()) {
             throw new BadReservationRequestException(workplaceId);
         }
     }

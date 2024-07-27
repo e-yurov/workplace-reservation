@@ -7,17 +7,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
         JpaSpecificationExecutor<Reservation> {
-    @Query(
-            value = "SELECT exists(" +
-                    "SELECT * FROM workplace_reservation.reservation r " +
-                    "WHERE r.workplace_id = ?1 AND " +
-                    "(r.start_date_time, r.end_date_time) OVERLAPS (?2, ?3))",
-            nativeQuery = true
+    @Query("FROM Reservation r " +
+            "WHERE (r.workplace.id = ?1) AND (" +
+                "((r.startDateTime >= ?2) AND (r.startDateTime < ?3)) OR " +
+                "((r.endDateTime > ?2) AND (r.endDateTime <= ?3)) OR " +
+                "((r.startDateTime <= ?2) AND (r.endDateTime >= ?3)))"
     )
-    boolean checkReserved(UUID workplaceId, LocalDateTime startReservation, LocalDateTime endReservation);
+    List<Reservation> checkReserved(UUID workplaceId,
+                                    LocalDateTime startReservation, LocalDateTime endReservation);
 }
