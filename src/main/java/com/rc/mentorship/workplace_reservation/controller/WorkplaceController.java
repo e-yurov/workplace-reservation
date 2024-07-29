@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
+import com.rc.mentorship.workplace_reservation.controller.api.WorkplaceApi;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/workplaces")
 @RequiredArgsConstructor
-public class WorkplaceController {
+public class WorkplaceController implements WorkplaceApi {
     private final WorkplaceService workplaceService;
 
     @GetMapping

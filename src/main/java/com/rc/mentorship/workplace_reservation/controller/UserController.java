@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
+import com.rc.mentorship.workplace_reservation.controller.api.UserApi;
 import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserApi {
     private final UserService userService;
 
     @GetMapping

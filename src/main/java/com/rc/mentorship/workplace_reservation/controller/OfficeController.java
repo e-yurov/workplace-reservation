@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
+import com.rc.mentorship.workplace_reservation.controller.api.OfficeApi;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/offices")
 @RequiredArgsConstructor
-public class OfficeController {
+public class OfficeController implements OfficeApi {
     private final OfficeService officeService;
 
     @GetMapping

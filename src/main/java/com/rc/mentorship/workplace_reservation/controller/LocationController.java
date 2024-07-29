@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
+import com.rc.mentorship.workplace_reservation.controller.api.LocationApi;
 import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/locations")
 @RequiredArgsConstructor
-public class LocationController {
+public class LocationController implements LocationApi {
     private final LocationService locationService;
 
     @GetMapping

@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
+import com.rc.mentorship.workplace_reservation.controller.api.ReservationApi;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/reservations")
 @RequiredArgsConstructor
-public class ReservationController {
+public class ReservationController implements ReservationApi {
     private final ReservationService reservationService;
 
     @GetMapping
