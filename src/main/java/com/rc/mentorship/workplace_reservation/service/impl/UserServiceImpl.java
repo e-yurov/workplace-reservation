@@ -24,17 +24,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponse> findAll(PageRequest pageRequest) {
-        return userRepository.findAll(pageRequest).map(userMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<UserResponse> findAllByRole(PageRequest pageRequest, String role) {
-        var users = role == null ?
-                userRepository.findAll(pageRequest) :
-                userRepository.findByRole(role, pageRequest);
-        return users.map(userMapper::toDto);
+        return userRepository.findAllByRoleIfPresent(role, pageRequest)
+                .map(userMapper::toDto);
     }
 
     @Override

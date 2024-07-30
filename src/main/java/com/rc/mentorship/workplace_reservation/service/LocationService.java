@@ -9,8 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import java.util.UUID;
 
 public interface LocationService {
-    Page<LocationResponse> findAll(PageRequest pageRequest);
-
     Page<LocationResponse> findAllByCity(PageRequest pageRequest, String city);
 
     LocationResponse findById(UUID id);

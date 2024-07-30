@@ -24,17 +24,9 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<LocationResponse> findAll(PageRequest pageRequest) {
-        return locationRepository.findAll(pageRequest).map(locationMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<LocationResponse> findAllByCity(PageRequest pageRequest, String city) {
-        var locations = city == null ?
-                locationRepository.findAll(pageRequest) :
-                locationRepository.findByCity(city, pageRequest);
-        return locations.map(locationMapper::toDto);
+        return locationRepository.findAllByCityIfPresent(city, pageRequest)
+                .map(locationMapper::toDto);
     }
 
     @Override
