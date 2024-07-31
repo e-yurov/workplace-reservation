@@ -9,23 +9,31 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 
 @UtilityClass
 public class OfficeSpecs {
-    public Specification<Office> filterByStartTime(Filter filter) {
+    public Specification<Office> build(Map<String, Filter> filterMap) {
+        return Specification
+                .where(filterByStartTime(filterMap.get("startTime")))
+                .and(filterByEndTime(filterMap.get("endTime")))
+                .and(filterByLocationId(filterMap.get("locationId")));
+    }
+
+    private Specification<Office> filterByStartTime(Filter filter) {
         return filterByTime(filter, "startTime");
     }
 
-    public Specification<Office> filterByEndTime(Filter filter) {
+    private Specification<Office> filterByEndTime(Filter filter) {
         return filterByTime(filter, "endTime");
     }
 
-    public Specification<Office> filterByLocationId(Filter filter) {
+    private Specification<Office> filterByLocationId(Filter filter) {
         return (root, query, builder) ->
                 GlobalSpecs.buildByUuid(root, builder, filter, "location");
     }
 
-    Specification<Office> filterByTime(Filter filter, String attribute) {
+    private Specification<Office> filterByTime(Filter filter, String attribute) {
         return (root, query, builder) -> {
             if (filter == null) {
                 return null;

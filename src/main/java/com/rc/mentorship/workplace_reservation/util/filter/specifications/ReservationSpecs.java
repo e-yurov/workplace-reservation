@@ -9,26 +9,35 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 
 @UtilityClass
 public class ReservationSpecs {
-    public Specification<Reservation> filterByStartDateTime(Filter filter) {
+    public Specification<Reservation> build(Map<String, Filter> filterMap) {
+        return Specification
+                .where(filterByStartDateTime(filterMap.get("startDateTime")))
+                .and(filterByEndDateTime(filterMap.get("endDateTime")))
+                .and(filterByUserId(filterMap.get("userId")))
+                .and(filterByWorkplaceId(filterMap.get("workplaceId")));
+    }
+
+    private Specification<Reservation> filterByStartDateTime(Filter filter) {
         return filterByDateTime(filter, "startDateTime");
     }
 
-    public Specification<Reservation> filterByEndDateTime(Filter filter) {
+    private Specification<Reservation> filterByEndDateTime(Filter filter) {
         return filterByDateTime(filter, "endDateTime");
     }
 
-    public Specification<Reservation> filterByUserId(Filter filter) {
+    private Specification<Reservation> filterByUserId(Filter filter) {
         return filterByUuid(filter, "user");
     }
 
-    public Specification<Reservation> filterByWorkplaceId(Filter filter) {
+    private Specification<Reservation> filterByWorkplaceId(Filter filter) {
         return filterByUuid(filter, "workplace");
     }
 
-    Specification<Reservation> filterByDateTime(Filter filter, String attribute) {
+    private Specification<Reservation> filterByDateTime(Filter filter, String attribute) {
         return (root, query, builder) -> {
             if (filter == null) {
                 return null;
@@ -47,7 +56,7 @@ public class ReservationSpecs {
         };
     }
 
-    Specification<Reservation> filterByUuid(Filter filter, String attribute) {
+    private Specification<Reservation> filterByUuid(Filter filter, String attribute) {
         return (root, query, builder) ->
                 GlobalSpecs.buildByUuid(root, builder, filter, attribute);
     }

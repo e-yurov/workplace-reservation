@@ -92,6 +92,8 @@ public class WorkplaceController {
             @Parameter(name = "pageSize", description = "Размер страницы")
             @RequestParam(defaultValue = "10")
             Integer pageSize,
+            @RequestParam
+            String officeId,
             @Parameter(hidden = true)
             @RequestParam
             Map<String, String> filters

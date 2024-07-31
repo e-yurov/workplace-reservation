@@ -9,7 +9,6 @@ import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
-import com.rc.mentorship.workplace_reservation.util.filter.Filter;
 import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import com.rc.mentorship.workplace_reservation.util.filter.specifications.OfficeSpecs;
 import lombok.RequiredArgsConstructor;
@@ -40,14 +39,11 @@ public class OfficeServiceImpl implements OfficeService {
     @Transactional(readOnly = true)
     public Page<OfficeResponse> findAllWithFilters(PageRequest pageRequest,
                                                    Map<String, String> filters) {
-        Map<String, Filter> fieldFilterMap = FilterParamParser.parseAllParams(
-                filters, Set.of("pageNumber", "pageSize"));
-        Specification<Office> allFilters = Specification.allOf(
-                OfficeSpecs.filterByStartTime(fieldFilterMap.get("startTime")),
-                OfficeSpecs.filterByEndTime(fieldFilterMap.get("endTime")),
-                OfficeSpecs.filterByLocationId(fieldFilterMap.get("locationId"))
+        Specification<Office> allSpecs = OfficeSpecs.build(
+                FilterParamParser.parseAllParams(
+                        filters, Set.of("pageNumber", "pageSize"))
         );
-        return officeRepository.findAll(allFilters, pageRequest).map(officeMapper::toDto);
+        return officeRepository.findAll(allSpecs, pageRequest).map(officeMapper::toDto);
     }
 
     @Override

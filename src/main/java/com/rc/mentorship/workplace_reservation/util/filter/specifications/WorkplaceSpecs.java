@@ -7,10 +7,20 @@ import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Locale;
+import java.util.Map;
 
 @UtilityClass
 public class WorkplaceSpecs {
-    public Specification<Workplace> filterByFloor(Filter filter) {
+    public Specification<Workplace> build(Map<String, Filter> filterMap) {
+        return Specification
+                .where(filterByFloor(filterMap.get("floor")))
+                .and(filterByType(filterMap.get("type")))
+                .and(filterByComputerPresent(filterMap.get("computerPresent")))
+                .and(filterByAvailable(filterMap.get("available")))
+                .and(filterByOfficeId(filterMap.get("officeId")));
+    }
+
+    private Specification<Workplace> filterByFloor(Filter filter) {
         return (root, query, builder) -> {
             if (filter == null) {
                 return null;
@@ -28,7 +38,7 @@ public class WorkplaceSpecs {
         };
     }
 
-    public Specification<Workplace> filterByType(Filter filter) {
+    private Specification<Workplace> filterByType(Filter filter) {
         return (root, query, builder) -> {
             if (filter == null) {
                 return null;
@@ -46,7 +56,7 @@ public class WorkplaceSpecs {
         };
     }
 
-    public Specification<Workplace> filterByComputerPresent(Filter filter) {
+    private Specification<Workplace> filterByComputerPresent(Filter filter) {
         return (root, query, builder) -> {
             if (filter == null) {
                 return null;
@@ -57,7 +67,7 @@ public class WorkplaceSpecs {
         };
     }
 
-    public Specification<Workplace> filterByAvailable(Filter filter) {
+    private Specification<Workplace> filterByAvailable(Filter filter) {
         return (root, query, builder) -> {
             if (filter == null) {
                 return null;
@@ -68,7 +78,7 @@ public class WorkplaceSpecs {
         };
     }
 
-    public Specification<Workplace> filterByOfficeId(Filter filter) {
+    private Specification<Workplace> filterByOfficeId(Filter filter) {
         return (root, query, builder) ->
                 GlobalSpecs.buildByUuid(root, builder, filter, "office");
     }

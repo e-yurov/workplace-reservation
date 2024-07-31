@@ -9,7 +9,6 @@ import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
-import com.rc.mentorship.workplace_reservation.util.filter.Filter;
 import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import com.rc.mentorship.workplace_reservation.util.filter.specifications.WorkplaceSpecs;
 import lombok.RequiredArgsConstructor;
@@ -40,16 +39,11 @@ public class WorkplaceServiceImpl implements WorkplaceService {
     @Transactional(readOnly = true)
     public Page<WorkplaceResponse> findAllWithFilters(PageRequest pageRequest,
                                                       Map<String, String> filters) {
-        Map<String, Filter> fieldFilterMap = FilterParamParser.parseAllParams(filters,
-                Set.of("pageNumber", "pageSize"));
-        Specification<Workplace> allFilters = Specification.allOf(
-                WorkplaceSpecs.filterByFloor(fieldFilterMap.get("floor")),
-                WorkplaceSpecs.filterByType(fieldFilterMap.get("type")),
-                WorkplaceSpecs.filterByComputerPresent(fieldFilterMap.get("computerPresent")),
-                WorkplaceSpecs.filterByAvailable(fieldFilterMap.get("available")),
-                WorkplaceSpecs.filterByOfficeId(fieldFilterMap.get("officeId"))
+        Specification<Workplace> allSpecs = WorkplaceSpecs.build(
+                FilterParamParser.parseAllParams(filters,
+                Set.of("pageNumber", "pageSize"))
         );
-        return workplaceRepository.findAll(allFilters, pageRequest)
+        return workplaceRepository.findAll(allSpecs, pageRequest)
                 .map(workplaceMapper::toDto);
     }
 
