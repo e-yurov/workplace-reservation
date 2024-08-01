@@ -17,6 +17,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(details);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorDetails> handleBadCredentialsException(BadCredentialsException ex) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
+        return ResponseEntity.status(status).body(details);
+    }
+
     @ExceptionHandler({
             BadReservationRequestException.class,
             BadReservationTimeException.class,

@@ -14,6 +14,7 @@ import java.util.UUID;
 public class UserUpdateRequest {
     private UUID id;
     private String name;
+    private String password;
     private String email;
     private String role;
 }
