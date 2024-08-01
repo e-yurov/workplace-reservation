@@ -13,4 +13,6 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("FROM User u WHERE (:role IS NULL OR u.role = :role)")
     Page<User> findAllByRoleIfPresent(String role, PageRequest pageRequest);
+
+    boolean existsByEmail(String email);
 }

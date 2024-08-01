@@ -2,3 +2,6 @@ databaseChangeLog:
   - include:
       file: initial-schema-import.yml
       relativeToChangelogFile: true
+  - include:
+      file: add-user-password.yml
+      relativeToChangelogFile: true
