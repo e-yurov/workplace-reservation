@@ -30,7 +30,7 @@ public class JwtServiceImpl implements JwtService {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String retrieveEmail(String token) {
+    public String verifyAndRetrieveEmail(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withIssuer("workplace app")
                 .build();

@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userMapper.toEntity(registerRequest);
         user.setRole("ROLE_USER");
         userRepository.save(user);
-        return new JwtResponse(jwtService.generateToken(email));
+        return new JwtResponse(jwtService.generateToken(registerRequest.getEmail()));
     }
 
     @Override
