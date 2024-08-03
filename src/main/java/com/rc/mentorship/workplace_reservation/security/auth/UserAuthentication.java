@@ -1,4 +1,4 @@
-package com.rc.mentorship.workplace_reservation.auth;
+package com.rc.mentorship.workplace_reservation.security.auth;
 
 import com.rc.mentorship.workplace_reservation.entity.User;
 import lombok.Getter;
@@ -14,5 +14,11 @@ public class UserAuthentication {
     public UserAuthentication(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public UserAuthentication(String email, String password, User user) {
+        this.email = email;
+        this.password = password;
+        this.user = user;
     }
 }

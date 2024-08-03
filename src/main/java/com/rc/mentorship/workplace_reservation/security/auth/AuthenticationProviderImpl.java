@@ -1,4 +1,4 @@
-package com.rc.mentorship.workplace_reservation.auth;
+package com.rc.mentorship.workplace_reservation.security.auth;
 
 import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.exception.BadCredentialsException;

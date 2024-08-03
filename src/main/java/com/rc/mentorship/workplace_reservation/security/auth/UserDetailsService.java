@@ -1,14 +1,14 @@
-package com.rc.mentorship.workplace_reservation.auth;
+package com.rc.mentorship.workplace_reservation.security.auth;
 
 import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.exception.UserNotFoundException;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserDetailsService {
     private final UserRepository userRepository;

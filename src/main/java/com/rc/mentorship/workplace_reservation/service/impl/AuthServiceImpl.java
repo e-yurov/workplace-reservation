@@ -1,7 +1,5 @@
 package com.rc.mentorship.workplace_reservation.service.impl;
 
-import com.rc.mentorship.workplace_reservation.auth.AuthenticationProvider;
-import com.rc.mentorship.workplace_reservation.auth.UserAuthentication;
 import com.rc.mentorship.workplace_reservation.dto.request.LoginRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.RegisterRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.JwtResponse;
@@ -9,6 +7,8 @@ import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.exception.UserAlreadyExistsException;
 import com.rc.mentorship.workplace_reservation.mapper.UserMapper;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
+import com.rc.mentorship.workplace_reservation.security.auth.AuthenticationProvider;
+import com.rc.mentorship.workplace_reservation.security.auth.UserAuthentication;
 import com.rc.mentorship.workplace_reservation.service.AuthService;
 import com.rc.mentorship.workplace_reservation.service.JwtService;
 import lombok.RequiredArgsConstructor;
