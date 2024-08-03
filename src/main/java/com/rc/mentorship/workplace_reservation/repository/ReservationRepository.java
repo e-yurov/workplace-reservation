@@ -14,11 +14,11 @@ import java.util.UUID;
 public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
         JpaSpecificationExecutor<Reservation> {
     @Query("""
-           FROM Reservation r 
-           WHERE (r.workplace.id = ?1) AND (
-               ((r.startDateTime >= ?2) AND (r.startDateTime < ?3)) OR
-               ((r.endDateTime > ?2) AND (r.endDateTime <= ?3)) OR
-               ((r.startDateTime <= ?2) AND (r.endDateTime >= ?3))
+           FROM Reservation r
+           WHERE (r.workplace.id = :workplaceId) AND (
+               ((r.startDateTime >= :startReservation) AND (r.startDateTime < :endReservation)) OR
+               ((r.endDateTime > :startReservation) AND (r.endDateTime <= :endReservation)) OR
+               ((r.startDateTime <= :startReservation) AND (r.endDateTime >= :endReservation))
            )
            """
     )
