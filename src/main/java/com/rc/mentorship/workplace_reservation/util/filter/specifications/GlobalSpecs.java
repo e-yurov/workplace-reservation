@@ -6,7 +6,6 @@ import com.rc.mentorship.workplace_reservation.util.filter.FilterType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.experimental.UtilityClass;
 
 import java.util.UUID;
@@ -18,8 +17,9 @@ class GlobalSpecs {
             FilterType filterType,
             Expression<T> expr,
             T value,
-            String attribute
+            String attributeName
     ) {
+
         switch (filterType) {
             case GREATER_THAN -> {
                 return builder.greaterThan(expr, value);
@@ -36,15 +36,15 @@ class GlobalSpecs {
             case EQUALS -> {
                 return builder.equal(expr, value);
             }
-            default -> throw new FiltrationParamsFormatException(attribute);
+            default -> throw new FiltrationParamsFormatException(attributeName);
         }
     }
 
-    <T> Predicate buildByUuid(
-            Root<T> root,
+    Predicate buildByUuid(
+            Expression<UUID> expr,
             CriteriaBuilder builder,
             Filter filter,
-            String attribute
+            String attributeName
     ) {
         if (filter == null) {
             return null;
@@ -54,10 +54,9 @@ class GlobalSpecs {
         try {
             id = UUID.fromString(filter.getValue());
         } catch (IllegalArgumentException ex) {
-            throw new FiltrationParamsFormatException(attribute + "Id");
+            throw new FiltrationParamsFormatException(attributeName);
         }
 
-        return builder.equal(root.get(attribute)
-                .get("id"), id);
+        return builder.equal(expr, id);
     }
 }
