@@ -8,4 +8,8 @@ import lombok.Setter;
 @Getter
 public class SecurityContext {
     private UserAuthentication authentication;
+
+    public boolean hasUser() {
+        return authentication.getUser() != null;
+    }
 }
