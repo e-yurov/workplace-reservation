@@ -9,5 +9,5 @@ import org.springframework.http.HttpMethod;
 public class MatchingEntry {
     private String pattern;
     private HttpMethod method;
-    private Access access;
+    private AccessGranter accessGranter;
 }

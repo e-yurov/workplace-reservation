@@ -1,30 +1,28 @@
 package com.rc.mentorship.workplace_reservation.security.config.util;
 
-import com.rc.mentorship.workplace_reservation.security.config.configurers.Access;
 import com.rc.mentorship.workplace_reservation.security.config.configurers.MatchingEntry;
-import com.rc.mentorship.workplace_reservation.security.context.SecurityContextHolder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class RequestMatcher {
-    private List<MatchingEntry> matchers = new ArrayList<>();
+    private final List<MatchingEntry> matchers;
 
     public boolean match(HttpMethod method, String uri) {
-        Access access = identifyAccess();
         for (MatchingEntry matcher : matchers) {
-
+            int vote = AccessVoter.vote(matcher, method, uri);
+            switch (vote) {
+                case AccessVoter.DENIED -> {
+                    return false;
+                }
+                case AccessVoter.GRANTED -> {
+                    return true;
+                }
+            }
         }
-
         return false;
     }
 
-    public Access identifyAccess() {
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            return Access.ALL;
-        }
-
-        return Access.AUTHENTICATED;
-    }
 }

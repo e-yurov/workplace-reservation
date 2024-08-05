@@ -1,6 +1,5 @@
 package com.rc.mentorship.workplace_reservation.security.config.util;
 
-import com.rc.mentorship.workplace_reservation.security.config.configurers.Access;
 import com.rc.mentorship.workplace_reservation.security.config.configurers.MatchingEntry;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpMethod;
@@ -14,8 +13,15 @@ public class AccessVoter {
     public static final String twoAsteriskRegexp = "[\\w/]@";
     public static final String oneAsteriskRegexp = "[^/]+";
 
-    int vote(MatchingEntry matcher, HttpMethod method, String uri, Access access) {
-        return NO_MATCH;
+    int vote(MatchingEntry matcher, HttpMethod method, String uri) {
+        if (!uriMatches(matcher.getPattern(), uri) ||
+                (method != null && !matcher.getMethod().equals(method))) {
+            return NO_MATCH;
+        }
+        if (matcher.getAccessGranter().hasAccess()) {
+            return GRANTED;
+        }
+        return DENIED;
     }
 
 //    private boolean uriMatches(String pattern, String uri) {
