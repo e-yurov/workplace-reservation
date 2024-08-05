@@ -10,12 +10,12 @@ public class AccessVoter {
     public static final int NO_MATCH = 0;
     public static final int DENIED = -1;
 
-    public static final String twoAsteriskRegexp = "[\\w/]@";
+    public static final String twoAsteriskRegexp = "[\\w/.]@";
     public static final String oneAsteriskRegexp = "[^/]+";
 
     int vote(MatchingEntry matcher, HttpMethod method, String uri) {
         if (!uriMatches(matcher.getPattern(), uri) ||
-                (method != null && !matcher.getMethod().equals(method))) {
+                (matcher.getMethod() != null && !matcher.getMethod().equals(method))) {
             return NO_MATCH;
         }
         if (matcher.getAccessGranter().hasAccess()) {

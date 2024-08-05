@@ -25,4 +25,14 @@ public class RequestMatcher {
         return false;
     }
 
+    public MatchingEntry getMatchingForUri(HttpMethod method, String uri) {
+        for (MatchingEntry matcher : matchers) {
+            if (AccessVoter.uriMatches(matcher.getPattern(), uri)) {
+                if (matcher.getMethod() == null || method.equals(matcher.getMethod())) {
+                    return matcher;
+                }
+            }
+        }
+        return null;
+    }
 }

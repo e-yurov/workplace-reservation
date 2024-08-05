@@ -14,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,6 +24,9 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
+    @Setter
+    private static boolean disabled = false;
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
@@ -33,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || authHeader.isBlank() || !authHeader.startsWith("Bearer ")) {
-            setResponseBody(response, "No JWT token in Authorization header!");
+            ErrorSerializationUtil.setUnauthorizedResponseBody(response, "No JWT token in Authorization header!");
             return;
         }
 
@@ -47,10 +51,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (JWTVerificationException ex) {
-            setResponseBody(response, "Invalid JWT token!");
+            ErrorSerializationUtil.setUnauthorizedResponseBody(response, "Invalid JWT token!");
             return;
         } catch (UserNotFoundException ex) {
-            setResponseBody(response, ex.getMessage());
+            ErrorSerializationUtil.setUnauthorizedResponseBody(response, ex.getMessage());
             return;
         }
 
@@ -69,7 +73,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        return uri.startsWith("/api/v1/auth") || uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs");
+//        String uri = request.getRequestURI();
+//        return uri.startsWith("/api/v1/auth") || uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs");
+        return disabled;
     }
 }
