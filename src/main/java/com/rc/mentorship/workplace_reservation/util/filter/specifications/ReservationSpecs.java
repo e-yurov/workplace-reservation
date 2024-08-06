@@ -1,9 +1,6 @@
 package com.rc.mentorship.workplace_reservation.util.filter.specifications;
 
-import com.rc.mentorship.workplace_reservation.entity.Reservation;
-import com.rc.mentorship.workplace_reservation.entity.Reservation_;
-import com.rc.mentorship.workplace_reservation.entity.User_;
-import com.rc.mentorship.workplace_reservation.entity.Workplace_;
+import com.rc.mentorship.workplace_reservation.entity.*;
 import com.rc.mentorship.workplace_reservation.exception.FiltrationParamsFormatException;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
 import jakarta.persistence.criteria.Expression;
@@ -20,18 +17,18 @@ import java.util.UUID;
 public class ReservationSpecs {
     public Specification<Reservation> build(Map<String, Filter> filterMap) {
         return Specification
-                .where(filterByStartDateTime(filterMap.get(Reservation_.START_DATE_TIME)))
-                .and(filterByEndDateTime(filterMap.get(Reservation_.END_DATE_TIME)))
+                .where(filterByStartDateTime(filterMap.get(ReservationDateTime_.START + "DateTime")))
+                .and(filterByEndDateTime(filterMap.get(ReservationDateTime_.END + "DateTime")))
                 .and(filterByUserId(filterMap.get(Reservation_.USER + "Id")))
                 .and(filterByWorkplaceId(filterMap.get(Reservation_.WORKPLACE + "Id")));
     }
 
     private Specification<Reservation> filterByStartDateTime(Filter filter) {
-        return filterByDateTime(filter, Reservation_.startDateTime);
+        return filterByDateTime(filter, ReservationDateTime_.start);
     }
 
     private Specification<Reservation> filterByEndDateTime(Filter filter) {
-        return filterByDateTime(filter, Reservation_.endDateTime);
+        return filterByDateTime(filter, ReservationDateTime_.end);
     }
 
     private Specification<Reservation> filterByUserId(Filter filter) {
@@ -50,7 +47,7 @@ public class ReservationSpecs {
 
     private Specification<Reservation> filterByDateTime(
             Filter filter,
-            SingularAttribute<Reservation, LocalDateTime> attribute
+            SingularAttribute<ReservationDateTime, LocalDateTime> attribute
     ) {
         return (root, query, builder) -> {
             if (filter == null) {
@@ -64,7 +61,7 @@ public class ReservationSpecs {
                 throw new FiltrationParamsFormatException(attribute.getName());
             }
 
-            Expression<LocalDateTime> expr = root.get(attribute);
+            Expression<LocalDateTime> expr = root.get(Reservation_.dateTime).get(attribute);
             return GlobalSpecs.buildWithFilterType(builder, filter.getType(),
                     expr, dateTime, attribute.getName());
         };

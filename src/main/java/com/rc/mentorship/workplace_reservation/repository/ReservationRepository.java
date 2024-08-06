@@ -16,9 +16,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
     @Query("""
            FROM Reservation r
            WHERE (r.workplace.id = :workplaceId) AND (
-               ((r.startDateTime >= :startReservation) AND (r.startDateTime < :endReservation)) OR
-               ((r.endDateTime > :startReservation) AND (r.endDateTime <= :endReservation)) OR
-               ((r.startDateTime <= :startReservation) AND (r.endDateTime >= :endReservation))
+               ((r.dateTime.start >= :startReservation) AND (r.dateTime.start < :endReservation)) OR
+               ((r.dateTime.end > :startReservation) AND (r.dateTime.end <= :endReservation)) OR
+               ((r.dateTime.start <= :startReservation) AND (r.dateTime.end >= :endReservation))
            )
            """
     )

@@ -4,6 +4,7 @@ import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequ
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
+import com.rc.mentorship.workplace_reservation.entity.ReservationDateTime;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.exception.BadReservationRequestException;
 import com.rc.mentorship.workplace_reservation.exception.BadReservationTimeException;
@@ -23,7 +24,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -68,7 +68,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationMapper.toEntity(toCreate);
         fillReservationOrThrow(reservation,
                 toCreate.getUserId(), toCreate.getWorkplaceId(),
-                toCreate.getStartDateTime(), toCreate.getEndDateTime());
+                reservation.getDateTime());
         reservationRepository.save(reservation);
         return reservationMapper.toDto(reservation);
     }
@@ -82,7 +82,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationMapper.toEntity(toUpdate);
         fillReservationOrThrow(reservation,
                 toUpdate.getUserId(), toUpdate.getWorkplaceId(),
-                toUpdate.getStartDateTime(), toUpdate.getEndDateTime());
+                reservation.getDateTime());
         reservationRepository.save(reservation);
         return reservationMapper.toDto(reservation);
     }
@@ -95,14 +95,14 @@ public class ReservationServiceImpl implements ReservationService {
 
     private void fillReservationOrThrow(Reservation reservation,
                                         UUID userId, UUID workplaceId,
-                                        LocalDateTime start, LocalDateTime end) {
-        if (reservation.getStartDateTime().isAfter(reservation.getEndDateTime())) {
+                                        ReservationDateTime dateTime) {
+        if (dateTime.getStart().isAfter(dateTime.getEnd())) {
             throw new BadReservationTimeException();
         }
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(() -> new NotFoundException("Workplace", workplaceId));
-        checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, start, end);
+        checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, dateTime);
 
         reservation.setUser(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User", userId)));
@@ -110,11 +110,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void checkAvailableAndNotReservedOrThrow(boolean available, UUID workplaceId,
-                                                     LocalDateTime start, LocalDateTime end) {
+                                                     ReservationDateTime dateTime) {
         if (!available) {
             throw new WorkplaceNotAvailableException(workplaceId);
         }
-        if (!reservationRepository.checkReserved(workplaceId, start, end).isEmpty()) {
+        if (!reservationRepository.checkReserved(workplaceId, dateTime.getStart(), dateTime.getEnd()).isEmpty()) {
             throw new BadReservationRequestException(workplaceId);
         }
     }
