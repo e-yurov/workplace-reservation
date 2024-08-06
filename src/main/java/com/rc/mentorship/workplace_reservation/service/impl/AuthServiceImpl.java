@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.MessageDigest;
+import java.util.Base64;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -22,6 +25,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final AuthenticationProvider authProvider;
+    private final MessageDigest messageDigest;
 
     @Override
     @Transactional
@@ -31,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExistsException(email);
         }
         User user = userMapper.toEntity(registerRequest);
+        user.setPassword(encryptPassword(registerRequest.getPassword()));
         user.setRole("ROLE_USER");
         userRepository.save(user);
         return new JwtResponse(jwtService.generateToken(registerRequest.getEmail()));
@@ -40,8 +45,14 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public JwtResponse login(LoginRequest loginRequest) {
         UserAuthentication authentication = authProvider.authenticate(
-                new UserAuthentication(loginRequest.getEmail(), loginRequest.getPassword())
+                new UserAuthentication(loginRequest.getEmail(),
+                        encryptPassword(loginRequest.getPassword()))
         );
         return new JwtResponse(jwtService.generateToken(authentication.getEmail()));
+    }
+
+    private String encryptPassword(String password) {
+        byte[] digest = messageDigest.digest(password.getBytes());
+        return Base64.getEncoder().encodeToString(digest);
     }
 }
