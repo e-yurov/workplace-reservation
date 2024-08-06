@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,7 +29,8 @@ public class AccessFilter extends OncePerRequestFilter {
                 HttpMethod.valueOf(request.getMethod()),
                 request.getRequestURI());
         if (!match) {
-            ErrorSerializationUtil.setUnauthorizedResponseBody(response, "No access!");
+            ErrorSerializationUtil.setResponseBody(response,
+                    "No access!", HttpStatus.UNAUTHORIZED);
             return;
         }
         filterChain.doFilter(request, response);

@@ -10,7 +10,7 @@ public class AccessVoter {
     public static final int NO_MATCH = 0;
     public static final int DENIED = -1;
 
-    public static final String twoAsteriskRegexp = "[\\w/.]@";
+    public static final String twoAsteriskRegexp = "[\\w/.\\-_]@";
     public static final String oneAsteriskRegexp = "[^/]+";
 
     int vote(MatchingEntry matcher, HttpMethod method, String uri) {
@@ -24,32 +24,7 @@ public class AccessVoter {
         return DENIED;
     }
 
-//    private boolean uriMatches(String pattern, String uri) {
-//        if (uri == null || !uri.startsWith("/") || !pattern.startsWith("/")) {
-//            return false;
-//        }
-//
-//        String[] splitPattern = pattern.substring(1).split("/");
-//        String[] splitPath = uri.substring(1).split("/");
-//        int maxInd = Math.max(splitPattern.length, splitPath.length);
-//        for (int i = 0; i < maxInd; i++) {
-//            if (i == splitPattern.length || i == splitPath.length) {
-//                return false;
-//            }
-//
-//            if (splitPattern[i].equals("**")) {
-//                return true;
-//            }
-//            if (!splitPattern[i].equals("*")) {
-//                if (!splitPattern[i].equals(splitPath[i])) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
-
-    public boolean uriMatches(String pattern, String uri) {
+    boolean uriMatches(String pattern, String uri) {
         if (uri == null || !uri.startsWith("/") || !pattern.startsWith("/")) {
             return false;
         }

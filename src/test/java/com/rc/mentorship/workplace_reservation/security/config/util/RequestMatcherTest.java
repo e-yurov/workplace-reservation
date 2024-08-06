@@ -1,7 +1,5 @@
-package com.rc.mentorship.workplace_reservation.security.util;
+package com.rc.mentorship.workplace_reservation.security.config.util;
 
-
-import com.rc.mentorship.workplace_reservation.security.config.util.AccessVoter;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -1,13 +1,16 @@
 package com.rc.mentorship.workplace_reservation.filter;
 
-import com.rc.mentorship.workplace_reservation.security.config.configurers.AccessGranters;
 import com.rc.mentorship.workplace_reservation.security.config.configurers.MatchingEntry;
+import com.rc.mentorship.workplace_reservation.security.config.configurers.access.AccessGranters;
 import com.rc.mentorship.workplace_reservation.security.config.util.RequestMatcher;
-import jakarta.servlet.*;
+import com.rc.mentorship.workplace_reservation.util.ErrorSerializationUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,9 +30,12 @@ public class AuthEnablingFilter extends OncePerRequestFilter {
         MatchingEntry matchingForUri = requestMatcher.getMatchingForUri(
                 HttpMethod.valueOf(request.getMethod()),
                 request.getRequestURI());
-        System.out.println(request.getRequestURI());
-        JwtFilter.setDisabled(matchingForUri == null ||
-                matchingForUri.getAccessGranter().equals(AccessGranters.AUTHENTICATED));
+        if (matchingForUri == null ||
+                matchingForUri.getAccessGranter().equals(AccessGranters.NO)) {
+            ErrorSerializationUtil.setResponseBody(response, "Forbidden!", HttpStatus.FORBIDDEN);
+            return;
+        }
+        JwtFilter.setDisabled(!matchingForUri.getAccessGranter().equals(AccessGranters.AUTHENTICATED));
         filterChain.doFilter(request, response);
     }
 }

@@ -27,13 +27,13 @@ public class ErrorSerializationUtil {
         return mapper.writeValueAsString(object);
     }
 
-    public void setUnauthorizedResponseBody(HttpServletResponse response, String message) throws IOException {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
+    public void setResponseBody(HttpServletResponse response, String message,
+                                HttpStatus status) throws IOException {
         ErrorDetails errorDetails =
                 new ErrorDetails(status.value(), status.name(), message);
 
         response.setStatus(status.value());
         response.setContentType("application/json");
-        response.getWriter().write(ErrorSerializationUtil.convertToJson(errorDetails));
+        response.getWriter().write(convertToJson(errorDetails));
     }
 }

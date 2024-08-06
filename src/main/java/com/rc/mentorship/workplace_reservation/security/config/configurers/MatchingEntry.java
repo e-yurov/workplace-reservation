@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.security.config.configurers;
 
+import com.rc.mentorship.workplace_reservation.security.config.configurers.access.AccessGranter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpMethod;

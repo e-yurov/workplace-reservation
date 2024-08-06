@@ -3,7 +3,6 @@ package com.rc.mentorship.workplace_reservation.filter;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.exception.UserNotFoundException;
-import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
 import com.rc.mentorship.workplace_reservation.security.auth.UserAuthentication;
 import com.rc.mentorship.workplace_reservation.security.auth.UserDetailsService;
 import com.rc.mentorship.workplace_reservation.security.context.SecurityContextHolder;
@@ -37,7 +36,8 @@ public class JwtFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || authHeader.isBlank() || !authHeader.startsWith("Bearer ")) {
-            ErrorSerializationUtil.setUnauthorizedResponseBody(response, "No JWT token in Authorization header!");
+            ErrorSerializationUtil.setResponseBody(response,
+                    "No JWT token in Authorization header!", HttpStatus.UNAUTHORIZED);
             return;
         }
 
@@ -51,30 +51,20 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (JWTVerificationException ex) {
-            ErrorSerializationUtil.setUnauthorizedResponseBody(response, "Invalid JWT token!");
+            ErrorSerializationUtil.setResponseBody(response,
+                    "Invalid JWT token!", HttpStatus.UNAUTHORIZED);
             return;
         } catch (UserNotFoundException ex) {
-            ErrorSerializationUtil.setUnauthorizedResponseBody(response, ex.getMessage());
+            ErrorSerializationUtil.setResponseBody(response,
+                    ex.getMessage(), HttpStatus.UNAUTHORIZED);
             return;
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void setResponseBody(HttpServletResponse response, String message) throws IOException {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
-        ErrorDetails errorDetails =
-                new ErrorDetails(status.value(), status.name(), message);
-
-        response.setStatus(status.value());
-        response.setContentType("application/json");
-        response.getWriter().write(ErrorSerializationUtil.convertToJson(errorDetails));
-    }
-
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-//        String uri = request.getRequestURI();
-//        return uri.startsWith("/api/v1/auth") || uri.startsWith("/swagger-ui") || uri.startsWith("/v3/api-docs");
         return disabled;
     }
 }
