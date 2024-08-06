@@ -1,8 +1,6 @@
 package com.rc.mentorship.workplace_reservation.util.filter.specifications;
 
-import com.rc.mentorship.workplace_reservation.entity.Location_;
-import com.rc.mentorship.workplace_reservation.entity.Office;
-import com.rc.mentorship.workplace_reservation.entity.Office_;
+import com.rc.mentorship.workplace_reservation.entity.*;
 import com.rc.mentorship.workplace_reservation.exception.FiltrationParamsFormatException;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
 import jakarta.persistence.criteria.Expression;
@@ -19,17 +17,17 @@ import java.util.UUID;
 public class OfficeSpecs {
     public Specification<Office> build(Map<String, Filter> filterMap) {
         return Specification
-                .where(filterByStartTime(filterMap.get(Office_.START_TIME)))
-                .and(filterByEndTime(filterMap.get(Office_.END_TIME)))
+                .where(filterByStartTime(filterMap.get(OfficeWorkTime_.START_TIME)))
+                .and(filterByEndTime(filterMap.get(OfficeWorkTime_.END_TIME)))
                 .and(filterByLocationId(filterMap.get(Office_.LOCATION + "Id")));
     }
 
     private Specification<Office> filterByStartTime(Filter filter) {
-        return filterByTime(filter, Office_.startTime);
+        return filterByTime(filter, OfficeWorkTime_.startTime);
     }
 
     private Specification<Office> filterByEndTime(Filter filter) {
-        return filterByTime(filter, Office_.endTime);
+        return filterByTime(filter, OfficeWorkTime_.endTime);
     }
 
     private Specification<Office> filterByLocationId(Filter filter) {
@@ -40,7 +38,7 @@ public class OfficeSpecs {
     }
 
     private Specification<Office> filterByTime(Filter filter,
-                                               SingularAttribute<Office, LocalTime> attribute) {
+                                               SingularAttribute<OfficeWorkTime, LocalTime> attribute) {
         return (root, query, builder) -> {
             if (filter == null) {
                 return null;
@@ -53,7 +51,7 @@ public class OfficeSpecs {
                 throw new FiltrationParamsFormatException(attribute.getName());
             }
 
-            Expression<LocalTime> expr = root.get(attribute);
+            Expression<LocalTime> expr = root.get(Office_.workTime).get(attribute);
             return GlobalSpecs.buildWithFilterType(builder, filter.getType(),
                     expr, time, attribute.getName());
         };

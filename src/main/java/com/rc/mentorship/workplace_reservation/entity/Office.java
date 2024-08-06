@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,13 +17,8 @@ public class Office {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "start_time")
-    @Temporal(value = TemporalType.TIME)
-    private LocalTime startTime;
-
-    @Column(name = "end_time")
-    @Temporal(value = TemporalType.TIME)
-    private LocalTime endTime;
+    @Embedded
+    private OfficeWorkTime workTime;
 
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")
