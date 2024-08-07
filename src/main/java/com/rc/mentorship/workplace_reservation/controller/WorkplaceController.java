@@ -5,6 +5,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateReques
 import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
+import com.rc.mentorship.workplace_reservation.security.role.HasRole;
+import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.WorkplaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,6 +87,7 @@ public class WorkplaceController {
             )
     })
     @GetMapping
+    @HasRole
     public ResponseEntity<Page<WorkplaceResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")
@@ -130,6 +133,7 @@ public class WorkplaceController {
             )
     })
     @GetMapping("/{id}")
+    @HasRole
     public ResponseEntity<WorkplaceResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -165,6 +169,7 @@ public class WorkplaceController {
             )
     })
     @PostMapping
+    @HasRole({Role.MANAGER, Role.ADMIN})
     public ResponseEntity<WorkplaceResponse> create(
             @RequestBody
             WorkplaceCreateRequest createRequest
@@ -199,6 +204,7 @@ public class WorkplaceController {
             )
     })
     @PutMapping("/{id}")
+    @HasRole({Role.MANAGER, Role.ADMIN})
     public ResponseEntity<WorkplaceResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -227,6 +233,7 @@ public class WorkplaceController {
             )
     })
     @DeleteMapping("/{id}")
+    @HasRole({Role.MANAGER, Role.ADMIN})
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")

@@ -2,7 +2,6 @@ package com.rc.mentorship.workplace_reservation.exception.handler;
 
 import com.rc.mentorship.workplace_reservation.exception.*;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
-import com.rc.mentorship.workplace_reservation.exception.AccessDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

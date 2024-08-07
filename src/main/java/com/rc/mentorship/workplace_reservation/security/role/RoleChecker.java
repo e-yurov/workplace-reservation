@@ -16,7 +16,7 @@ public class RoleChecker {
 
         User user = SecurityContextHolder.getContext().getAuthentication().getUser();
         for (Role role : permit) {
-            if (role.toString().equals(user.getRole())) {
+            if (role == user.getRole()) {
                 return true;
             }
         }

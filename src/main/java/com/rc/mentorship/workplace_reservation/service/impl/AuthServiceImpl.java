@@ -9,6 +9,7 @@ import com.rc.mentorship.workplace_reservation.mapper.UserMapper;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.security.auth.AuthenticationProvider;
 import com.rc.mentorship.workplace_reservation.security.auth.UserAuthentication;
+import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.AuthService;
 import com.rc.mentorship.workplace_reservation.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = userMapper.toEntity(registerRequest);
         user.setPassword(encryptPassword(registerRequest.getPassword()));
-        user.setRole("ROLE_USER");
+        user.setRole(Role.USER);
         userRepository.save(user);
         return new JwtResponse(jwtService.generateToken(registerRequest.getEmail()));
     }

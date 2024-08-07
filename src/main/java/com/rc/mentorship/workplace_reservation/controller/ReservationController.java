@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequ
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
+import com.rc.mentorship.workplace_reservation.security.role.HasRole;
+import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -79,6 +81,7 @@ public class ReservationController {
             )
     })
     @GetMapping
+    @HasRole
     public ResponseEntity<Page<ReservationResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")
@@ -122,6 +125,7 @@ public class ReservationController {
             )
     })
     @GetMapping("/{id}")
+    @HasRole
     public ResponseEntity<ReservationResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -167,6 +171,7 @@ public class ReservationController {
             )
     })
     @PostMapping
+    @HasRole
     public ResponseEntity<ReservationResponse> create(
             @RequestBody
             ReservationCreateRequest createRequest
@@ -202,6 +207,7 @@ public class ReservationController {
             )
     })
     @PutMapping("/{id}")
+    @HasRole({Role.MANAGER, Role.ADMIN})
     public ResponseEntity<ReservationResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -230,6 +236,7 @@ public class ReservationController {
             )
     })
     @DeleteMapping("/{id}")
+    @HasRole({Role.MANAGER, Role.ADMIN})
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")

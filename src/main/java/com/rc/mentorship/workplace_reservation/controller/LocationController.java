@@ -4,6 +4,7 @@ import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest
 import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
+import com.rc.mentorship.workplace_reservation.security.role.HasRole;
 import com.rc.mentorship.workplace_reservation.service.LocationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,6 +46,7 @@ public class LocationController {
             )
     })
     @GetMapping
+    @HasRole
     public ResponseEntity<Page<LocationResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")

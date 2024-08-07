@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.OfficeCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
+import com.rc.mentorship.workplace_reservation.security.role.HasRole;
+import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.OfficeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -74,6 +76,7 @@ public class OfficeController {
             )
     })
     @GetMapping
+    @HasRole
     public ResponseEntity<Page<OfficeResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")
@@ -117,6 +120,7 @@ public class OfficeController {
             )
     })
     @GetMapping("{id}")
+    @HasRole
     public ResponseEntity<OfficeResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -152,6 +156,7 @@ public class OfficeController {
             )
     })
     @PostMapping
+    @HasRole(Role.ADMIN)
     public ResponseEntity<OfficeResponse> create(
             @RequestBody
             OfficeCreateRequest createRequest
@@ -186,6 +191,7 @@ public class OfficeController {
             )
     })
     @PutMapping("{id}")
+    @HasRole(Role.ADMIN)
     public ResponseEntity<OfficeResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -214,6 +220,7 @@ public class OfficeController {
             )
     })
     @DeleteMapping("{id}")
+    @HasRole(Role.ADMIN)
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")

@@ -47,7 +47,7 @@ public class UserController {
             )
     })
     @GetMapping
-    @HasRole(Role.ADMIN)
+    @HasRole({Role.MANAGER, Role.ADMIN})
     public ResponseEntity<Page<UserResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")
@@ -89,6 +89,7 @@ public class UserController {
             )
     })
     @GetMapping("/{id}")
+    @HasRole({Role.MANAGER, Role.ADMIN})
     public ResponseEntity<UserResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -114,6 +115,7 @@ public class UserController {
             )
     })
     @PostMapping
+    @HasRole(Role.ADMIN)
     public ResponseEntity<UserResponse> create(
             @RequestBody
             UserCreateRequest createRequest
@@ -148,6 +150,7 @@ public class UserController {
             )
     })
     @PutMapping("/{id}")
+    @HasRole(Role.ADMIN)
     public ResponseEntity<UserResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -176,6 +179,7 @@ public class UserController {
             )
     })
     @DeleteMapping("/{id}")
+    @HasRole(Role.ADMIN)
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
