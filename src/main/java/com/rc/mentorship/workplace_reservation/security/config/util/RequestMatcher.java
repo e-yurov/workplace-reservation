@@ -12,12 +12,12 @@ public class RequestMatcher {
 
     public boolean match(HttpMethod method, String uri) {
         for (MatchingEntry matcher : matchers) {
-            int vote = AccessVoter.vote(matcher, method, uri);
+            Access vote = AccessVoter.vote(matcher, method, uri);
             switch (vote) {
-                case AccessVoter.DENIED -> {
+                case DENIED -> {
                     return false;
                 }
-                case AccessVoter.GRANTED -> {
+                case GRANTED -> {
                     return true;
                 }
             }

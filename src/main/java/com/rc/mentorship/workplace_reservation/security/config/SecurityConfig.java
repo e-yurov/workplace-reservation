@@ -13,7 +13,9 @@ public class SecurityConfig {
     @Bean
     public RequestMatcher securityFilterConfig(HttpSecurity http) {
         http.authorizeRequests()
-                .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();

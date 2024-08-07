@@ -6,22 +6,18 @@ import org.springframework.http.HttpMethod;
 
 @UtilityClass
 public class AccessVoter {
-    public static final int GRANTED = 1;
-    public static final int NO_MATCH = 0;
-    public static final int DENIED = -1;
-
     public static final String twoAsteriskRegexp = "[\\w/.\\-_]@";
     public static final String oneAsteriskRegexp = "[^/]+";
 
-    int vote(MatchingEntry matcher, HttpMethod method, String uri) {
+    Access vote(MatchingEntry matcher, HttpMethod method, String uri) {
         if (!uriMatches(matcher.getPattern(), uri) ||
                 (matcher.getMethod() != null && !matcher.getMethod().equals(method))) {
-            return NO_MATCH;
+            return Access.NO_MATCH;
         }
         if (matcher.getAccessGranter().hasAccess()) {
-            return GRANTED;
+            return Access.GRANTED;
         }
-        return DENIED;
+        return Access.DENIED;
     }
 
     boolean uriMatches(String pattern, String uri) {

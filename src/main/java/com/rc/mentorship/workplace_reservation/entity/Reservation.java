@@ -16,13 +16,6 @@ public class Reservation {
     @Column(name = "id")
     private UUID id;
 
-//    @Column(name = "start_date_time")
-//    @Temporal(value = TemporalType.TIMESTAMP)
-//    private LocalDateTime startDateTime;
-//
-//    @Column(name = "end_date_time")
-//    @Temporal(value = TemporalType.TIMESTAMP)
-//    private LocalDateTime endDateTime;
     @Embedded
     private ReservationDateTime dateTime;
 
