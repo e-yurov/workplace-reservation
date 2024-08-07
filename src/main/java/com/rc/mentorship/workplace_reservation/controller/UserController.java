@@ -4,6 +4,8 @@ import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
+import com.rc.mentorship.workplace_reservation.security.role.HasRole;
+import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,6 +47,7 @@ public class UserController {
             )
     })
     @GetMapping
+    @HasRole(Role.ADMIN)
     public ResponseEntity<Page<UserResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")
