@@ -36,6 +36,7 @@ public class LocationServiceTest {
 
     @InjectMocks
     private LocationServiceImpl locationService;
+
     private Location location;
     private LocationResponse locationResponse;
 
@@ -49,7 +50,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void findAll() {
+    void findAllByCity() {
         PageRequest pageable = mock(PageRequest.class);
         Page<Location> locationPage = new PageImpl<>(List.of(new Location(), new Location(), new Location()));
         when(locationRepository.findAllByCityIfPresent(null, pageable)).thenReturn(locationPage);
@@ -64,9 +65,9 @@ public class LocationServiceTest {
         when(locationRepository.findById(mockId)).thenReturn(Optional.of(location));
         when(locationMapper.toDto(location)).thenReturn(locationResponse);
 
-        LocationResponse actualResponse = locationService.findById(mockId);
+        LocationResponse result = locationService.findById(mockId);
 
-        assertThat(actualResponse).isEqualTo(locationResponse);
+        assertThat(result).isEqualTo(locationResponse);
     }
 
     @Test
