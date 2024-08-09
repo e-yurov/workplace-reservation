@@ -85,7 +85,7 @@ public class OfficeServiceTest {
 
         OfficeResponse result = officeService.findById(mockId);
 
-        assertThat(result).isEqualTo(officeResponse);
+        assertThat(result).isNotNull().isEqualTo(officeResponse);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class OfficeServiceTest {
 
         OfficeResponse response = officeService.create(request);
 
-        assertThat(response).isEqualTo(officeResponse);
+        assertThat(response).isNotNull().isEqualTo(officeResponse);
         verify(officeRepository, times(1)).save(office);
     }
 
@@ -141,7 +141,7 @@ public class OfficeServiceTest {
 
         OfficeResponse result = officeService.update(request);
 
-        assertThat(result).isEqualTo(officeResponse);
+        assertThat(result).isNotNull().isEqualTo(officeResponse);
         verify(officeRepository, times(1)).save(office);
     }
 

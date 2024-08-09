@@ -67,7 +67,7 @@ public class LocationServiceTest {
 
         LocationResponse result = locationService.findById(mockId);
 
-        assertThat(result).isEqualTo(locationResponse);
+        assertThat(result).isNotNull().isEqualTo(locationResponse);
     }
 
     @Test
@@ -84,9 +84,9 @@ public class LocationServiceTest {
         when(locationMapper.toEntity(request)).thenReturn(location);
         when(locationMapper.toDto(location)).thenReturn(locationResponse);
 
-        LocationResponse response = locationService.create(request);
+        LocationResponse result = locationService.create(request);
 
-        assertThat(response).isEqualTo(locationResponse);
+        assertThat(result).isNotNull().isEqualTo(locationResponse);
         verify(locationRepository, times(1)).save(location);
     }
 
@@ -98,9 +98,9 @@ public class LocationServiceTest {
         when(locationMapper.toEntity(request)).thenReturn(location);
         when(locationMapper.toDto(location)).thenReturn(locationResponse);
 
-        LocationResponse response = locationService.update(request);
+        LocationResponse result = locationService.update(request);
 
-        assertThat(response).isEqualTo(locationResponse);
+        assertThat(result).isNotNull().isEqualTo(locationResponse);
         verify(locationRepository, times(1)).save(location);
     }
 
