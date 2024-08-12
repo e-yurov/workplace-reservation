@@ -9,10 +9,16 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = OfficeMapper.class)
 public interface WorkplaceMapper {
+    @Mapping(source = "computerPresent", target = "isComputerPresent")
+    @Mapping(source = "available", target = "isAvailable")
     Workplace toEntity(WorkplaceCreateRequest requestDto);
 
+    @Mapping(source = "computerPresent", target = "isComputerPresent")
+    @Mapping(source = "available", target = "isAvailable")
     Workplace toEntity(WorkplaceUpdateRequest requestDto);
 
     @Mapping(source = "office", target = "officeResponse")
+    @Mapping(source = "computerPresent", target = "computerPresent")
+    @Mapping(source = "available", target = "available")
     WorkplaceResponse toDto(Workplace entity);
 }
