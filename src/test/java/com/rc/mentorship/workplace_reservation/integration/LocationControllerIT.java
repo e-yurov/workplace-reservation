@@ -141,8 +141,6 @@ public class LocationControllerIT {
     void delete() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/locations/" + ID)
                 .header(AUTHORIZATION, BEARER + token)
-        ).andExpectAll(
-                status().isOk()
-        );
+        ).andExpect(status().isOk());
     }
 }
