@@ -102,7 +102,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(() -> new NotFoundException("Workplace", workplaceId));
-        checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, dateTime);
+        checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, reservation.getId(), dateTime);
 
         reservation.setUser(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User", userId)));
@@ -110,11 +110,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void checkAvailableAndNotReservedOrThrow(boolean available, UUID workplaceId,
-                                                     ReservationDateTime dateTime) {
+                                                     UUID id, ReservationDateTime dateTime) {
         if (!available) {
             throw new WorkplaceNotAvailableException(workplaceId);
         }
-        if (!reservationRepository.checkReserved(workplaceId, dateTime.getStart(), dateTime.getEnd()).isEmpty()) {
+        if (!reservationRepository.checkReserved(workplaceId, id, dateTime.getStart(), dateTime.getEnd()).isEmpty()) {
             throw new BadReservationRequestException(workplaceId);
         }
     }

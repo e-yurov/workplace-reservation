@@ -58,12 +58,12 @@ public class ReservationSpecs {
             try {
                 dateTime = LocalDateTime.parse(filter.getValue());
             } catch (DateTimeParseException ex) {
-                throw new FiltrationParamsFormatException(attribute.getName());
+                throw new FiltrationParamsFormatException(attribute.getName() + "DateTime");
             }
 
             Expression<LocalDateTime> expr = root.get(Reservation_.dateTime).get(attribute);
             return GlobalSpecs.buildWithFilterType(builder, filter.getType(),
-                    expr, dateTime, attribute.getName());
+                    expr, dateTime, attribute.getName() + "DateTime");
         };
     }
 

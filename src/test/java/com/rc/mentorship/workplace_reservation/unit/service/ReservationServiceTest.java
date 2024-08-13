@@ -126,9 +126,10 @@ public class ReservationServiceTest {
         request.setWorkplaceId(workplaceMockId);
         request.setUserId(userMockId);
         workplace.isAvailable(true);
+        reservation.setId(null);
         when(reservationMapper.toEntity(request)).thenReturn(reservation);
         when(workplaceRepository.findById(workplaceMockId)).thenReturn(Optional.of(workplace));
-        when(reservationRepository.checkReserved(workplaceMockId, dateTime.getStart(), dateTime.getEnd()))
+        when(reservationRepository.checkReserved(workplaceMockId, null, dateTime.getStart(), dateTime.getEnd()))
                 .thenReturn(Collections.emptyList());
         when(userRepository.findById(userMockId)).thenReturn(Optional.of(user));
         when(reservationMapper.toDto(reservation)).thenReturn(reservationResponse);
@@ -157,9 +158,10 @@ public class ReservationServiceTest {
         request.setWorkplaceId(workplaceMockId);
         request.setUserId(userMockId);
         workplace.isAvailable(true);
+        reservation.setId(null);
         when(reservationMapper.toEntity(request)).thenReturn(reservation);
         when(workplaceRepository.findById(workplaceMockId)).thenReturn(Optional.of(workplace));
-        when(reservationRepository.checkReserved(workplaceMockId, dateTime.getStart(), dateTime.getEnd()))
+        when(reservationRepository.checkReserved(workplaceMockId, null, dateTime.getStart(), dateTime.getEnd()))
                 .thenReturn(Collections.emptyList());
         when(userRepository.findById(userMockId)).thenReturn(Optional.empty());
 
@@ -196,9 +198,10 @@ public class ReservationServiceTest {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         workplace.isAvailable(true);
+        reservation.setId(null);
         when(reservationMapper.toEntity(request)).thenReturn(reservation);
         when(workplaceRepository.findById(workplaceMockId)).thenReturn(Optional.of(workplace));
-        when(reservationRepository.checkReserved(workplaceMockId, dateTime.getStart(), dateTime.getEnd()))
+        when(reservationRepository.checkReserved(workplaceMockId, null, dateTime.getStart(), dateTime.getEnd()))
                 .thenReturn(List.of(new Reservation()));
 
         assertThatThrownBy(() -> reservationService.create(request))
@@ -215,7 +218,7 @@ public class ReservationServiceTest {
         when(reservationRepository.findById(mockId)).thenReturn(Optional.of(mock(Reservation.class)));
         when(reservationMapper.toEntity(request)).thenReturn(reservation);
         when(workplaceRepository.findById(workplaceMockId)).thenReturn(Optional.of(workplace));
-        when(reservationRepository.checkReserved(workplaceMockId, dateTime.getStart(), dateTime.getEnd()))
+        when(reservationRepository.checkReserved(workplaceMockId, mockId, dateTime.getStart(), dateTime.getEnd()))
                 .thenReturn(Collections.emptyList());
         when(userRepository.findById(userMockId)).thenReturn(Optional.of(user));
         when(reservationMapper.toDto(reservation)).thenReturn(reservationResponse);

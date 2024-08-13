@@ -81,7 +81,6 @@ public class WorkplaceControllerIT extends IntegrationTest {
                 status().isBadRequest(),
                 content().contentType(MediaType.APPLICATION_JSON),
                 jsonPath("$.message").value(StringEndsWith.endsWith("'floor'!"))
-
         );
     }
 
