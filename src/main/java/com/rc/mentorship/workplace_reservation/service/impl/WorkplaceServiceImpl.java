@@ -31,12 +31,6 @@ public class WorkplaceServiceImpl implements WorkplaceService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<WorkplaceResponse> findAll(PageRequest pageRequest) {
-        return workplaceRepository.findAll(pageRequest).map(workplaceMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<WorkplaceResponse> findAllWithFilters(PageRequest pageRequest,
                                                       Map<String, String> filters) {
         Specification<Workplace> allSpecs = WorkplaceSpecs.build(

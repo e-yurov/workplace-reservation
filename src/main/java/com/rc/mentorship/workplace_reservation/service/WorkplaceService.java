@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface WorkplaceService {
-    Page<WorkplaceResponse> findAll(PageRequest pageRequest);
-
     Page<WorkplaceResponse> findAllWithFilters(PageRequest pageRequest,
                                             Map<String, String> fieldFilterMap);
 

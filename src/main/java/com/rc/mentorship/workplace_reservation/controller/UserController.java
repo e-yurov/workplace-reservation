@@ -100,31 +100,6 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Создание пользователя"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Успешное создание пользователя",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = UserResponse.class)
-                            )
-                    }
-            )
-    })
-    @PostMapping
-    @HasRole(Role.ADMIN)
-    public ResponseEntity<UserResponse> create(
-            @RequestBody
-            UserCreateRequest createRequest
-    ) {
-        UserResponse response = userService.create(createRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @Operation(
             summary = "Обновление пользователя"
     )
     @ApiResponses(value = {

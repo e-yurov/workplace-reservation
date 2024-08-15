@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface ReservationService {
-    Page<ReservationResponse> findAll(PageRequest pageRequest);
-
     Page<ReservationResponse> findAllWithFilters(PageRequest pageRequest,
                                                  Map<String, String> fieldFilterMap);
 

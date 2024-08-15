@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface OfficeService {
-    Page<OfficeResponse> findAll(PageRequest pageRequest);
-
     Page<OfficeResponse> findAllWithFilters(PageRequest pageRequest,
                                             Map<String, String> filters);
 

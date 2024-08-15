@@ -38,12 +38,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ReservationResponse> findAll(PageRequest pageRequest) {
-        return reservationRepository.findAll(pageRequest).map(reservationMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<ReservationResponse> findAllWithFilters(PageRequest pageRequest,
                                                         Map<String, String> filters) {
         Specification<Reservation> allSpecs = ReservationSpecs.build(

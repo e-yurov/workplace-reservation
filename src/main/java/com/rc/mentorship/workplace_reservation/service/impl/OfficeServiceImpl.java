@@ -31,12 +31,6 @@ public class OfficeServiceImpl implements OfficeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<OfficeResponse> findAll(PageRequest pageRequest) {
-        return officeRepository.findAll(pageRequest).map(officeMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Page<OfficeResponse> findAllWithFilters(PageRequest pageRequest,
                                                    Map<String, String> filters) {
         Specification<Office> allSpecs = OfficeSpecs.build(
