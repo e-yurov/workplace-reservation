@@ -1,4 +1,4 @@
-package com.rc.mentorship.workplace_reservation.integration;
+package com.rc.mentorship.workplace_reservation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest;

@@ -1,4 +1,4 @@
-package com.rc.mentorship.workplace_reservation.unit.service;
+package com.rc.mentorship.workplace_reservation.service;
 
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
@@ -84,7 +84,7 @@ public class ReservationServiceTest {
     @Test
     void findAllWithFilters_NoFilters_ReturningPageOf3() {
         PageRequest pageRequest = mock(PageRequest.class);
-        Page<Reservation> officePage = new PageImpl<>(List.of(new Reservation(), new Reservation(), new Reservation()));
+        Page<Reservation> reservationPage = new PageImpl<>(List.of(new Reservation(), new Reservation(), new Reservation()));
         Map<String, String> filters = Collections.emptyMap();
         Map<String, Filter> fieldFilterMap = Collections.emptyMap();
         Specification<Reservation> allSpecs = mock(Specification.class);
@@ -94,7 +94,7 @@ public class ReservationServiceTest {
         ) {
             filterParamParserMock.when(() -> FilterParamParser.parseAllParams(eq(filters), anySet())).thenReturn(fieldFilterMap);
             reservationSpecsMock.when(() -> ReservationSpecs.build(fieldFilterMap)).thenReturn(allSpecs);
-            when(reservationRepository.findAll(allSpecs, pageRequest)).thenReturn(officePage);
+            when(reservationRepository.findAll(allSpecs, pageRequest)).thenReturn(reservationPage);
 
             Page<ReservationResponse> result = reservationService.findAllWithFilters(pageRequest, filters);
 

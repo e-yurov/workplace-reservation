@@ -1,4 +1,4 @@
-package com.rc.mentorship.workplace_reservation.unit.service;
+package com.rc.mentorship.workplace_reservation.service;
 
 import com.rc.mentorship.workplace_reservation.service.JwtService;
 import com.rc.mentorship.workplace_reservation.service.impl.JwtServiceImpl;

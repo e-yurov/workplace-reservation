@@ -2,10 +2,7 @@ package com.rc.mentorship.workplace_reservation.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class WorkplaceResponse {
     private UUID id;
     private int floor;
