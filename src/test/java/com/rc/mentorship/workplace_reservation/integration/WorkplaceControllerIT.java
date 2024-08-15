@@ -29,7 +29,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
-    void findAll() throws Exception {
+    void findAll_NoFilters_ReturningPageOfOneWorkplace() throws Exception {
         mockMvc.perform(get("/api/v1/workplaces")
                         .header(AUTHORIZATION, BEARER + token)
                         .param("officeId", ID)
@@ -49,7 +49,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplaces_filter.sql"})
-    void findAll_withFilters() throws Exception {
+    void findAll_HasFilters_ReturningFilteredPageOfOneWorkplace() throws Exception {
         mockMvc.perform(get("/api/v1/workplaces")
                         .header(AUTHORIZATION, BEARER + token)
                         .param("officeId", ID)
@@ -72,7 +72,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    void findAll_throwingFiltrationParamsFormatException() throws Exception {
+    void findAll_WrongFiltersFormat_ReturningBadRequest() throws Exception {
         mockMvc.perform(get("/api/v1/workplaces")
                 .header(AUTHORIZATION, BEARER + token)
                 .param("officeId", ID)
@@ -86,7 +86,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
-    void findById() throws Exception {
+    void findById_HasWorkplaceById_ReturningWorkplace() throws Exception {
         mockMvc.perform(get("/api/v1/workplaces/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
                         .param("officeId", ID)
@@ -103,7 +103,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    void findById_throwingNotFound() throws Exception {
+    void findById_NoWorkplaceById_ReturningNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/workplaces/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
                         .param("officeId", ID)
@@ -117,7 +117,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
-    void create() throws Exception {
+    void create_SimpleValues_ReturningCreatedWorkplace() throws Exception {
         WorkplaceCreateRequest request = new WorkplaceCreateRequest(UUID.fromString(ID),
                 1, Workplace.Type.DESK, true, true);
         System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request));
@@ -139,7 +139,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    void create_throwingNotFoundOffice() throws Exception {
+    void create_NoOffice_RetuningNotFound() throws Exception {
         WorkplaceCreateRequest request = new WorkplaceCreateRequest(UUID.fromString(ID),
                 1, Workplace.Type.DESK, true, true);
 
@@ -158,7 +158,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
-    void update() throws Exception {
+    void update_SimpleValues_ReturningUpdatedWorkplace() throws Exception {
         WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(UUID.fromString(ID), UUID.fromString(ID),
                 2, Workplace.Type.ROOM, false, false);
 
@@ -180,7 +180,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    void update_throwingNotFound() throws Exception {
+    void update_NoWorkplaceToUpdate_ReturningNotFound() throws Exception {
         WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(UUID.fromString(ID), UUID.fromString(ID),
                 2, Workplace.Type.ROOM, false, false);
 
@@ -199,7 +199,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
-    void delete() throws Exception {
+    void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/workplaces/" + ID)
                 .param("officeId", ID)
                 .header(AUTHORIZATION, BEARER + token)

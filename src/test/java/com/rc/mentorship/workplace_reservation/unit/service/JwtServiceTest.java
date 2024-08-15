@@ -20,14 +20,14 @@ public class JwtServiceTest {
     private final JwtService jwtService = new JwtServiceImpl(duration, secret);
 
     @Test
-    void generateToken() {
+    void generateToken_SimpleValues_RetuningToken() {
         String token = jwtService.generateToken(email);
 
         assertThat(token).isNotBlank();
     }
 
     @Test
-    void verifyAndRetrieveEmail() {
+    void verifyAndRetrieveEmail_ValidToken_RetuningEmail() {
         String token = jwtService.generateToken(email);
 
         String result = jwtService.verifyAndRetrieveEmail(token);

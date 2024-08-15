@@ -36,7 +36,7 @@ public class AuthControllerIT extends IntegrationTest {
     }
 
     @Test
-    void register() throws Exception {
+    void register_SimpleValues_ReturningToken() throws Exception {
         RegisterRequest request = new RegisterRequest("Name", "Email", "Password");
 
         mockMvc.perform(post("/api/v1/auth/register")
@@ -61,7 +61,7 @@ public class AuthControllerIT extends IntegrationTest {
 
     @Test
     @Sql("/sql/insert_user.sql")
-    void register_throwingUserAlreadyExists() throws Exception {
+    void register_HasUserWithSuchEmail_ReturningBadRequest() throws Exception {
         RegisterRequest request = new RegisterRequest("Name", "Email", "Password");
 
         mockMvc.perform(post("/api/v1/auth/register")
@@ -77,7 +77,7 @@ public class AuthControllerIT extends IntegrationTest {
 
     @Test
     @Sql("/sql/insert_user.sql")
-    void login() throws Exception {
+    void login_ValidCredentials_ReturningToken() throws Exception {
         LoginRequest request = new LoginRequest("Email", "Password");
 
         mockMvc.perform(post("/api/v1/auth/login")
@@ -93,7 +93,7 @@ public class AuthControllerIT extends IntegrationTest {
     }
 
     @Test
-    void login_noUser_throwingBadCredentials() throws Exception {
+    void login_NoUserWithSuchEmail_ReturningUnauthorized() throws Exception {
         LoginRequest request = new LoginRequest("Email", "Password");
 
         mockMvc.perform(post("/api/v1/auth/login")
@@ -109,7 +109,7 @@ public class AuthControllerIT extends IntegrationTest {
 
     @Test
     @Sql("/sql/insert_user.sql")
-    void login_wrongPassword_throwingBadCredentials() throws Exception {
+    void login_WrongPassword_ReturningUnauthorized() throws Exception {
         LoginRequest request = new LoginRequest("Email", "123");
 
         mockMvc.perform(post("/api/v1/auth/login")

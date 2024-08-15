@@ -57,7 +57,7 @@ public class UserController {
             Integer pageSize,
             @Parameter(name = "role", description = "Фильтр по роли")
             @RequestParam(required = false)
-            String role
+            Role role
     ) {
         return ResponseEntity.ok(userService.findAllByRole(
                 PageRequest.of(pageNumber, pageSize), role));

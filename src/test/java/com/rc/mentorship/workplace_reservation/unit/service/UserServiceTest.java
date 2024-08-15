@@ -51,7 +51,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void findAllByRole() {
+    void findAllByRole_NoRoleFilter_ReturningPageOf3() {
         PageRequest pageRequest = mock(PageRequest.class);
         Page<User> userPage = new PageImpl<>(List.of(new User(), new User(), new User()));
         when(userRepository.findAllByRoleIfPresent(null, pageRequest)).thenReturn(userPage);
@@ -62,7 +62,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void findById() {
+    void findById_HasUserById_ReturningUser() {
         when(userRepository.findById(mockId)).thenReturn(Optional.of(user));
         when(userMapper.toDto(user)).thenReturn(response);
 
@@ -72,7 +72,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void findById_throwingNotFound() {
+    void findById_NoUserById_ThrowingNotFound() {
         when(userRepository.findById(mockId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.findById(mockId))
@@ -80,7 +80,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void create() {
+    void create_SimpleValues_ReturningCreatedUser() {
         UserCreateRequest request = new UserCreateRequest();
         when(userMapper.toEntity(request)).thenReturn(user);
         when(userMapper.toDto(user)).thenReturn(response);
@@ -92,7 +92,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void update() {
+    void update_SimpleValues_ReturningUpdatedUser() {
         UserUpdateRequest request = new UserUpdateRequest();
         request.setId(mockId);
         when(userRepository.findById(mockId)).thenReturn(Optional.of(mock(User.class)));
@@ -106,7 +106,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void update_throwingNotFound() {
+    void update_NoUserToUpdate_ThrowingNotFound() {
         UserUpdateRequest request = new UserUpdateRequest();
         request.setId(mockId);
         when(userRepository.findById(mockId)).thenReturn(Optional.empty());
@@ -116,7 +116,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void delete() {
+    void delete_SimpleValues_Deleted() {
         userService.delete(mockId);
 
         verify(userRepository, only()).deleteById(mockId);

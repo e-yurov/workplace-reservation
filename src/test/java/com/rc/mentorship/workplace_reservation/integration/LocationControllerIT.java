@@ -26,7 +26,7 @@ public class LocationControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql"})
-    void findAll() throws Exception {
+    void findAll_NoCityFilter_ReturningPageOfOneLocation() throws Exception {
         mockMvc.perform(get("/api/v1/locations")
                         .header(AUTHORIZATION, BEARER + token)
                 )
@@ -42,7 +42,7 @@ public class LocationControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql"})
-    void findById() throws Exception {
+    void findById_HasLocationById_ReturningLocation() throws Exception {
         mockMvc.perform(get("/api/v1/locations/" + ID)
                         .header(AUTHORIZATION, BEARER + token))
                 .andExpectAll(
@@ -54,7 +54,7 @@ public class LocationControllerIT extends IntegrationTest {
     }
 
     @Test
-    void findById_throwingNotFound() throws Exception {
+    void findById_NoLocationById_ReturningNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/locations/" + ID)
                         .header(AUTHORIZATION, BEARER + token))
                 .andExpectAll(
@@ -65,7 +65,7 @@ public class LocationControllerIT extends IntegrationTest {
     }
 
     @Test
-    void create() throws Exception {
+    void create_SimpleValues_ReturningCreatedLocation() throws Exception {
         LocationCreateRequest request = new LocationCreateRequest("City", "Address");
 
         mockMvc.perform(post("/api/v1/locations")
@@ -82,7 +82,7 @@ public class LocationControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql"})
-    void update() throws Exception {
+    void update_SimpleValues_ReturningUpdatedLocation() throws Exception {
         LocationUpdateRequest request =
                 new LocationUpdateRequest(UUID.fromString(ID), "New city", "New address");
 
@@ -99,7 +99,7 @@ public class LocationControllerIT extends IntegrationTest {
     }
 
     @Test
-    void update_throwingNotFound() throws Exception {
+    void update_NoLocationToUpdate_ReturningNotFound() throws Exception {
         LocationUpdateRequest request =
                 new LocationUpdateRequest(UUID.fromString(ID), "New city", "New address");
 
@@ -117,7 +117,7 @@ public class LocationControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql"})
-    void delete() throws Exception {
+    void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/locations/" + ID)
                 .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk());

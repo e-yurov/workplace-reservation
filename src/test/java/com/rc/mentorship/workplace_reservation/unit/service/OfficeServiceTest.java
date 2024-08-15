@@ -58,7 +58,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void findAllWithFilters() {
+    void findAllWithFilters_NoFilters_ReturningPageOf3() {
         PageRequest pageRequest = mock(PageRequest.class);
         Page<Office> officePage = new PageImpl<>(List.of(new Office(), new Office(), new Office()));
         Map<String, String> filters = Collections.emptyMap();
@@ -79,7 +79,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void findById() {
+    void findById_HasOfficeById_ReturningOffice() {
         when(officeRepository.findById(mockId)).thenReturn(Optional.of(office));
         when(officeMapper.toDto(office)).thenReturn(officeResponse);
 
@@ -89,7 +89,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void findById_throwingNotFound() {
+    void findById_NoOfficeById_ThrowingNotFound() {
         when(officeRepository.findById(mockId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> officeService.findById(mockId))
@@ -97,7 +97,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void create() {
+    void create_SimpleValues_ReturningCreatedOffice() {
         OfficeCreateRequest request = new OfficeCreateRequest();
         UUID locationMockId = UUID.fromString("11111111-1111-1111-1111-111111111111");
         request.setLocationId(locationMockId);
@@ -116,7 +116,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void create_throwingNotFoundLocation() {
+    void create_NoLocation_ThrowingNotFound() {
         OfficeCreateRequest request = new OfficeCreateRequest();
         UUID locationMockId = UUID.fromString("11111111-1111-1111-1111-111111111111");
         request.setLocationId(locationMockId);
@@ -128,7 +128,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void update() {
+    void update_SimpleValues_ReturningUpdatedOffice() {
         OfficeUpdateRequest request = new OfficeUpdateRequest();
         request.setId(mockId);
         UUID locationMockId = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -146,7 +146,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void update_throwingNotFoundOffice() {
+    void update_NoOfficeToUpdate_ThrowingNotFound() {
         OfficeUpdateRequest request = new OfficeUpdateRequest();
         request.setId(mockId);
         when(officeRepository.findById(mockId)).thenReturn(Optional.empty());
@@ -157,7 +157,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void update_throwingNotFoundLocation() {
+    void update_NoLocation_ThrowingNotFound() {
         OfficeUpdateRequest request = new OfficeUpdateRequest();
         request.setId(mockId);
         UUID locationMockId = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -172,7 +172,7 @@ public class OfficeServiceTest {
     }
 
     @Test
-    void delete() {
+    void delete_SimpleValues_Deleted() {
         officeService.delete(mockId);
 
         verify(officeRepository, only()).deleteById(mockId);

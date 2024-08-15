@@ -50,7 +50,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void findAllByCity() {
+    void findAllByCity_NoCityFilter_ReturningPageOf3() {
         PageRequest pageable = mock(PageRequest.class);
         Page<Location> locationPage = new PageImpl<>(List.of(new Location(), new Location(), new Location()));
         when(locationRepository.findAllByCityIfPresent(null, pageable)).thenReturn(locationPage);
@@ -61,7 +61,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void findById() {
+    void findById_HasLocationById_ReturningLocation() {
         when(locationRepository.findById(mockId)).thenReturn(Optional.of(location));
         when(locationMapper.toDto(location)).thenReturn(locationResponse);
 
@@ -71,7 +71,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void findById_throwingNotFound() {
+    void findById_NoLocationById_ThrowingNotFound() {
         when(locationRepository.findById(mockId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> locationService.findById(mockId))
@@ -79,7 +79,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void create() {
+    void create_SimpleValues_ReturningCreatedLocation() {
         LocationCreateRequest request = new LocationCreateRequest();
         when(locationMapper.toEntity(request)).thenReturn(location);
         when(locationMapper.toDto(location)).thenReturn(locationResponse);
@@ -91,7 +91,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void update() {
+    void update_SimpleValues_ReturningUpdatedLocation() {
         LocationUpdateRequest request = new LocationUpdateRequest();
         request.setId(mockId);
         when(locationRepository.findById(mockId)).thenReturn(Optional.of(mock(Location.class)));
@@ -105,7 +105,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void update_throwingNotFound() {
+    void update_NoLocationToUpdate_ThrowingNotFound() {
         LocationUpdateRequest request = new LocationUpdateRequest();
         request.setId(mockId);
         when(locationRepository.findById(mockId)).thenReturn(Optional.empty());
@@ -114,7 +114,7 @@ public class LocationServiceTest {
     }
 
     @Test
-    void delete() {
+    void delete_SimpleValues_Deleted() {
         locationService.delete(mockId);
 
         verify(locationRepository, only()).deleteById(mockId);

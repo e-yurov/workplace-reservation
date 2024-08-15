@@ -28,7 +28,7 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
-    void findAll() throws Exception {
+    void findAll_NoFilters_ReturningPageOfOneOffice() throws Exception {
         mockMvc.perform(get("/api/v1/offices")
                         .header(AUTHORIZATION, BEARER + token)
                 )
@@ -45,7 +45,7 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_offices_filter.sql"})
-    void findAll_withFilters() throws Exception {
+    void findAll_HasFilters_ReturningFilteredPageOfOneOffice() throws Exception {
         mockMvc.perform(get("/api/v1/offices")
                 .header(AUTHORIZATION, BEARER + token)
                 .param("locationId", ID)
@@ -61,7 +61,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    void findAll_throwingFiltrationParamsFormatException() throws Exception {
+    void findAll_WrongFiltersFormat_ReturningBadRequest() throws Exception {
         mockMvc.perform(get("/api/v1/offices")
                 .header(AUTHORIZATION, BEARER + token)
                 .param("startTime", "invalid")
@@ -75,7 +75,7 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
-    void findById() throws Exception {
+    void findById_HasOfficeById_ReturningOffice() throws Exception {
         mockMvc.perform(get("/api/v1/offices/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
                 )
@@ -89,7 +89,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    void findById_throwingNotFound() throws Exception {
+    void findById_NoOfficeById_ReturningNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/offices/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
                 )
@@ -102,7 +102,7 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql"})
-    void create() throws Exception {
+    void create_SimpleValues_ReturningCreatedOffice() throws Exception {
         OfficeCreateRequest request =
                 new OfficeCreateRequest(UUID.fromString(ID), LocalTime.of(8, 0), LocalTime.of(18, 0));
 
@@ -121,7 +121,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    void create_throwingNotFoundLocation() throws Exception {
+    void create_NoLocation_RetuningNotFound() throws Exception {
         OfficeCreateRequest request =
                 new OfficeCreateRequest(UUID.fromString(ID), LocalTime.of(8, 0), LocalTime.of(18, 0));
 
@@ -139,7 +139,7 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
-    void update() throws Exception {
+    void update_SimpleValues_ReturningUpdatedOffice() throws Exception {
         OfficeUpdateRequest request = new OfficeUpdateRequest(UUID.fromString(ID), UUID.fromString(ID),
                 LocalTime.of(7, 0), LocalTime.of(17, 0));
 
@@ -159,7 +159,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    void update_throwingNotFound() throws Exception {
+    void update_NoOfficeToUpdate_ReturningNotFound() throws Exception {
         OfficeUpdateRequest request = new OfficeUpdateRequest(UUID.fromString(ID), UUID.fromString(ID),
                 LocalTime.of(7, 0), LocalTime.of(17, 0));
 
@@ -177,7 +177,7 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
-    void delete() throws Exception {
+    void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/offices/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk());

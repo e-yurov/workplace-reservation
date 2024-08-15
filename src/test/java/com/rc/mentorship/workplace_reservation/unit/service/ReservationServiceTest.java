@@ -82,7 +82,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void findAllWithFilters() {
+    void findAllWithFilters_NoFilters_ReturningPageOf3() {
         PageRequest pageRequest = mock(PageRequest.class);
         Page<Reservation> officePage = new PageImpl<>(List.of(new Reservation(), new Reservation(), new Reservation()));
         Map<String, String> filters = Collections.emptyMap();
@@ -103,7 +103,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void findById(){
+    void findById_HasReservationById_ReturningReservation(){
         when(reservationRepository.findById(mockId)).thenReturn(Optional.of(reservation));
         when(reservationMapper.toDto(reservation)).thenReturn(reservationResponse);
 
@@ -113,7 +113,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void findById_throwingNotFound() {
+    void findById_NoReservationById_ThrowingNotFound() {
         when(reservationRepository.findById(mockId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> reservationService.findById(mockId))
@@ -121,7 +121,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void create() {
+    void create_SimpleValues_ReturningCreatedReservation() {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         request.setUserId(userMockId);
@@ -141,7 +141,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void create_throwingNotFoundWorkplace() {
+    void create_NoWorkplace_ThrowingNotFound() {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         when(reservationMapper.toEntity(request)).thenReturn(reservation);
@@ -153,7 +153,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void create_throwingNotFoundUser() {
+    void create_NoUser_ThrowingNotFound() {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         request.setUserId(userMockId);
@@ -171,7 +171,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void create_throwingBadReservationTime() {
+    void create_TimeOfStartBeforeTimeOfEnd_ThrowingBadReservationTime() {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         when(reservationMapper.toEntity(request)).thenReturn(reservation);
@@ -182,7 +182,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void create_throwingWorkplaceNotAvailable() {
+    void create_WorkplaceNotAvailableForReservation_ThrowingWorkplaceNotAvailable() {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         workplace.isAvailable(false);
@@ -194,7 +194,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void create_throwingBadReservationRequest() {
+    void create_AlreadyReserved_ThrowingBadReservationRequest() {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         workplace.isAvailable(true);
@@ -209,7 +209,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void update() {
+    void update_SimpleValues_ReturningUpdatedReservation() {
         ReservationUpdateRequest request = new ReservationUpdateRequest();
         request.setId(mockId);
         request.setWorkplaceId(workplaceMockId);
@@ -230,7 +230,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void update_throwingNotFoundReservation() {
+    void update_NoReservationToUpdate_ThrowingNotFound() {
         ReservationUpdateRequest request = new ReservationUpdateRequest();
         request.setId(mockId);
         when(reservationRepository.findById(mockId)).thenReturn(Optional.empty());
@@ -241,7 +241,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void delete() {
+    void delete_SimpleValues_Deleted() {
         reservationService.delete(mockId);
 
         verify(reservationRepository, only()).deleteById(mockId);

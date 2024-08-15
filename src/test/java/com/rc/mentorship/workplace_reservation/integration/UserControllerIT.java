@@ -3,7 +3,6 @@ package com.rc.mentorship.workplace_reservation.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.service.JwtService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,7 +26,7 @@ public class UserControllerIT extends IntegrationTest {
 
     @Test
     @Sql("/sql/insert_user.sql")
-    void findAll() throws Exception {
+    void findAll_NoRoleFilter_ReturningPageOfOneUser() throws Exception {
         mockMvc.perform(get("/api/v1/users")
                         .header(AUTHORIZATION, BEARER + token)
                 )
@@ -39,11 +38,9 @@ public class UserControllerIT extends IntegrationTest {
                 );
     }
 
-    //todo: fix
     @Test
-    @Disabled
     @Sql({"/sql/insert_users_filter.sql"})
-    void findAll_withRole() throws Exception {
+    void findAll_HasRoleFilter_ReturningFilteredPageOfOneUser() throws Exception {
         mockMvc.perform(get("/api/v1/users")
                 .header(AUTHORIZATION, BEARER + token)
                 .param("role", "USER")
@@ -58,7 +55,7 @@ public class UserControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_user.sql"})
-    void findById() throws Exception {
+    void findById_HasUserById_ReturningUser() throws Exception {
         mockMvc.perform(get("/api/v1/users/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
                 )
@@ -73,7 +70,7 @@ public class UserControllerIT extends IntegrationTest {
     }
 
     @Test
-    void findById_throwingNotFound() throws Exception {
+    void findById_NoUserById_ReturningNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/users/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
                 )
@@ -84,11 +81,9 @@ public class UserControllerIT extends IntegrationTest {
                 );
     }
 
-    //todo: add for create
-
     @Test
     @Sql({"/sql/insert_user.sql"})
-    void update() throws Exception {
+    void update_SimpleValues_ReturningUpdatedUser() throws Exception {
         UserUpdateRequest request = new UserUpdateRequest(UUID.fromString(ID),
                 "New name", "New password", "New email", "MANAGER");
 
@@ -108,7 +103,7 @@ public class UserControllerIT extends IntegrationTest {
     }
 
     @Test
-    void update_throwingNotFound() throws Exception {
+    void update_NoUserToUpdate_ReturningNotFound() throws Exception {
         UserUpdateRequest request = new UserUpdateRequest(UUID.fromString(ID),
                 "New name", "New password", "New email", "MANAGER");
 
@@ -126,7 +121,7 @@ public class UserControllerIT extends IntegrationTest {
 
     @Test
     @Sql({"/sql/insert_user.sql"})
-    void delete() throws Exception {
+    void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/users/" + ID)
                 .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk());

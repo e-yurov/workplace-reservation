@@ -7,6 +7,7 @@ import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
 import com.rc.mentorship.workplace_reservation.mapper.UserMapper;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
+import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserResponse> findAllByRole(PageRequest pageRequest, String role) {
+    public Page<UserResponse> findAllByRole(PageRequest pageRequest, Role role) {
         return userRepository.findAllByRoleIfPresent(role, pageRequest)
                 .map(userMapper::toDto);
     }
