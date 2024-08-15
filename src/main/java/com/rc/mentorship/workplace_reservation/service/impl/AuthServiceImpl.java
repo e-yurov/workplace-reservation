@@ -39,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(encryptPassword(registerRequest.getPassword()));
         user.setRole(Role.USER);
         userRepository.save(user);
-        return new JwtResponse(jwtService.generateToken(registerRequest.getEmail()));
+        return new JwtResponse(jwtService.generateToken(email));
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.rc.mentorship.workplace_reservation.security.auth;
 
 import com.rc.mentorship.workplace_reservation.entity.User;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
+@EqualsAndHashCode
 public class UserAuthentication {
     private final String email;
     private final String password;
