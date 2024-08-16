@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -48,6 +49,7 @@ public class UserController {
     })
     @GetMapping
     @HasRole({Role.MANAGER, Role.ADMIN})
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Page<UserResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")
@@ -90,6 +92,7 @@ public class UserController {
     })
     @GetMapping("/{id}")
     @HasRole({Role.MANAGER, Role.ADMIN})
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<UserResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -126,6 +129,7 @@ public class UserController {
     })
     @PutMapping("/{id}")
     @HasRole(Role.ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -155,6 +159,7 @@ public class UserController {
     })
     @DeleteMapping("/{id}")
     @HasRole(Role.ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")

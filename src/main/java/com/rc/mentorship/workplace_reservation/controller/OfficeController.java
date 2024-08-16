@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -77,6 +78,7 @@ public class OfficeController {
     })
     @GetMapping
     @HasRole
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Page<OfficeResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
             @RequestParam(defaultValue = "0")
@@ -121,6 +123,7 @@ public class OfficeController {
     })
     @GetMapping("{id}")
     @HasRole
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<OfficeResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -157,6 +160,7 @@ public class OfficeController {
     })
     @PostMapping
     @HasRole(Role.ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OfficeResponse> create(
             @RequestBody
             OfficeCreateRequest createRequest
@@ -192,6 +196,7 @@ public class OfficeController {
     })
     @PutMapping("{id}")
     @HasRole(Role.ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OfficeResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -221,6 +226,7 @@ public class OfficeController {
     })
     @DeleteMapping("{id}")
     @HasRole(Role.ADMIN)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")

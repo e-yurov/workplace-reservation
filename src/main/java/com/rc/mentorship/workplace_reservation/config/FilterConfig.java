@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class FilterConfig {
-    @Bean
+//    @Bean
     public FilterRegistrationBean<AuthEnablingFilter> authEnablingFilterRegistration(
             AuthEnablingFilter authEnablingFilter) {
         FilterRegistrationBean<AuthEnablingFilter> registrationBean =
@@ -20,7 +20,7 @@ public class FilterConfig {
         return registrationBean;
     }
 
-    @Bean
+//    @Bean
     public FilterRegistrationBean<JwtFilter> jwtFilterRegistration(JwtFilter jwtFilter) {
         FilterRegistrationBean<JwtFilter> registrationBean =
                 new FilterRegistrationBean<>();
@@ -30,7 +30,7 @@ public class FilterConfig {
         return registrationBean;
     }
 
-    @Bean
+//    @Bean
     public FilterRegistrationBean<AccessFilter> accessFilterRegistration(AccessFilter accessFilter) {
         FilterRegistrationBean<AccessFilter> registrationBean =
                 new FilterRegistrationBean<>();

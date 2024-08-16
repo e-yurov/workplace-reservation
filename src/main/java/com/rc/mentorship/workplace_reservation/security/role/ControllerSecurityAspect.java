@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Aspect
-@Component
+//@Component
 public class ControllerSecurityAspect {
     @Pointcut("within(com.rc.mentorship.workplace_reservation.controller.*)")
     private void isController() {}

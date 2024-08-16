@@ -1,0 +1,37 @@
+package com.rc.mentorship.workplace_reservation.config;
+
+import com.rc.mentorship.workplace_reservation.util.JwtAuthConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthConverter jwtAuthConverter) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.authorizeHttpRequests(customizer ->
+                customizer
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui/index.html").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .anyRequest().authenticated()
+        );
+        http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.oauth2ResourceServer(c ->
+                c.jwt(jwtConfigurer ->
+                        jwtConfigurer.jwtAuthenticationConverter(jwtAuthConverter)
+                )
+        );
+
+        return http.build();
+    }
+}
