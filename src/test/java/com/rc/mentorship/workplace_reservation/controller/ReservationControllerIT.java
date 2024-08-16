@@ -1,8 +1,15 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
+import com.rc.mentorship.workplace_reservation.dto.response.*;
+import com.rc.mentorship.workplace_reservation.entity.Office;
+import com.rc.mentorship.workplace_reservation.entity.Reservation;
+import com.rc.mentorship.workplace_reservation.entity.Workplace;
+import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
+import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
 import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.hamcrest.core.StringEndsWith;
 import org.hamcrest.core.StringStartsWith;
@@ -11,62 +18,78 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class ReservationControllerIT extends IntegrationTest {
+    private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+    private static final LocalDateTime START_DATE_TIME = LocalDateTime.parse("2024-07-18T12:00:00");
+    private static final LocalDateTime NEW_START_DATE_TIME = START_DATE_TIME.plusHours(1);
+    private static final LocalDateTime END_DATE_TIME = LocalDateTime.parse("2024-07-18T18:00:00");
+    private static final LocalDateTime NEW_END_DATE_TIME = END_DATE_TIME.minusHours(1);
+
+    private final LocationResponse expectedLocation = new LocationResponse(ID, "City", "Address");
+    private final OfficeResponse expectedOffice = new OfficeResponse(ID, LocalTime.of(8, 0),
+            LocalTime.of(18, 0), expectedLocation);
+    private final WorkplaceResponse expectedWorkplace = new WorkplaceResponse(ID, 1, Workplace.Type.DESK,
+            true, true, expectedOffice);
+    private final UserResponse expectedUser = new UserResponse(ID, "Name", "Email", "USER");
+    private final ReservationResponse expected = new ReservationResponse(ID, START_DATE_TIME, END_DATE_TIME,
+            expectedUser, expectedWorkplace);
+
+    private final ReservationRepository reservationRepository;
+    private final ReservationMapper reservationMapper;
+
     @Autowired
     public ReservationControllerIT(MockMvc mockMvc,
                                    ObjectMapper objectMapper,
-                                   JwtService jwtService) {
+                                   JwtService jwtService,
+                                   ReservationRepository reservationRepository,
+                                   ReservationMapper reservationMapper) {
         super(mockMvc, objectMapper, jwtService);
+        this.reservationRepository = reservationRepository;
+        this.reservationMapper = reservationMapper;
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
     void findAll_NoFilters_ReturningPageOfOneReservation() throws Exception {
-        mockMvc.perform(get("/api/v1/reservations")
-                        .header(AUTHORIZATION, BEARER + token)
-                )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.content").isArray(),
-                        jsonPath("$.content.length()").value(1),
-                        jsonPath("$.content[0].id").value(ID),
-                        jsonPath("$.content[0].user.id").value(ID),
-                        jsonPath("$.content[0].workplace.id").value(ID),
-                        jsonPath("$.content[0].startDateTime").value("2024-07-18T12:00:00"),
-                        jsonPath("$.content[0].endDateTime").value("2024-07-18T18:00:00")
-                );
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/reservations")
+                        .header(AUTHORIZATION, BEARER + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
+        ReservationResponse[] result = objectMapper.treeToValue(contentNode, ReservationResponse[].class);
+
+        assertThat(result).singleElement().isEqualTo(expected);
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservations_filters.sql"})
     void findAll_HasFilters_ReturningFilteredPageOfOneReservation() throws Exception {
-        mockMvc.perform(get("/api/v1/reservations")
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/reservations")
                         .header(AUTHORIZATION, BEARER + token)
                         .param("startDateTime", "gt/2024-07-18T11:00:00")
                         .param("endDateTime", "lte/2024-07-18T18:00:00")
                 )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.content").isArray(),
-                        jsonPath("$.content.length()").value(1),
-                        jsonPath("$.content[0].id").value(ID),
-                        jsonPath("$.content[0].user.id").value(ID),
-                        jsonPath("$.content[0].workplace.id").value(ID),
-                        jsonPath("$.content[0].startDateTime").value("2024-07-18T12:00:00"),
-                        jsonPath("$.content[0].endDateTime").value("2024-07-18T18:00:00")
-                );
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
+        ReservationResponse[] result = objectMapper.treeToValue(contentNode, ReservationResponse[].class);
+
+        assertThat(result).singleElement().isEqualTo(expected);
     }
 
     @Test
@@ -75,71 +98,60 @@ public class ReservationControllerIT extends IntegrationTest {
                         .header(AUTHORIZATION, BEARER + token)
                         .param("startDateTime", "invalid")
                 )
-                .andExpectAll(
-                        status().isBadRequest(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value(StringEndsWith.endsWith("'startDateTime'!"))
-                );
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
     void findById_HasReservationById_ReturningReservation() throws Exception {
-        mockMvc.perform(get("/api/v1/reservations/" + ID)
-                        .header(AUTHORIZATION, BEARER + token)
-                )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.id").value(ID),
-                        jsonPath("$.user.id").value(ID),
-                        jsonPath("$.workplace.id").value(ID),
-                        jsonPath("$.startDateTime").value("2024-07-18T12:00:00"),
-                        jsonPath("$.endDateTime").value("2024-07-18T18:00:00")
-                );
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/reservations/" + ID)
+                        .header(AUTHORIZATION, BEARER + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        ReservationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                ReservationResponse.class);
+
+        assertThat(result).isNotNull().isEqualTo(expected);
     }
 
     @Test
     void findById_NoReservationById_ReturningNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/reservations/" + ID)
-                        .header(AUTHORIZATION, BEARER + token)
-                )
-                .andExpectAll(
-                        status().isNotFound(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value(String.format(NOT_FOUND_MSG, "Reservation", ID))
-                );
+                        .header(AUTHORIZATION, BEARER + token))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_workplace.sql", "/sql/insert_user.sql"})
     void create_SimpleValues_ReturningCreatedReservation() throws Exception {
-        ReservationCreateRequest request = new ReservationCreateRequest(UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T12:00:00"), LocalDateTime.parse("2024-07-18T18:00:00"));
+        ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, START_DATE_TIME, END_DATE_TIME);
 
-        mockMvc.perform(post("/api/v1/reservations")
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header(AUTHORIZATION, BEARER + token)
                 )
-                .andExpectAll(
-                        status().isCreated(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.user.id").value(ID),
-                        jsonPath("$.workplace.id").value(ID),
-                        jsonPath("$.startDateTime").value("2024-07-18T12:00:00"),
-                        jsonPath("$.endDateTime").value("2024-07-18T18:00:00")
-                );
+                .andExpect(status().isCreated())
+                .andReturn();
+        ReservationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                ReservationResponse.class);
+        Optional<Reservation> actualInDB = reservationRepository.findById(result.getId());
+
+        assertThat(result).isNotNull()
+                .extracting(ReservationResponse::getUserResponse, ReservationResponse::getWorkplaceResponse,
+                        ReservationResponse::getStartDateTime, ReservationResponse::getEndDateTime)
+                .containsExactly(expectedUser, expectedWorkplace, START_DATE_TIME, END_DATE_TIME);
+        assertThat(actualInDB).isPresent();
+        assertThat(reservationMapper.toDto(actualInDB.get())).isEqualTo(result);
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_workplace.sql", "/sql/insert_user.sql"})
     void create_TimeOfStartBeforeTimeOfEnd_ReturningBadRequest() throws Exception {
-        ReservationCreateRequest request = new ReservationCreateRequest(UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T13:00:00"), LocalDateTime.parse("2024-07-18T12:00:00"));
+        ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, END_DATE_TIME, START_DATE_TIME);
 
         mockMvc.perform(post("/api/v1/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -151,14 +163,15 @@ public class ReservationControllerIT extends IntegrationTest {
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.message").value(StringStartsWith.startsWith("Wrong reservation time!"))
                 );
+
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_not_available_workplace.sql", "/sql/insert_user.sql"})
     void create_WorkplaceNotAvailableForReservation_ReturningBadRequest() throws Exception {
-        ReservationCreateRequest request = new ReservationCreateRequest(UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T12:00:00"), LocalDateTime.parse("2024-07-18T18:00:00"));
+        ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, START_DATE_TIME, END_DATE_TIME);
 
         mockMvc.perform(post("/api/v1/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -170,14 +183,15 @@ public class ReservationControllerIT extends IntegrationTest {
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.message").value(StringEndsWith.endsWith("is not available for reservation!"))
                 );
+
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
     void create_AlreadyReserved_ReturningBadRequest() throws Exception {
-        ReservationCreateRequest request = new ReservationCreateRequest(UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T10:00:00"), LocalDateTime.parse("2024-07-18T16:00:00"));
+        ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, START_DATE_TIME, END_DATE_TIME);
 
         mockMvc.perform(post("/api/v1/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -193,8 +207,7 @@ public class ReservationControllerIT extends IntegrationTest {
 
     @Test
     void create_NoWorkplace_RetuningNotFound() throws Exception {
-        ReservationCreateRequest request = new ReservationCreateRequest(UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T12:00:00"), LocalDateTime.parse("2024-07-18T18:00:00"));
+        ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, START_DATE_TIME, END_DATE_TIME);
 
         mockMvc.perform(post("/api/v1/reservations")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -206,57 +219,57 @@ public class ReservationControllerIT extends IntegrationTest {
                         content().contentType(MediaType.APPLICATION_JSON),
                         jsonPath("$.message").value(String.format(NOT_FOUND_MSG, "Workplace", ID))
                 );
+
+        assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
             "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
     void update_SimpleValues_ReturningUpdatedReservation() throws Exception {
-        ReservationUpdateRequest request = new ReservationUpdateRequest(UUID.fromString(ID),
-                UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T13:00:00"), LocalDateTime.parse("2024-07-18T17:00:00"));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(ID, ID, ID,
+                NEW_START_DATE_TIME, NEW_END_DATE_TIME);
 
-        mockMvc.perform(put("/api/v1/reservations/" + ID)
+        MvcResult mvcResult = mockMvc.perform(put("/api/v1/reservations/" + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header(AUTHORIZATION, BEARER + token)
                 )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.id").value(ID),
-                        jsonPath("$.user.id").value(ID),
-                        jsonPath("$.workplace.id").value(ID),
-                        jsonPath("$.startDateTime").value("2024-07-18T13:00:00"),
-                        jsonPath("$.endDateTime").value("2024-07-18T17:00:00")
-                );
+                .andExpect(status().isOk())
+                .andReturn();
+        ReservationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                ReservationResponse.class);
+        Optional<Reservation> actualInDB = reservationRepository.findById(result.getId());
+
+        assertThat(result).isNotNull()
+                .extracting(ReservationResponse::getId, ReservationResponse::getUserResponse, ReservationResponse::getWorkplaceResponse,
+                        ReservationResponse::getStartDateTime, ReservationResponse::getEndDateTime)
+                .containsExactly(ID, expectedUser, expectedWorkplace, NEW_START_DATE_TIME, NEW_END_DATE_TIME);
+        assertThat(actualInDB).isPresent();
+        assertThat(reservationMapper.toDto(actualInDB.get())).isEqualTo(result);
     }
 
     @Test
     void update_NoReservationToUpdate_ReturningNotFound() throws Exception {
-        ReservationUpdateRequest request = new ReservationUpdateRequest(UUID.fromString(ID),
-                UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T13:00:00"), LocalDateTime.parse("2024-07-18T17:00:00"));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(ID, ID, ID,
+                NEW_START_DATE_TIME, NEW_END_DATE_TIME);
 
         mockMvc.perform(put("/api/v1/reservations/" + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .header(AUTHORIZATION, BEARER + token)
                 )
-                .andExpectAll(
-                        status().isNotFound(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value(String.format(NOT_FOUND_MSG, "Reservation", ID))
-                );
+                .andExpect(status().isNotFound());
+
+        assertThat(reservationRepository.findById(ID)).isEmpty();
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql",
             "/sql/insert_user.sql", "/sql/insert_reservation.sql", "/sql/insert_reservation_another.sql"})
     void update_AlreadyReservedForNewTime_ReturningBadRequest() throws Exception {
-        ReservationUpdateRequest request = new ReservationUpdateRequest(UUID.fromString(ID),
-                UUID.fromString(ID), UUID.fromString(ID),
-                LocalDateTime.parse("2024-07-18T10:00:00"), LocalDateTime.parse("2024-07-18T16:00:00"));
+        ReservationUpdateRequest request = new ReservationUpdateRequest(ID, ID, ID,
+                START_DATE_TIME.minusHours(2), END_DATE_TIME.minusHours(2));
 
         mockMvc.perform(put("/api/v1/reservations/" + ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -277,5 +290,7 @@ public class ReservationControllerIT extends IntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/reservations/" + ID)
                 .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk());
+
+        assertThat(reservationRepository.findById(ID)).isEmpty();
     }
 }

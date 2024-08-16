@@ -127,8 +127,8 @@ public class OfficeControllerIT extends IntegrationTest {
         Optional<Office> actualInDB = officeRepository.findById(result.getId());
 
         assertThat(result).isNotNull()
-                .extracting(OfficeResponse::getStartTime, OfficeResponse::getEndTime)
-                .containsExactly(START_TIME, END_TIME);
+                .extracting(OfficeResponse::getLocationResponse, OfficeResponse::getStartTime, OfficeResponse::getEndTime)
+                .containsExactly(expectedLocation, START_TIME, END_TIME);
         assertThat(actualInDB).isPresent();
         assertThat(officeMapper.toDto(actualInDB.get())).isEqualTo(result);
     }

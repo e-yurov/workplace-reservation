@@ -151,9 +151,9 @@ public class WorkplaceControllerIT extends IntegrationTest {
         Optional<Workplace> actualInDB = workplaceRepository.findById(result.getId());
 
         assertThat(result).isNotNull()
-                .extracting(WorkplaceResponse::getFloor, WorkplaceResponse::getType,
+                .extracting(WorkplaceResponse::getOfficeResponse, WorkplaceResponse::getFloor, WorkplaceResponse::getType,
                         WorkplaceResponse::isComputerPresent, WorkplaceResponse::isAvailable)
-                .containsExactly(FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
+                .containsExactly(expectedOffice, FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
         assertThat(actualInDB).isPresent();
         assertThat(workplaceMapper.toDto(actualInDB.get())).isEqualTo(result);
     }
@@ -169,6 +169,8 @@ public class WorkplaceControllerIT extends IntegrationTest {
                         .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isNotFound());
+
+        assertThat(workplaceRepository.findAll()).isEmpty();
     }
 
     @Test
@@ -191,8 +193,9 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
         assertThat(result).isNotNull()
                 .extracting(WorkplaceResponse::getId, WorkplaceResponse::getFloor, WorkplaceResponse::getType,
-                        WorkplaceResponse::isComputerPresent, WorkplaceResponse::isAvailable)
-                .containsExactly(ID, NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE);
+                        WorkplaceResponse::isComputerPresent, WorkplaceResponse::isAvailable,
+                        WorkplaceResponse::getOfficeResponse)
+                .containsExactly(ID, NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE, expectedOffice);
         assertThat(actualInDB).isPresent();
         assertThat(workplaceMapper.toDto(actualInDB.get())).isEqualTo(result);
     }
