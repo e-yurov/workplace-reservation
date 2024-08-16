@@ -20,15 +20,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class OfficeControllerIT extends IntegrationTest {
-    private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-
     private static final LocalTime START_TIME = LocalTime.of(8, 0);
     private static final LocalTime END_TIME = LocalTime.of(18, 0);
 
@@ -53,7 +50,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
+    @Sql({"/sql/insert_office.sql"})
     void findAll_NoFilters_ReturningPageOfOneOffice() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/offices")
                         .header(AUTHORIZATION, BEARER + token))
@@ -66,7 +63,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_offices_filter.sql"})
+    @Sql({"/sql/insert_offices_filter.sql"})
     void findAll_HasFilters_ReturningFilteredPageOfOneOffice() throws Exception {
         MvcResult mvcResult = mockMvc.perform(
                 get("/api/v1/offices")
@@ -90,7 +87,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
+    @Sql({"/sql/insert_office.sql"})
     void findById_HasOfficeById_ReturningOffice() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/offices/" + ID)
                         .header(AUTHORIZATION, BEARER + token))
@@ -149,7 +146,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
+    @Sql({"/sql/insert_office.sql"})
     void update_SimpleValues_ReturningUpdatedOffice() throws Exception {
         OfficeUpdateRequest request = new OfficeUpdateRequest(ID, ID, NEW_START_TIME, NEW_END_TIME);
 
@@ -187,7 +184,7 @@ public class OfficeControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
+    @Sql({"/sql/insert_office.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/offices/" + ID)
                         .header(AUTHORIZATION, BEARER + token)

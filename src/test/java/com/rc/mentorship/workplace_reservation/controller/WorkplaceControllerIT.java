@@ -22,14 +22,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class WorkplaceControllerIT extends IntegrationTest {
-    private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     private static final String OFFICE_ID_PARAM = ID.toString();
 
     private static final int FLOOR = 1;
@@ -63,7 +61,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
+    @Sql({"/sql/insert_workplace.sql"})
     void findAll_NoFilters_ReturningPageOfOneWorkplace() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces")
                         .header(AUTHORIZATION, BEARER + token)
@@ -78,7 +76,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplaces_filter.sql"})
+    @Sql({"/sql/insert_workplaces_filter.sql"})
     void findAll_HasFilters_ReturningFilteredPageOfOneWorkplace() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces")
                         .header(AUTHORIZATION, BEARER + token)
@@ -110,7 +108,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
+    @Sql({"/sql/insert_workplace.sql"})
     void findById_HasWorkplaceById_ReturningWorkplace() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
@@ -134,7 +132,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
+    @Sql({"/sql/insert_office.sql"})
     void create_SimpleValues_ReturningCreatedWorkplace() throws Exception {
         WorkplaceCreateRequest request = new WorkplaceCreateRequest(ID, FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
 
@@ -174,7 +172,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
+    @Sql({"/sql/insert_workplace.sql"})
     void update_SimpleValues_ReturningUpdatedWorkplace() throws Exception {
         WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(ID, ID,
                 NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE);
@@ -217,7 +215,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
+    @Sql({"/sql/insert_workplace.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/workplaces/" + ID)
                 .param("officeId", OFFICE_ID_PARAM)

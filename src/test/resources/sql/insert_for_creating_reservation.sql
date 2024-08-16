@@ -5,5 +5,3 @@ insert into office (id, location_id, start_time, end_time) values ('00000000-000
 insert into workplace (id, office_id, floor, type, computer_present, available) values ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 1, 'DESK', true, true);
 
 insert into "user" (id, name, email, role, password) values ('00000000-0000-0000-0000-000000000000', 'Name', 'Email', 'USER', '588+9PF8OZmpTyxvYS6KiI5bECaHjk4ZOYsjvTjsIho=');
-
-insert into reservation (id, user_id, workplace_id, start_date_time, end_date_time) values ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', '2024-07-18T12:00:00', '2024-07-18T18:00:00');

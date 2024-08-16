@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.dto.request.LoginRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.RegisterRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.JwtResponse;
-import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
 import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.security.role.Role;
@@ -19,10 +18,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.security.MessageDigest;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class AuthControllerIT extends IntegrationTest {
     private static final String NAME = "Name";

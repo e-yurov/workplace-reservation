@@ -18,15 +18,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LocationControllerIT extends IntegrationTest {
-    private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-
     private static final String CITY = "City";
     private static final String ADDRESS = "Address";
 

@@ -10,6 +10,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Sql(scripts = {"/sql/delete_all.sql", "/sql/insert_admin.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -22,8 +24,7 @@ public class IntegrationTest {
     protected int port;
 
     protected final String token;
-    protected static final String ID = "00000000-0000-0000-0000-000000000000";
-    protected static final String NOT_FOUND_MSG = "%s with ID: %s not found!";
+    protected static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     protected static final String AUTHORIZATION = "Authorization";
     protected static final String BEARER = "Bearer ";
 

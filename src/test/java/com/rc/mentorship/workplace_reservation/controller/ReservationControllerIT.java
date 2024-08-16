@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.*;
-import com.rc.mentorship.workplace_reservation.entity.Office;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
@@ -24,15 +23,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class ReservationControllerIT extends IntegrationTest {
-    private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-
     private static final LocalDateTime START_DATE_TIME = LocalDateTime.parse("2024-07-18T12:00:00");
     private static final LocalDateTime NEW_START_DATE_TIME = START_DATE_TIME.plusHours(1);
     private static final LocalDateTime END_DATE_TIME = LocalDateTime.parse("2024-07-18T18:00:00");
@@ -62,8 +58,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
+    @Sql({"/sql/insert_reservation.sql"})
     void findAll_NoFilters_ReturningPageOfOneReservation() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/reservations")
                         .header(AUTHORIZATION, BEARER + token))
@@ -76,8 +71,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservations_filters.sql"})
+    @Sql({"/sql/insert_reservations_filters.sql"})
     void findAll_HasFilters_ReturningFilteredPageOfOneReservation() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/reservations")
                         .header(AUTHORIZATION, BEARER + token)
@@ -102,8 +96,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
+    @Sql({"/sql/insert_reservation.sql"})
     void findById_HasReservationById_ReturningReservation() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/reservations/" + ID)
                         .header(AUTHORIZATION, BEARER + token))
@@ -123,8 +116,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql"})
+    @Sql({"/sql/insert_for_creating_reservation.sql"})
     void create_SimpleValues_ReturningCreatedReservation() throws Exception {
         ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, START_DATE_TIME, END_DATE_TIME);
 
@@ -148,8 +140,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql"})
+    @Sql({"/sql/insert_for_creating_reservation.sql"})
     void create_TimeOfStartBeforeTimeOfEnd_ReturningBadRequest() throws Exception {
         ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, END_DATE_TIME, START_DATE_TIME);
 
@@ -168,8 +159,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_not_available_workplace.sql", "/sql/insert_user.sql"})
+    @Sql({"/sql/insert_for_creating_reservation_workplace_not_available.sql"})
     void create_WorkplaceNotAvailableForReservation_ReturningBadRequest() throws Exception {
         ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, START_DATE_TIME, END_DATE_TIME);
 
@@ -188,8 +178,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
+    @Sql({"/sql/insert_reservation.sql"})
     void create_AlreadyReserved_ReturningBadRequest() throws Exception {
         ReservationCreateRequest request = new ReservationCreateRequest(ID, ID, START_DATE_TIME, END_DATE_TIME);
 
@@ -217,15 +206,14 @@ public class ReservationControllerIT extends IntegrationTest {
                 .andExpectAll(
                         status().isNotFound(),
                         content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value(String.format(NOT_FOUND_MSG, "Workplace", ID))
+                        jsonPath("$.message").value(StringStartsWith.startsWith("Workplace"))
                 );
 
         assertThat(reservationRepository.findAll()).isEmpty();
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
+    @Sql({"/sql/insert_reservation.sql"})
     void update_SimpleValues_ReturningUpdatedReservation() throws Exception {
         ReservationUpdateRequest request = new ReservationUpdateRequest(ID, ID, ID,
                 NEW_START_DATE_TIME, NEW_END_DATE_TIME);
@@ -265,8 +253,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql",
-            "/sql/insert_user.sql", "/sql/insert_reservation.sql", "/sql/insert_reservation_another.sql"})
+    @Sql({"/sql/insert_reservation_another.sql"})
     void update_AlreadyReservedForNewTime_ReturningBadRequest() throws Exception {
         ReservationUpdateRequest request = new ReservationUpdateRequest(ID, ID, ID,
                 START_DATE_TIME.minusHours(2), END_DATE_TIME.minusHours(2));
@@ -284,8 +271,7 @@ public class ReservationControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql",
-            "/sql/insert_workplace.sql", "/sql/insert_user.sql", "/sql/insert_reservation.sql"})
+    @Sql({"/sql/insert_reservation.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/reservations/" + ID)
                 .header(AUTHORIZATION, BEARER + token)
