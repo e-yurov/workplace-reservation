@@ -1,9 +1,15 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequest;
+import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
+import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
+import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
+import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
+import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.hamcrest.core.StringEndsWith;
 import org.junit.jupiter.api.Test;
@@ -11,71 +17,90 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.LocalTime;
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//todo: add assertions for Location and Office
 public class WorkplaceControllerIT extends IntegrationTest {
+    private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+    private static final String OFFICE_ID_PARAM = ID.toString();
+
+    private static final int FLOOR = 1;
+    private static final Workplace.Type TYPE = Workplace.Type.DESK;
+    private static final boolean COMPUTER_PRESENT = true;
+    private static final boolean AVAILABLE = true;
+
+    private static final int NEW_FLOOR = 2;
+    private static final Workplace.Type NEW_TYPE = Workplace.Type.ROOM;
+    private static final boolean NEW_COMPUTER_PRESENT = false;
+    private static final boolean NEW_AVAILABLE = false;
+
+    private final LocationResponse expectedLocation = new LocationResponse(ID, "City", "Address");
+    private final OfficeResponse expectedOffice = new OfficeResponse(ID, LocalTime.of(8, 0),
+            LocalTime.of(18, 0), expectedLocation);
+    private final WorkplaceResponse expected = new WorkplaceResponse(ID, FLOOR, TYPE,
+            COMPUTER_PRESENT, AVAILABLE, expectedOffice);
+
+    private final WorkplaceRepository workplaceRepository;
+    private final WorkplaceMapper workplaceMapper;
+
     @Autowired
     public WorkplaceControllerIT(MockMvc mockMvc,
                                  ObjectMapper objectMapper,
-                                 JwtService jwtService) {
+                                 JwtService jwtService,
+                                 WorkplaceRepository workplaceRepository,
+                                 WorkplaceMapper workplaceMapper) {
         super(mockMvc, objectMapper, jwtService);
+        this.workplaceRepository = workplaceRepository;
+        this.workplaceMapper = workplaceMapper;
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
     void findAll_NoFilters_ReturningPageOfOneWorkplace() throws Exception {
-        mockMvc.perform(get("/api/v1/workplaces")
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces")
                         .header(AUTHORIZATION, BEARER + token)
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                 )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.content").isArray(),
-                        jsonPath("$.content.length()").value(1),
-                        jsonPath("$.content[0].id").value(ID),
-                        jsonPath("$.content[0].floor").value(1),
-                        jsonPath("$.content[0].type").value("DESK"),
-                        jsonPath("$.content[0].computerPresent").value(true),
-                        jsonPath("$.content[0].available").value(true)
-                );
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
+        WorkplaceResponse[] result = objectMapper.treeToValue(contentNode, WorkplaceResponse[].class);
+
+        assertThat(result).singleElement().isEqualTo(expected);
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplaces_filter.sql"})
     void findAll_HasFilters_ReturningFilteredPageOfOneWorkplace() throws Exception {
-        mockMvc.perform(get("/api/v1/workplaces")
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces")
                         .header(AUTHORIZATION, BEARER + token)
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                         .param("floor", "lt/2")
                         .param("type", "DESK")
                         .param("computerPresent", "true")
                         .param("available", "true")
                 )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.content").isArray(),
-                        jsonPath("$.content.length()").value(1),
-                        jsonPath("$.content[0].id").value(ID),
-                        jsonPath("$.content[0].floor").value(1),
-                        jsonPath("$.content[0].type").value("DESK"),
-                        jsonPath("$.content[0].computerPresent").value(true),
-                        jsonPath("$.content[0].available").value(true)
-                );
+                .andExpect(status().isOk())
+                .andReturn();
+        JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
+        WorkplaceResponse[] result = objectMapper.treeToValue(contentNode, WorkplaceResponse[].class);
+
+        assertThat(result).singleElement().isEqualTo(expected);
     }
 
     @Test
     void findAll_WrongFiltersFormat_ReturningBadRequest() throws Exception {
         mockMvc.perform(get("/api/v1/workplaces")
                 .header(AUTHORIZATION, BEARER + token)
-                .param("officeId", ID)
+                .param("officeId", OFFICE_ID_PARAM)
                 .param("floor", "aa/invalid")
         ).andExpectAll(
                 status().isBadRequest(),
@@ -87,122 +112,115 @@ public class WorkplaceControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
     void findById_HasWorkplaceById_ReturningWorkplace() throws Exception {
-        mockMvc.perform(get("/api/v1/workplaces/" + ID)
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                 )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.id").value(ID),
-                        jsonPath("$.floor").value(1),
-                        jsonPath("$.type").value("DESK"),
-                        jsonPath("$.computerPresent").value(true),
-                        jsonPath("$.available").value(true)
-                );
+                .andExpect(status().isOk())
+                .andReturn();
+        WorkplaceResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                WorkplaceResponse.class);
+
+        assertThat(result).isNotNull().isEqualTo(expected);
     }
 
     @Test
     void findById_NoWorkplaceById_ReturningNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/workplaces/" + ID)
                         .header(AUTHORIZATION, BEARER + token)
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                 )
-                .andExpectAll(
-                        status().isNotFound(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value(String.format(NOT_FOUND_MSG, "Workplace", ID))
-                );
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql"})
     void create_SimpleValues_ReturningCreatedWorkplace() throws Exception {
-        WorkplaceCreateRequest request = new WorkplaceCreateRequest(UUID.fromString(ID),
-                1, Workplace.Type.DESK, true, true);
-        System.out.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request));
+        WorkplaceCreateRequest request = new WorkplaceCreateRequest(ID, FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
 
-        mockMvc.perform(post("/api/v1/workplaces")
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/workplaces")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                         .header(AUTHORIZATION, BEARER + token)
                 )
-                .andExpectAll(
-                        status().isCreated(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.floor").value(1),
-                        jsonPath("$.type").value("DESK"),
-                        jsonPath("$.computerPresent").value(true),
-                        jsonPath("$.available").value(true)
-                );
+                .andExpect(status().isCreated())
+                .andReturn();
+        WorkplaceResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                WorkplaceResponse.class);
+        Optional<Workplace> actualInDB = workplaceRepository.findById(result.getId());
+
+        assertThat(result).isNotNull()
+                .extracting(WorkplaceResponse::getFloor, WorkplaceResponse::getType,
+                        WorkplaceResponse::isComputerPresent, WorkplaceResponse::isAvailable)
+                .containsExactly(FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
+        assertThat(actualInDB).isPresent();
+        assertThat(workplaceMapper.toDto(actualInDB.get())).isEqualTo(result);
     }
 
     @Test
     void create_NoOffice_RetuningNotFound() throws Exception {
-        WorkplaceCreateRequest request = new WorkplaceCreateRequest(UUID.fromString(ID),
-                1, Workplace.Type.DESK, true, true);
+        WorkplaceCreateRequest request = new WorkplaceCreateRequest(ID, FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
 
         mockMvc.perform(post("/api/v1/workplaces")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                         .header(AUTHORIZATION, BEARER + token)
                 )
-                .andExpectAll(
-                        status().isNotFound(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value(String.format(NOT_FOUND_MSG, "Office", ID))
-                );
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
     void update_SimpleValues_ReturningUpdatedWorkplace() throws Exception {
-        WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(UUID.fromString(ID), UUID.fromString(ID),
-                2, Workplace.Type.ROOM, false, false);
+        WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(ID, ID,
+                NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE);
 
-        mockMvc.perform(put("/api/v1/workplaces/" + ID)
+        MvcResult mvcResult = mockMvc.perform(put("/api/v1/workplaces/" + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                         .header(AUTHORIZATION, BEARER + token)
                 )
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.id").value(ID),
-                        jsonPath("$.floor").value(2),
-                        jsonPath("$.type").value("ROOM"),
-                        jsonPath("$.computerPresent").value(false),
-                        jsonPath("$.available").value(false)
-                );
+                .andExpect(status().isOk())
+                .andReturn();
+        WorkplaceResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                WorkplaceResponse.class);
+        Optional<Workplace> actualInDB = workplaceRepository.findById(result.getId());
+
+        assertThat(result).isNotNull()
+                .extracting(WorkplaceResponse::getId, WorkplaceResponse::getFloor, WorkplaceResponse::getType,
+                        WorkplaceResponse::isComputerPresent, WorkplaceResponse::isAvailable)
+                .containsExactly(ID, NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE);
+        assertThat(actualInDB).isPresent();
+        assertThat(workplaceMapper.toDto(actualInDB.get())).isEqualTo(result);
     }
 
     @Test
     void update_NoWorkplaceToUpdate_ReturningNotFound() throws Exception {
-        WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(UUID.fromString(ID), UUID.fromString(ID),
-                2, Workplace.Type.ROOM, false, false);
+        WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(ID, ID,
+                NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE);
 
         mockMvc.perform(put("/api/v1/workplaces/" + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .param("officeId", ID)
+                        .param("officeId", OFFICE_ID_PARAM)
                         .header(AUTHORIZATION, BEARER + token)
                 )
-                .andExpectAll(
-                        status().isNotFound(),
-                        content().contentType(MediaType.APPLICATION_JSON),
-                        jsonPath("$.message").value(String.format(NOT_FOUND_MSG, "Workplace", ID))
-                );
+                .andExpect(status().isNotFound());
+
+        assertThat(workplaceRepository.findById(ID)).isEmpty();
     }
 
     @Test
     @Sql({"/sql/insert_location.sql", "/sql/insert_office.sql", "/sql/insert_workplace.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/workplaces/" + ID)
-                .param("officeId", ID)
+                .param("officeId", OFFICE_ID_PARAM)
                 .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk());
+
+        assertThat(workplaceRepository.findById(ID)).isEmpty();
     }
 }

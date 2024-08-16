@@ -28,8 +28,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class OfficeControllerIT extends IntegrationTest {
     private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
     private static final LocalTime START_TIME = LocalTime.of(8, 0);
     private static final LocalTime END_TIME = LocalTime.of(18, 0);
+
     private static final LocalTime NEW_START_TIME = START_TIME.minusHours(1);
     private static final LocalTime NEW_END_TIME = END_TIME.minusHours(1);
 

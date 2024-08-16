@@ -26,9 +26,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserControllerIT extends IntegrationTest {
     private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
     private static final String NAME = "Name";
     private static final String EMAIL = "Email";
     private static final String ROLE = "USER";
+
     private static final String NEW_NAME = "New name";
     private static final String NEW_EMAIL = "New email";
     private static final String NEW_ROLE = "MANAGER";

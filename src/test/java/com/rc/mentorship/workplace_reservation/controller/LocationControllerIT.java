@@ -26,8 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class LocationControllerIT extends IntegrationTest {
     private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
     private static final String CITY = "City";
     private static final String ADDRESS = "Address";
+
     private static final String NEW_CITY = "New city";
     private static final String NEW_ADDRESS = "New address";
 
