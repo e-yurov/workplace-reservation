@@ -66,7 +66,8 @@ public class LocationControllerIT extends IntegrationTest {
                         .header(AUTHORIZATION, BEARER + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), LocationResponse.class);
+        LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                LocationResponse.class);
 
         assertThat(result).isNotNull().isEqualTo(expected);
     }
@@ -90,7 +91,8 @@ public class LocationControllerIT extends IntegrationTest {
         )
                 .andExpect(status().isCreated())
                 .andReturn();
-        LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), LocationResponse.class);
+        LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                LocationResponse.class);
         Optional<Location> actualInDB = locationRepository.findById(result.getId());
 
         assertThat(result).extracting(LocationResponse::getCity, LocationResponse::getAddress)
@@ -110,10 +112,12 @@ public class LocationControllerIT extends IntegrationTest {
                 .content(objectMapper.writeValueAsString(request))
                 .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk()).andReturn();
-        LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), LocationResponse.class);
+        LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                LocationResponse.class);
         Optional<Location> actualInDB = locationRepository.findById(result.getId());
 
-        assertThat(result).extracting(LocationResponse::getId, LocationResponse::getCity, LocationResponse::getAddress)
+        assertThat(result)
+                .extracting(LocationResponse::getId, LocationResponse::getCity, LocationResponse::getAddress)
                 .containsExactly(ID, NEW_CITY, NEW_ADDRESS);
         assertThat(actualInDB).isPresent();
         assertThat(locationMapper.toDto(actualInDB.get())).isEqualTo(result);

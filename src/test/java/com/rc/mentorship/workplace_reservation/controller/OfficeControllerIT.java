@@ -94,7 +94,8 @@ public class OfficeControllerIT extends IntegrationTest {
                         .header(AUTHORIZATION, BEARER + token))
                 .andExpect(status().isOk())
                 .andReturn();
-        OfficeResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), OfficeResponse.class);
+        OfficeResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                OfficeResponse.class);
 
         assertThat(result).isNotNull().isEqualTo(expected);
     }
@@ -119,7 +120,8 @@ public class OfficeControllerIT extends IntegrationTest {
         )
                 .andExpect(status().isCreated())
                 .andReturn();
-        OfficeResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), OfficeResponse.class);
+        OfficeResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                OfficeResponse.class);
         Optional<Office> actualInDB = officeRepository.findById(result.getId());
 
         assertThat(result).isNotNull()
@@ -156,7 +158,8 @@ public class OfficeControllerIT extends IntegrationTest {
                 )
                 .andExpect(status().isOk())
                 .andReturn();
-        OfficeResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), OfficeResponse.class);
+        OfficeResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                OfficeResponse.class);
         Optional<Office> actualInDB = officeRepository.findById(result.getId());
 
         assertThat(result)
