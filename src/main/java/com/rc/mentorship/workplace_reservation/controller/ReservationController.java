@@ -4,8 +4,6 @@ import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequ
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
-import com.rc.mentorship.workplace_reservation.security.role.HasRole;
-import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -84,7 +82,6 @@ public class ReservationController {
             )
     })
     @GetMapping
-    @HasRole
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Page<ReservationResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
@@ -129,7 +126,6 @@ public class ReservationController {
             )
     })
     @GetMapping("/{id}")
-    @HasRole
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ReservationResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
@@ -176,7 +172,6 @@ public class ReservationController {
             )
     })
     @PostMapping
-    @HasRole
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ReservationResponse> create(
             @RequestBody
@@ -213,7 +208,6 @@ public class ReservationController {
             )
     })
     @PutMapping("/{id}")
-    @HasRole({Role.MANAGER, Role.ADMIN})
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<ReservationResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
@@ -243,7 +237,6 @@ public class ReservationController {
             )
     })
     @DeleteMapping("/{id}")
-    @HasRole({Role.MANAGER, Role.ADMIN})
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)

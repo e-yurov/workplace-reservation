@@ -6,7 +6,6 @@ import com.rc.mentorship.workplace_reservation.dto.request.RegisterRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.JwtResponse;
 import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
-import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +27,14 @@ public class AuthControllerIT extends IntegrationTest {
     private static final String PASSWORD = "Password";
 
     private final UserRepository userRepository;
-    private final MessageDigest messageDigest;
 
     @Autowired
     public AuthControllerIT(MockMvc mockMvc,
                             ObjectMapper objectMapper,
                             JwtService jwtService,
-                            UserRepository userRepository,
-                            MessageDigest messageDigest) {
+                            UserRepository userRepository) {
         super(mockMvc, objectMapper, jwtService);
         this.userRepository = userRepository;
-        this.messageDigest = messageDigest;
     }
 
     @Test
@@ -52,7 +48,7 @@ public class AuthControllerIT extends IntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
         JwtResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), JwtResponse.class);
-        byte[] passwordDigest = messageDigest.digest(PASSWORD.getBytes());
+//        byte[] passwordDigest = messageDigest.digest(PASSWORD.getBytes());
         Optional<User> userOptional = userRepository.findByEmail(EMAIL);
 
         assertThat(result.getToken()).isNotEmpty();
@@ -60,8 +56,8 @@ public class AuthControllerIT extends IntegrationTest {
         User user = userOptional.get();
         assertThat(user.getEmail()).isEqualTo(EMAIL);
         assertThat(user.getName()).isEqualTo(NAME);
-        assertThat(user.getRole()).isEqualTo(Role.USER);
-        assertThat(user.getPassword()).asBase64Decoded().containsExactly(passwordDigest);
+        assertThat(user.getRole()).isEqualTo(User.Role.USER);
+//        assertThat(user.getPassword()).asBase64Decoded().containsExactly(passwordDigest);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.rc.mentorship.workplace_reservation.entity;
 
-import com.rc.mentorship.workplace_reservation.security.role.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,4 +32,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
+
+    public enum Role {
+        USER,
+        MANAGER,
+        ADMIN;
+    }
 }

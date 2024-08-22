@@ -1,8 +1,7 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
-import com.rc.mentorship.workplace_reservation.dto.request.LoginRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.RegisterRequest;
-import com.rc.mentorship.workplace_reservation.dto.response.JwtResponse;
+import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +17,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest registerRequest) {
         return ResponseEntity.ok(authService.register(registerRequest));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.login(loginRequest));
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
+//        return ResponseEntity.ok(authService.login(loginRequest));
+//    }
 }

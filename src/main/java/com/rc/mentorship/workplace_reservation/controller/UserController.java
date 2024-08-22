@@ -2,9 +2,8 @@ package com.rc.mentorship.workplace_reservation.controller;
 
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
+import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
-import com.rc.mentorship.workplace_reservation.security.role.HasRole;
-import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,7 +47,6 @@ public class UserController {
             )
     })
     @GetMapping
-    @HasRole({Role.MANAGER, Role.ADMIN})
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<Page<UserResponse>> findAll(
             @Parameter(name = "pageNumber", description = "Номер страницы")
@@ -59,7 +57,7 @@ public class UserController {
             Integer pageSize,
             @Parameter(name = "role", description = "Фильтр по роли")
             @RequestParam(required = false)
-            Role role
+            User.Role role
     ) {
         return ResponseEntity.ok(userService.findAllByRole(
                 PageRequest.of(pageNumber, pageSize), role));
@@ -91,7 +89,6 @@ public class UserController {
             )
     })
     @GetMapping("/{id}")
-    @HasRole({Role.MANAGER, Role.ADMIN})
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<UserResponse> findById(
             @Parameter(name = "id", in = ParameterIn.PATH)
@@ -128,7 +125,6 @@ public class UserController {
             )
     })
     @PutMapping("/{id}")
-    @HasRole(Role.ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
@@ -158,7 +154,6 @@ public class UserController {
             )
     })
     @DeleteMapping("/{id}")
-    @HasRole(Role.ADMIN)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)

@@ -2,9 +2,7 @@ package com.rc.mentorship.workplace_reservation.service.impl;
 
 import com.rc.mentorship.workplace_reservation.dto.request.RegisterRequest;
 import com.rc.mentorship.workplace_reservation.service.KeycloakService;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
-import org.jboss.resteasy.specimpl.AbstractBuiltResponse;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RoleMappingResource;
@@ -16,7 +14,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.FilterInputStream;
 import java.util.Collections;
 import java.util.List;
 
