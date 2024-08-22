@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class AccessFilter extends OncePerRequestFilter {
     private final RequestMatcher requestMatcher;

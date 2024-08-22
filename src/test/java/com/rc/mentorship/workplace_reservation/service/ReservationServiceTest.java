@@ -171,7 +171,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    void create_TimeOfStartBeforeTimeOfEnd_ThrowingBadReservationTime() {
+    void create_TimeOfStartAfterTimeOfEnd_ThrowingBadReservationTime() {
         ReservationCreateRequest request = new ReservationCreateRequest();
         request.setWorkplaceId(workplaceMockId);
         when(reservationMapper.toEntity(request)).thenReturn(reservation);

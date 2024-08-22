@@ -12,6 +12,7 @@ import com.rc.mentorship.workplace_reservation.security.auth.UserAuthentication;
 import com.rc.mentorship.workplace_reservation.security.role.Role;
 import com.rc.mentorship.workplace_reservation.service.AuthService;
 import com.rc.mentorship.workplace_reservation.service.JwtService;
+import com.rc.mentorship.workplace_reservation.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationProvider authProvider;
     private final MessageDigest messageDigest;
 
+    private final KeycloakService keycloakService;
+
     @Override
     @Transactional
     public JwtResponse register(RegisterRequest registerRequest) {
@@ -39,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(encryptPassword(registerRequest.getPassword()));
         user.setRole(Role.USER);
         userRepository.save(user);
+        keycloakService.addUser(registerRequest);
         return new JwtResponse(jwtService.generateToken(email));
     }
 

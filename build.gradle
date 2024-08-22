@@ -52,7 +52,7 @@ dependencies {
 	compileOnly 'org.hibernate:hibernate-jpamodelgen:6.5.2.Final'
 	annotationProcessor 'org.hibernate:hibernate-jpamodelgen:6.5.2.Final'
 
-	implementation 'org.keycloak:keycloak-admin-client:22.0.1'
+	implementation 'org.keycloak:keycloak-admin-client:25.0.2'
 }
 
 tasks.named('test') {

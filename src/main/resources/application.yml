@@ -21,16 +21,24 @@ spring:
         jwt:
           issuer-uri: http://localhost:8180/realms/workplace_reservation
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
-#      client:
-#        registration:
-#          keycloak:
-#            client-id: workplace_reservation
-#            client-secret: VRjLSsAD4t9r6Dw8DeBK4oVE2z4gZyFo
-#            scope: openid, profile
-#        provider:
-#          keycloak:
-#            issuer-uri: http://localhost:8180/realms/workplace_reservation
-#            user-name-attribute: preferred_username
+      client:
+        registration:
+          keycloak:
+            scope: openid, profile
+            authorization-grant-type: authorization_code
+            client-id: reservation-app
+            client-secret: VRjLSsAD4t9r6Dw8DeBK4oVE2z4gZyFo
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8180/realms/workplace_reservation
+            jwk-set-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: ${spring.security.oauth2.client.registration.keycloak.client-id}
+      client-secret: ${spring.security.oauth2.client.registration.keycloak.client-secret}
 
 keycloak:
   server-url: http://localhost:8180

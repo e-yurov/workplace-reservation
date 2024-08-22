@@ -9,7 +9,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 @Configuration("deprecatedSecurityConfig")
-public class SecurityConfig { @Bean
+public class SecurityConfig {
+    @Bean
     public RequestMatcher securityFilterConfig(HttpSecurity http) {
 //        http.authorizeRequests()
 //                .requestMatchers("/api/v1/auth/**").permitAll()
