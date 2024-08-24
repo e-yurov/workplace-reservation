@@ -2,6 +2,7 @@ package com.rc.mentorship.workplace_reservation.dto.response;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -13,5 +14,5 @@ public class UserResponse {
     private UUID id;
     private String name;
     private String email;
-    private String role;
+    private List<String> roles;
 }

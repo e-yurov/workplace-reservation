@@ -20,15 +20,11 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "email")
     private String email;
 
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name = "keycloak_id")
+    private String keycloakId;
 
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;

@@ -2,7 +2,6 @@ package com.rc.mentorship.workplace_reservation.controller;
 
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
-import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,13 +53,9 @@ public class UserController {
             Integer pageNumber,
             @Parameter(name = "pageSize", description = "Размер страницы")
             @RequestParam(defaultValue = "10")
-            Integer pageSize,
-            @Parameter(name = "role", description = "Фильтр по роли")
-            @RequestParam(required = false)
-            User.Role role
+            Integer pageSize
     ) {
-        return ResponseEntity.ok(userService.findAllByRole(
-                PageRequest.of(pageNumber, pageSize), role));
+        return ResponseEntity.ok(userService.findAll(PageRequest.of(pageNumber, pageSize)));
     }
 
     @Operation(

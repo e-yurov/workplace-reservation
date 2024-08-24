@@ -56,7 +56,7 @@ public class UserServiceTest {
         Page<User> userPage = new PageImpl<>(List.of(new User(), new User(), new User()));
         when(userRepository.findAllByRoleIfPresent(null, pageRequest)).thenReturn(userPage);
 
-        Page<UserResponse> result = userService.findAllByRole(pageRequest, null);
+        Page<UserResponse> result = userService.findAll(pageRequest, null);
 
         assertThat(result).hasSize(3);
     }

@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
     private final KeycloakService keycloakService;
 
     @Override
@@ -27,17 +26,11 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistsException(email);
         }
-        User user = userMapper.toEntity(registerRequest);
-//        user.setPassword(encryptPassword(registerRequest.getPassword()));
-        user.setRole(User.Role.USER);
-        userRepository.save(user);
         keycloakService.addUser(registerRequest);
+        String keycloakId = keycloakService.getKeycloakIdByEmail(email);
+        User user = userMapper.toEntity(registerRequest);
+        user.setKeycloakId(keycloakId);
+        userRepository.save(user);
         return userMapper.toDto(user);
-//        return new JwtResponse(jwtService.generateToken(email));
     }
-
-//    private String encryptPassword(String password) {
-//        byte[] digest = messageDigest.digest(password.getBytes());
-//        return Base64.getEncoder().encodeToString(digest);
-//    }
 }

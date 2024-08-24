@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       file: add-user-password.yml
       relativeToChangelogFile: true
+  - include:
+      file: change-authentication-to-keycloak.yml
+      relativeToChangelogFile: true
