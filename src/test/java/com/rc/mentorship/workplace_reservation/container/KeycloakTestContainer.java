@@ -27,29 +27,29 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
+//@Testcontainers
 //@RequiredArgsConstructor
-public class KeycloakTestContainer {
-    private final TestRestTemplate restTemplate;
-    private final Keycloak k;
-
-    @Autowired
-    public KeycloakTestContainer(TestRestTemplate restTemplate,
-                                 Keycloak k) {
-        this.restTemplate = restTemplate;
-        this.k = k;
-    }
+public class KeycloakTestContainer extends PostgresTestContainer {
+//    private final TestRestTemplate restTemplate;
+//    private final Keycloak k;
+//
+//    @Autowired
+//    public KeycloakTestContainer(TestRestTemplate restTemplate,
+//                                 Keycloak k) {
+//        this.restTemplate = restTemplate;
+//        this.k = k;
+//    }
 
     @LocalServerPort
     static int port;
 
     @Container
     private static final KeycloakContainer keycloak;
-    static {keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:25.0.2")
-            .withRealmImportFile("keycloak/realm-export.json")
-            .withVerboseOutput();
-        System.out.println(keycloak.getPortBindings());
+
+    static {
+        keycloak = new KeycloakContainer("quay.io/keycloak/keycloak:25.0.2")
+            .withRealmImportFile("keycloak/realm-export.json");
+        keycloak.start();
     }
 
     @DynamicPropertySource
@@ -61,49 +61,46 @@ public class KeycloakTestContainer {
         registry.add("keycloak.server-url", keycloak::getAuthServerUrl);
     }
 
-    @Test
-    void testKc() {
-        assertTrue(keycloak.isRunning());
-
-        String authServerUrl = keycloak.getAuthServerUrl();
-        System.out.println(authServerUrl);
-
-        String uri = keycloak.getAuthServerUrl() + "/realms/workplace_reservation/protocol/openid-connect/token";
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("username", "admin");
-        body.add("password", "admin");
-        body.add("grant_type", "password");
-        body.add("client_id", "reservation-app");
-        body.add("client_secret", "VRjLSsAD4t9r6Dw8DeBK4oVE2z4gZyFo");
-
-//        body.put("username", Collections.singletonList("admin"));
-//        body.put("password", Collections.singletonList("admin"));
-//        body.put("grant_type", Collections.singletonList("password"));
-//        body.put("client_id", Collections.singletonList("reservation-app"));
-
-        WebClient client = WebClient.builder().build();
-        Map<String, String> result = client.post()
-                .uri(uri)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters.fromFormData(body))
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>(){})
-                .block();
-
-        System.out.println(result);
-        List<UserRepresentation> list = k.realm("workplace_reservation").users().list();
-
-        assertThat(k).isNotNull();
-
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//    @Test
+//    void testKc() {
+//        assertTrue(keycloak.isRunning());
 //
-
+//        String authServerUrl = keycloak.getAuthServerUrl();
+//        System.out.println(authServerUrl);
 //
-//        RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<>(body, headers, HttpMethod.POST, );
+//        String uri = keycloak.getAuthServerUrl() + "/realms/workplace_reservation/protocol/openid-connect/token";
+//        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+//        body.add("username", "admin");
+//        body.add("password", "admin");
+//        body.add("grant_type", "password");
+//        body.add("client_id", "reservation-app");
+//        body.add("client_secret", "VRjLSsAD4t9r6Dw8DeBK4oVE2z4gZyFo");
 //
-//        restTemplate.exchange(request, )
-    }
+////        body.put("username", Collections.singletonList("admin"));
+////        body.put("password", Collections.singletonList("admin"));
+////        body.put("grant_type", Collections.singletonList("password"));
+////        body.put("client_id", Collections.singletonList("reservation-app"));
+//
+//        WebClient client = WebClient.builder().build();
+//        Map<String, String> result = client.post()
+//                .uri(uri)
+//                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+//                .body(BodyInserters.fromFormData(body))
+//                .retrieve()
+//                .bodyToMono(new ParameterizedTypeReference<Map<String, String>>(){})
+//                .block();
+//
+//        System.out.println(result);
+//
+////        HttpHeaders headers = new HttpHeaders();
+////        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+////
+//
+////
+////        RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<>(body, headers, HttpMethod.POST, );
+////
+////        restTemplate.exchange(request, )
+//    }
 
     protected String getAdminToken() {
         String uri = keycloak.getAuthServerUrl() + "/realms/workplace_reservation/protocol/openid-connect/token";

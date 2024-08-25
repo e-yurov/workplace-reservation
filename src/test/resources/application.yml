@@ -1,15 +1,17 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:test_mem
-    username: sa
-    password: sa
-    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:mem:test_mem
+#    username: sa
+#    password: sa
+    driver-class-name: org.postgresql.Driver
   sql:
     init:
       mode: embedded
   liquibase:
     enabled: false
   jpa:
+    hibernate:
+      ddl-auto: create-drop
     properties:
       hibernate:
         show_sql: true
@@ -31,17 +33,17 @@ spring:
 #            issuer-uri: http://localhost:8080/realms/workplace_reservation
 #            jwk-set-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/certs
             user-name-attribute: preferred_username
-  h2:
-    console:
-      enabled: true
+#  h2:
+#    console:
+#      enabled: true
 
 jwt:
   lifetime: 30m
   secret: secret
 
 keycloak:
-#  server-url: http://localhost:8080
   realm: workplace_reservation
   username: admin
   password: admin
 
+testcontainers

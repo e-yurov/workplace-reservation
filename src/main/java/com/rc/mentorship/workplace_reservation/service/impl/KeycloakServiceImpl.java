@@ -65,6 +65,11 @@ public class KeycloakServiceImpl implements KeycloakService {
         return getUsersResource().searchByEmail(email, true).get(0).getId();
     }
 
+    @Override
+    public UserRepresentation getKeycloakUserByEmail(String email) {
+        return getUsersResource().searchByEmail(email, true).get(0);
+    }
+
     private CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredential = new CredentialRepresentation();
         passwordCredential.setTemporary(false);
