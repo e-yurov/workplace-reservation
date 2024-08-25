@@ -1,6 +1,5 @@
 package com.rc.mentorship.workplace_reservation.service.impl;
 
-import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.entity.User;
@@ -39,15 +38,6 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("User", id)
         ));
         return keycloakService.fillUserResponse(response);
-    }
-
-    @Deprecated
-    @Override
-    @Transactional
-    public UserResponse create(UserCreateRequest toCreate) {
-        User user = userMapper.toEntity(toCreate);
-        userRepository.save(user);
-        return userMapper.toDto(user);
     }
 
     @Override

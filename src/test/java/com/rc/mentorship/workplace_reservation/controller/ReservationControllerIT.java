@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +40,8 @@ public class ReservationControllerIT extends IntegrationTest {
             LocalTime.of(18, 0), expectedLocation);
     private final WorkplaceResponse expectedWorkplace = new WorkplaceResponse(ID, 1, Workplace.Type.DESK,
             true, true, expectedOffice);
-    private final UserResponse expectedUser = new UserResponse(ID, "Name", "Email", "USER");
+    //todo: check
+    private final UserResponse expectedUser = new UserResponse(ID, "Name", "Email", Collections.emptyList());
     private final ReservationResponse expected = new ReservationResponse(ID, START_DATE_TIME, END_DATE_TIME,
             expectedUser, expectedWorkplace);
 

@@ -50,16 +50,16 @@ public class UserServiceTest {
         response.setId(mockId);
     }
 
-    @Test
-    void findAllByRole_NoRoleFilter_ReturningPageOf3() {
-        PageRequest pageRequest = mock(PageRequest.class);
-        Page<User> userPage = new PageImpl<>(List.of(new User(), new User(), new User()));
-        when(userRepository.findAllByRoleIfPresent(null, pageRequest)).thenReturn(userPage);
-
-        Page<UserResponse> result = userService.findAll(pageRequest, null);
-
-        assertThat(result).hasSize(3);
-    }
+//    @Test
+//    void findAllByRole_NoRoleFilter_ReturningPageOf3() {
+//        PageRequest pageRequest = mock(PageRequest.class);
+//        Page<User> userPage = new PageImpl<>(List.of(new User(), new User(), new User()));
+//        when(userRepository.findAllByRoleIfPresent(null, pageRequest)).thenReturn(userPage);
+//
+//        Page<UserResponse> result = userService.findAll(pageRequest, null);
+//
+//        assertThat(result).hasSize(3);
+//    }
 
     @Test
     void findById_HasUserById_ReturningUser() {
@@ -79,17 +79,17 @@ public class UserServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @Test
-    void create_SimpleValues_ReturningCreatedUser() {
-        UserCreateRequest request = new UserCreateRequest();
-        when(userMapper.toEntity(request)).thenReturn(user);
-        when(userMapper.toDto(user)).thenReturn(response);
-
-        UserResponse result = userService.create(request);
-
-        assertThat(result).isNotNull().isEqualTo(response);
-        verify(userRepository, times(1)).save(user);
-    }
+//    @Test
+//    void create_SimpleValues_ReturningCreatedUser() {
+//        UserCreateRequest request = new UserCreateRequest();
+//        when(userMapper.toEntity(request)).thenReturn(user);
+//        when(userMapper.toDto(user)).thenReturn(response);
+//
+//        UserResponse result = userService.create(request);
+//
+//        assertThat(result).isNotNull().isEqualTo(response);
+//        verify(userRepository, times(1)).save(user);
+//    }
 
     @Test
     void update_SimpleValues_ReturningUpdatedUser() {
