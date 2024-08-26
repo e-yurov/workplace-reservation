@@ -1,5 +1,7 @@
 package com.rc.mentorship.workplace_reservation.config;
 
+import com.rc.mentorship.workplace_reservation.exception.handler.CustomAccessDeniedHandler;
+import com.rc.mentorship.workplace_reservation.exception.handler.CustomAuthenticationEntryPoint;
 import com.rc.mentorship.workplace_reservation.util.JwtAuthConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthConverter jwtAuthConverter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           JwtAuthConverter jwtAuthConverter,
+                                           CustomAuthenticationEntryPoint authenticationEntryPoint,
+                                           CustomAccessDeniedHandler accessDeniedHandler) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(customizer ->
                 customizer
@@ -31,6 +36,10 @@ public class SecurityConfig {
                         jwtConfigurer.jwtAuthenticationConverter(jwtAuthConverter)
                 )
         );
+        http.exceptionHandling(c -> {
+            c.authenticationEntryPoint(authenticationEntryPoint);
+            c.accessDeniedHandler(accessDeniedHandler);
+        });
 
         return http.build();
     }
