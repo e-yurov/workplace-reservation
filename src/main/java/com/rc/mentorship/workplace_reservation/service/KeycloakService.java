@@ -14,8 +14,6 @@ public interface KeycloakService {
 
     void deleteUserById(String id);
 
-    void deleteUserByEmail(String email);
-
     String getKeycloakIdByEmail(String email);
 
     UserRepresentation getKeycloakUserByEmail(String email);

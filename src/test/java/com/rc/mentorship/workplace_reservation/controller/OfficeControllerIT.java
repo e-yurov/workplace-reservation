@@ -10,7 +10,6 @@ import com.rc.mentorship.workplace_reservation.dto.response.OfficeResponse;
 import com.rc.mentorship.workplace_reservation.entity.Office;
 import com.rc.mentorship.workplace_reservation.mapper.OfficeMapper;
 import com.rc.mentorship.workplace_reservation.repository.OfficeRepository;
-import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

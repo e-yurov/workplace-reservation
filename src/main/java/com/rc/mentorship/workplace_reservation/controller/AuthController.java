@@ -20,9 +20,4 @@ public class AuthController {
     public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest registerRequest) {
         return ResponseEntity.ok(authService.register(registerRequest));
     }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
-//        return ResponseEntity.ok(authService.login(loginRequest));
-//    }
 }

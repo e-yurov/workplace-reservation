@@ -1,6 +1,5 @@
 package com.rc.mentorship.workplace_reservation.service;
 
-import com.rc.mentorship.workplace_reservation.dto.request.UserCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.UserUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.entity.User;
@@ -32,6 +31,8 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private KeycloakService keycloakService;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -50,21 +51,22 @@ public class UserServiceTest {
         response.setId(mockId);
     }
 
-//    @Test
-//    void findAllByRole_NoRoleFilter_ReturningPageOf3() {
-//        PageRequest pageRequest = mock(PageRequest.class);
-//        Page<User> userPage = new PageImpl<>(List.of(new User(), new User(), new User()));
-//        when(userRepository.findAllByRoleIfPresent(null, pageRequest)).thenReturn(userPage);
-//
-//        Page<UserResponse> result = userService.findAll(pageRequest, null);
-//
-//        assertThat(result).hasSize(3);
-//    }
+    @Test
+    void findAll_NoFilter_ReturningPageOf3() {
+        PageRequest pageRequest = mock(PageRequest.class);
+        Page<User> userPage = new PageImpl<>(List.of(new User(), new User(), new User()));
+        when(userRepository.findAll(pageRequest)).thenReturn(userPage);
+
+        Page<UserResponse> result = userService.findAll(pageRequest);
+
+        assertThat(result).hasSize(3);
+    }
 
     @Test
     void findById_HasUserById_ReturningUser() {
         when(userRepository.findById(mockId)).thenReturn(Optional.of(user));
         when(userMapper.toDto(user)).thenReturn(response);
+        when(keycloakService.fillUserResponse(response)).thenReturn(response);
 
         UserResponse result = userService.findById(mockId);
 
@@ -79,18 +81,6 @@ public class UserServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
-//    @Test
-//    void create_SimpleValues_ReturningCreatedUser() {
-//        UserCreateRequest request = new UserCreateRequest();
-//        when(userMapper.toEntity(request)).thenReturn(user);
-//        when(userMapper.toDto(user)).thenReturn(response);
-//
-//        UserResponse result = userService.create(request);
-//
-//        assertThat(result).isNotNull().isEqualTo(response);
-//        verify(userRepository, times(1)).save(user);
-//    }
-
     @Test
     void update_SimpleValues_ReturningUpdatedUser() {
         UserUpdateRequest request = new UserUpdateRequest();
@@ -98,11 +88,13 @@ public class UserServiceTest {
         when(userRepository.findById(mockId)).thenReturn(Optional.of(mock(User.class)));
         when(userMapper.toEntity(request)).thenReturn(user);
         when(userMapper.toDto(user)).thenReturn(response);
+        when(keycloakService.fillUserResponse(response)).thenReturn(response);
 
         UserResponse result = userService.update(request);
 
         assertThat(result).isNotNull().isEqualTo(response);
         verify(userRepository, times(1)).save(user);
+        verify(keycloakService, times(1)).updateUser(user);
     }
 
     @Test
@@ -117,8 +109,13 @@ public class UserServiceTest {
 
     @Test
     void delete_SimpleValues_Deleted() {
+        String keycloakId = "keycloak_id";
+        user.setKeycloakId(keycloakId);
+        when(userRepository.findById(mockId)).thenReturn(Optional.of(user));
+
         userService.delete(mockId);
 
-        verify(userRepository, only()).deleteById(mockId);
+        verify(userRepository, times(1)).delete(user);
+        verify(keycloakService, only()).deleteUserById(keycloakId);
     }
 }

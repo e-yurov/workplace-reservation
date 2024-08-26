@@ -1,9 +1,7 @@
 package com.rc.mentorship.workplace_reservation.container;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rc.mentorship.workplace_reservation.container.BasePostgresContainerIT;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;

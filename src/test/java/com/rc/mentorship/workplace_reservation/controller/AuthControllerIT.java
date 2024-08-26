@@ -26,8 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AuthControllerIT extends KeycloakPostgresContainerIT {
     private static final String URL = "/api/v1/auth";
 
-    private static final String NAME = "Name";
-    private static final String EMAIL = "Email@test.com";
+    private static final String NAME = "user";
+    private static final String EMAIL = "user@test.com";
     private static final String PASSWORD = "Password";
 
     private final UserRepository userRepository;
@@ -67,7 +67,7 @@ public class AuthControllerIT extends KeycloakPostgresContainerIT {
         assertThat(userMapper.toDto(actualInDb.get())).isEqualTo(result);
         assertThat(keycloakUser).isNotNull()
                 .extracting(AbstractUserRepresentation::getUsername, AbstractUserRepresentation::getEmail)
-                .containsExactly(NAME.toLowerCase(), EMAIL.toLowerCase());
+                .containsExactly(NAME, EMAIL);
     }
 
     @Test
@@ -81,43 +81,4 @@ public class AuthControllerIT extends KeycloakPostgresContainerIT {
                 )
                 .andExpect(status().isBadRequest());
     }
-//
-//    @Test
-//    @Sql("/sql/insert_user.sql")
-//    void login_ValidCredentials_ReturningToken() throws Exception {
-//        LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
-//
-//        MvcResult mvcResult = mockMvc.perform(post("/api/v1/auth/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//                )
-//                .andExpect(status().isOk())
-//                .andReturn();
-//        JwtResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), JwtResponse.class);
-//
-//        assertThat(result.getToken()).isNotEmpty();
-//    }
-//
-//    @Test
-//    void login_NoUserWithSuchEmail_ReturningUnauthorized() throws Exception {
-//        LoginRequest request = new LoginRequest(EMAIL, PASSWORD);
-//
-//        mockMvc.perform(post("/api/v1/auth/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//                )
-//                .andExpectAll(status().isUnauthorized());
-//    }
-//
-//    @Test
-//    @Sql("/sql/insert_user.sql")
-//    void login_WrongPassword_ReturningUnauthorized() throws Exception {
-//        LoginRequest request = new LoginRequest(EMAIL, "123");
-//
-//        mockMvc.perform(post("/api/v1/auth/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request))
-//                )
-//                .andExpect(status().isUnauthorized());
-//    }
 }

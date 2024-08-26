@@ -1,6 +1,3 @@
-server:
-  port: 8079
-
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -28,10 +25,6 @@ spring:
           keycloak:
             issuer-uri: http://localhost:8180/realms/workplace_reservation
             user-name-attribute: preferred_username
-
-jwt:
-  lifetime: 30m
-  secret: secret
 
 keycloak:
   server-url: http://localhost:8180

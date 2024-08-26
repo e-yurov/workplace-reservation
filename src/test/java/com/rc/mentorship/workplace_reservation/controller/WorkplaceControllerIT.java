@@ -11,7 +11,6 @@ import com.rc.mentorship.workplace_reservation.dto.response.WorkplaceResponse;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.mapper.WorkplaceMapper;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
-import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.hamcrest.core.StringEndsWith;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

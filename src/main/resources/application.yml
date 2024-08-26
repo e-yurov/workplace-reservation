@@ -45,7 +45,3 @@ keycloak:
   realm: workplace_reservation
   username: admin
   password: admin
-
-jwt:
-  lifetime: 1d
-  secret: workplace_secret

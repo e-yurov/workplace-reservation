@@ -10,7 +10,6 @@ import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
-import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.hamcrest.core.StringEndsWith;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
