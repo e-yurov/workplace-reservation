@@ -24,6 +24,7 @@ public abstract class KeycloakPostgresContainerIT extends BasePostgresContainerI
     private static final KeycloakContainer keycloak =
             new KeycloakContainer("quay.io/keycloak/keycloak:25.0.2")
                     .withRealmImportFile("keycloak/realm-export.json");
+//                    .withReuse(true);
 //    @BeforeEach
 //    void beforeEach() {
 //        System.setProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri",

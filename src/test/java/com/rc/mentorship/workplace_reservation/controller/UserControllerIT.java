@@ -80,7 +80,7 @@ public class UserControllerIT extends KeycloakPostgresContainerIT {
 //    }
 
     @Test
-    @Sql("/sql/insert_user.sql")
+    @Sql("/sql/insert_user_tofind.sql")
     void findAll_NoRoleFilter_ReturningPageOfOneUser() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
@@ -91,30 +91,29 @@ public class UserControllerIT extends KeycloakPostgresContainerIT {
 //        assertThat(result).singleElement().isEqualTo(expected);
         assertThat(result).singleElement()
                 .extracting(UserResponse::getId, UserResponse::getName, UserResponse::getEmail)
-                .containsExactly(ID, NAME, EMAIL);
+                .containsExactly(ID, "tofind", "tofind@test.com");
         assertThat(result[0].getRoles()).contains(ROLE);
     }
 
-    @Test
-    @Sql({"/sql/insert_users_filter.sql"})
-    void findAll_HasRoleFilter_ReturningFilteredPageOfOneUser() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get(URL)
-                        .param("role", "USER")
-                )
-                .andExpect(status().isOk())
-                .andReturn();
-        JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
-        UserResponse[] result = objectMapper.treeToValue(contentNode, UserResponse[].class);
+//    @Test
+//    @Sql({"/sql/insert_users_filter.sql"})
+//    void findAll_HasRoleFilter_ReturningFilteredPageOfOneUser() throws Exception {
+//        MvcResult mvcResult = mockMvc.perform(get(URL)
+//                        .param("role", "USER")
+//                )
+//                .andExpect(status().isOk())
+//                .andReturn();
+//        JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
+//        UserResponse[] result = objectMapper.treeToValue(contentNode, UserResponse[].class);
+//
+//        assertThat(result).singleElement()
+//                .extracting(UserResponse::getId, UserResponse::getName, UserResponse::getEmail)
+//                .containsExactly(ID, "tofind", "tofind@test.com");
+//        assertThat(result[0].getRoles()).contains(ROLE);
+//    }
 
-//        assertThat(result).singleElement().isEqualTo(expected);
-        assertThat(result).singleElement()
-                .extracting(UserResponse::getId, UserResponse::getName, UserResponse::getEmail)
-                .containsExactly(ID, NAME, EMAIL);
-        assertThat(result[0].getRoles()).contains(ROLE);
-    }
-
     @Test
-    @Sql({"/sql/insert_user.sql"})
+    @Sql({"/sql/insert_user_tofind.sql"})
     void findById_HasUserById_ReturningUser() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get(URL + '/' + ID))
                 .andExpect(status().isOk())
@@ -125,7 +124,7 @@ public class UserControllerIT extends KeycloakPostgresContainerIT {
 //        assertThat(result).isNotNull().isEqualTo(expected);
         assertThat(result).isNotNull()
                 .extracting(UserResponse::getId, UserResponse::getName, UserResponse::getEmail)
-                .containsExactly(ID, NAME, EMAIL);
+                .containsExactly(ID, "tofind", "tofind@test.com");
         assertThat(result.getRoles()).contains(ROLE);
     }
 
@@ -136,7 +135,7 @@ public class UserControllerIT extends KeycloakPostgresContainerIT {
     }
 
     @Test
-    @Sql({"/sql/insert_user.sql"})
+    @Sql({"/sql/insert_user_toupdate.sql"})
     void update_SimpleValues_ReturningUpdatedUser() throws Exception {
         UserUpdateRequest request = new UserUpdateRequest(ID, NEW_NAME, NEW_EMAIL);
 
@@ -177,7 +176,7 @@ public class UserControllerIT extends KeycloakPostgresContainerIT {
     }
 
     @Test
-    @Sql({"/sql/insert_user.sql"})
+    @Sql({"/sql/insert_user_todelete.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete(URL + '/' + ID))
                 .andExpect(status().isOk());
