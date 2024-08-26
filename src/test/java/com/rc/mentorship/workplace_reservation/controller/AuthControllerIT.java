@@ -1,47 +1,30 @@
 package com.rc.mentorship.workplace_reservation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rc.mentorship.workplace_reservation.container.KeycloakTestContainer;
-import com.rc.mentorship.workplace_reservation.dto.request.LoginRequest;
+import com.rc.mentorship.workplace_reservation.container.KeycloakPostgresContainerIT;
 import com.rc.mentorship.workplace_reservation.dto.request.RegisterRequest;
-import com.rc.mentorship.workplace_reservation.dto.response.JwtResponse;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.mapper.UserMapper;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
-import com.rc.mentorship.workplace_reservation.service.JwtService;
 import com.rc.mentorship.workplace_reservation.service.KeycloakService;
-import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.AbstractUserRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlMergeMode;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.security.MessageDigest;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@Sql(scripts = {"/sql/delete_all.sql", "/sql/insert_admin.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
-public class AuthControllerIT extends KeycloakTestContainer {
-    private final MockMvc mockMvc;
-    private final ObjectMapper objectMapper;
+public class AuthControllerIT extends KeycloakPostgresContainerIT {
+    private static final String URL = "/api/v1/auth";
 
     private static final String NAME = "Name";
     private static final String EMAIL = "Email@test.com";
@@ -51,15 +34,13 @@ public class AuthControllerIT extends KeycloakTestContainer {
     private final UserMapper userMapper;
     private final KeycloakService keycloakService;
 
-
     @Autowired
     public AuthControllerIT(MockMvc mockMvc,
                             ObjectMapper objectMapper,
                             UserRepository userRepository,
                             UserMapper userMapper,
                             KeycloakService keycloakService) {
-        this.mockMvc = mockMvc;
-        this.objectMapper = objectMapper;
+        super(mockMvc, objectMapper);
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.keycloakService = keycloakService;
@@ -69,7 +50,7 @@ public class AuthControllerIT extends KeycloakTestContainer {
     void register_SimpleValues_ReturningToken() throws Exception {
         RegisterRequest request = new RegisterRequest(NAME, EMAIL, PASSWORD);
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/v1/auth/register")
+        MvcResult mvcResult = mockMvc.perform(post(URL + "/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                 )
@@ -94,7 +75,7 @@ public class AuthControllerIT extends KeycloakTestContainer {
     void register_HasUserWithSuchEmail_ReturningBadRequest() throws Exception {
         RegisterRequest request = new RegisterRequest(NAME, EMAIL, PASSWORD);
 
-        mockMvc.perform(post("/api/v1/auth/register")
+        mockMvc.perform(post(URL + "/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                 )

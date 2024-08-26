@@ -2,16 +2,17 @@ package com.rc.mentorship.workplace_reservation.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rc.mentorship.workplace_reservation.container.BasePostgresContainerIT;
 import com.rc.mentorship.workplace_reservation.dto.request.LocationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.LocationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
 import com.rc.mentorship.workplace_reservation.entity.Location;
 import com.rc.mentorship.workplace_reservation.mapper.LocationMapper;
 import com.rc.mentorship.workplace_reservation.repository.LocationRepository;
-import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,7 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class LocationControllerIT extends IntegrationTest {
+@WithMockUser(roles = {"USER", "ADMIN"})
+public class LocationControllerIT extends BasePostgresContainerIT {
+    private static final String URL = "/api/v1/locations";
+
     private static final String CITY = "City";
     private static final String ADDRESS = "Address";
 
@@ -38,10 +42,9 @@ public class LocationControllerIT extends IntegrationTest {
     @Autowired
     public LocationControllerIT(MockMvc mockMvc,
                                 ObjectMapper objectMapper,
-                                JwtService jwtService,
                                 LocationRepository locationRepository,
                                 LocationMapper locationMapper) {
-        super(mockMvc, objectMapper, jwtService);
+        super(mockMvc, objectMapper);
         this.locationRepository = locationRepository;
         this.locationMapper = locationMapper;
     }
@@ -49,8 +52,7 @@ public class LocationControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_location.sql"})
     void findAll_NoCityFilter_ReturningPageOfOneLocation() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/locations")
-                        .header(AUTHORIZATION, BEARER + token))
+        MvcResult mvcResult = mockMvc.perform(get(URL))
                 .andExpect(status().isOk()).andReturn();
         JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
         LocationResponse[] result = objectMapper.treeToValue(contentNode, LocationResponse[].class);
@@ -61,10 +63,8 @@ public class LocationControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_location.sql"})
     void findById_HasLocationById_ReturningLocation() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/locations/" + ID)
-                        .header(AUTHORIZATION, BEARER + token))
-                .andExpect(status().isOk())
-                .andReturn();
+        MvcResult mvcResult = mockMvc.perform(get(URL + '/' + ID))
+                .andExpect(status().isOk()).andReturn();
         LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                 LocationResponse.class);
 
@@ -73,8 +73,7 @@ public class LocationControllerIT extends IntegrationTest {
 
     @Test
     void findById_NoLocationById_ReturningNotFound() throws Exception {
-        mockMvc.perform(get("/api/v1/locations/" + ID)
-                        .header(AUTHORIZATION, BEARER + token))
+        mockMvc.perform(get(URL + '/' + ID))
                 .andExpect(status().isNotFound());
     }
 
@@ -83,10 +82,9 @@ public class LocationControllerIT extends IntegrationTest {
         LocationCreateRequest request = new LocationCreateRequest(CITY, ADDRESS);
 
         MvcResult mvcResult = mockMvc.perform(
-                post("/api/v1/locations")
+                post(URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
-                .header(AUTHORIZATION, BEARER + token)
         )
                 .andExpect(status().isCreated())
                 .andReturn();
@@ -106,10 +104,9 @@ public class LocationControllerIT extends IntegrationTest {
         LocationUpdateRequest request =
                 new LocationUpdateRequest(ID, NEW_CITY, NEW_ADDRESS);
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/v1/locations/" + ID)
+        MvcResult mvcResult = mockMvc.perform(put(URL + '/' + ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
-                .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk()).andReturn();
         LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                 LocationResponse.class);
@@ -127,10 +124,9 @@ public class LocationControllerIT extends IntegrationTest {
         LocationUpdateRequest request =
                 new LocationUpdateRequest(ID, NEW_CITY, NEW_ADDRESS);
 
-        mockMvc.perform(put("/api/v1/locations/" + ID)
+        mockMvc.perform(put(URL + '/' + ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
-                .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isNotFound());
 
         assertThat(locationRepository.findById(ID)).isEmpty();
@@ -139,9 +135,8 @@ public class LocationControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_location.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/locations/" + ID)
-                .header(AUTHORIZATION, BEARER + token)
-        ).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + '/' + ID))
+                .andExpect(status().isOk());
 
         assertThat(locationRepository.findById(ID)).isEmpty();
     }

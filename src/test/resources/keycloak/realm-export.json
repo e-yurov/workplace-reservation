@@ -3016,7 +3016,88 @@
     "webAuthnPolicyPasswordlessAcceptableAaguids": [],
     "webAuthnPolicyPasswordlessExtraOrigins": [],
     "users": [
-
+      {
+        "id": "5fc74e31-8576-4fee-adea-2c60a5408f18",
+        "username": "admin",
+        "email": "admin@test.com",
+        "emailVerified": false,
+        "createdTimestamp": 1723804438810,
+        "enabled": true,
+        "totp": false,
+        "credentials": [
+          {
+            "id": "2b503f4d-0942-4795-819e-bc01e9b678a0",
+            "type": "password",
+            "userLabel": "My password",
+            "createdDate": 1724255557270,
+            "secretData": "{\"value\":\"TFU4J1/7Q/8j0/hTvN7KyXiwBDkuTCwAa3GZyl1dFZ4=\",\"salt\":\"tDESPsJOzGNobpEDbyH1cA==\",\"additionalParameters\":{}}",
+            "credentialData": "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+          }
+        ],
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "realmRoles": [
+          "default-roles-worplace_reservation",
+          "USER",
+          "ADMIN"
+        ],
+        "clientRoles": {
+          "realm-management": [
+            "realm-admin"
+          ]
+        },
+        "notBefore": 0,
+        "groups": []
+      },
+      {
+        "id": "33974cb7-9176-4d49-8030-3b6825fb7691",
+        "username": "service-account-reservation-app",
+        "emailVerified": false,
+        "createdTimestamp": 1724266816625,
+        "enabled": true,
+        "totp": false,
+        "serviceAccountClientId": "reservation-app",
+        "credentials": [],
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "realmRoles": [
+          "default-roles-worplace_reservation"
+        ],
+        "clientRoles": {
+          "reservation-app": [
+            "uma_protection"
+          ]
+        },
+        "notBefore": 0,
+        "groups": []
+      },
+      {
+        "id": "07766a30-8f8a-42f3-ab0c-b3aec1151b59",
+        "username": "user",
+        "email": "user@test.com",
+        "emailVerified": false,
+        "createdTimestamp": 1723804451029,
+        "enabled": true,
+        "totp": false,
+        "credentials": [
+          {
+            "id": "66ddd85d-6df1-44ec-be32-b7110e153bbb",
+            "type": "password",
+            "userLabel": "My password",
+            "createdDate": 1724252489831,
+            "secretData": "{\"value\":\"fVaTK5otLfqDkeaaDtAwJxbvjXX5hReJ/eiiZ2EMIuE=\",\"salt\":\"EI5KEcsb5eRUqApjvutmmQ==\",\"additionalParameters\":{}}",
+            "credentialData": "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+          }
+        ],
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "realmRoles": [
+          "default-roles-worplace_reservation",
+          "USER"
+        ],
+        "notBefore": 0,
+        "groups": []
+      }
     ],
     "scopeMappings": [
       {
