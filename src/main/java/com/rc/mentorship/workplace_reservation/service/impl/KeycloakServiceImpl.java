@@ -61,6 +61,15 @@ public class KeycloakServiceImpl implements KeycloakService {
         getUsersResource().delete(id);
     }
 
+    @Override
+    public void deleteUserByEmail(String email) {
+        List<UserRepresentation> users = getUsersResource().searchByEmail(email, true);
+        if (!users.isEmpty()) {
+            String id = users.get(0).getId();
+            getUsersResource().delete(id);
+        }
+    }
+
     public String getKeycloakIdByEmail(String email) {
         return getUsersResource().searchByEmail(email, true).get(0).getId();
     }

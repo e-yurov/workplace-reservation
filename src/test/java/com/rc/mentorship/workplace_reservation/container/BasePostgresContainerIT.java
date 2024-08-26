@@ -39,7 +39,7 @@ public abstract class BasePostgresContainerIT {
     }
 
     @DynamicPropertySource
-    static void registerProperty(DynamicPropertyRegistry registry) {
+    static void registerPostgresProperty(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgreSqlContainer::getJdbcUrl);
         registry.add("spring.datasource.username", postgreSqlContainer::getUsername);
         registry.add("spring.datasource.password", postgreSqlContainer::getPassword);

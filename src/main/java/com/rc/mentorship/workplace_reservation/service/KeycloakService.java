@@ -12,7 +12,9 @@ public interface KeycloakService {
 
     void updateUser(User user);
 
-    void deleteUserById(String email);
+    void deleteUserById(String id);
+
+    void deleteUserByEmail(String email);
 
     String getKeycloakIdByEmail(String email);
 

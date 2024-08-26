@@ -3,6 +3,7 @@ package com.rc.mentorship.workplace_reservation.container;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.container.BasePostgresContainerIT;
 import dasniko.testcontainers.keycloak.KeycloakContainer;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -22,9 +23,18 @@ public abstract class KeycloakPostgresContainerIT extends BasePostgresContainerI
 
     private static final KeycloakContainer keycloak =
             new KeycloakContainer("quay.io/keycloak/keycloak:25.0.2")
-            .withRealmImportFile("keycloak/realm-export.json")
-                    .withReuse(true);
+                    .withRealmImportFile("keycloak/realm-export.json");
+//    @BeforeEach
+//    void beforeEach() {
+//        System.setProperty("spring.security.oauth2.resourceserver.jwt.issuer-uri",
+//                keycloak.getAuthServerUrl() + "/realms/workplace_reservation");
+//        System.setProperty("spring.security.oauth2.client.provider.keycloak.issuer-uri",
+//                keycloak.getAuthServerUrl() + "/realms/workplace_reservation");
+//        System.setProperty("keycloak.server-url", keycloak.getAuthServerUrl());
+//    }
+
     static {keycloak.start();}
+
 
     @DynamicPropertySource
     static void registerProperty(DynamicPropertyRegistry registry) {
