@@ -2,6 +2,7 @@ package com.rc.mentorship.workplace_reservation.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rc.mentorship.workplace_reservation.container.BasePostgresContainerIT;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.WorkplaceUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
@@ -15,6 +16,7 @@ import org.hamcrest.core.StringEndsWith;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,7 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class WorkplaceControllerIT extends IntegrationTest {
+@WithMockUser(roles = {"USER", "ADMIN"})
+public class WorkplaceControllerIT extends BasePostgresContainerIT {
+    private static final String URL = "/api/v1/workplaces";
     private static final String OFFICE_ID_PARAM = ID.toString();
 
     private static final int FLOOR = 1;
@@ -52,10 +56,9 @@ public class WorkplaceControllerIT extends IntegrationTest {
     @Autowired
     public WorkplaceControllerIT(MockMvc mockMvc,
                                  ObjectMapper objectMapper,
-                                 JwtService jwtService,
                                  WorkplaceRepository workplaceRepository,
                                  WorkplaceMapper workplaceMapper) {
-        super(mockMvc, objectMapper, jwtService);
+        super(mockMvc, objectMapper);
         this.workplaceRepository = workplaceRepository;
         this.workplaceMapper = workplaceMapper;
     }
@@ -63,8 +66,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_workplace.sql"})
     void findAll_NoFilters_ReturningPageOfOneWorkplace() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces")
-                        .header(AUTHORIZATION, BEARER + token)
+        MvcResult mvcResult = mockMvc.perform(get(URL)
                         .param("officeId", OFFICE_ID_PARAM)
                 )
                 .andExpect(status().isOk())
@@ -78,8 +80,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_workplaces_filter.sql"})
     void findAll_HasFilters_ReturningFilteredPageOfOneWorkplace() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces")
-                        .header(AUTHORIZATION, BEARER + token)
+        MvcResult mvcResult = mockMvc.perform(get(URL)
                         .param("officeId", OFFICE_ID_PARAM)
                         .param("floor", "lt/2")
                         .param("type", "DESK")
@@ -96,8 +97,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     void findAll_WrongFiltersFormat_ReturningBadRequest() throws Exception {
-        mockMvc.perform(get("/api/v1/workplaces")
-                .header(AUTHORIZATION, BEARER + token)
+        mockMvc.perform(get(URL)
                 .param("officeId", OFFICE_ID_PARAM)
                 .param("floor", "aa/invalid")
         ).andExpectAll(
@@ -110,8 +110,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_workplace.sql"})
     void findById_HasWorkplaceById_ReturningWorkplace() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/workplaces/" + ID)
-                        .header(AUTHORIZATION, BEARER + token)
+        MvcResult mvcResult = mockMvc.perform(get(URL + '/' + ID)
                         .param("officeId", OFFICE_ID_PARAM)
                 )
                 .andExpect(status().isOk())
@@ -124,8 +123,7 @@ public class WorkplaceControllerIT extends IntegrationTest {
 
     @Test
     void findById_NoWorkplaceById_ReturningNotFound() throws Exception {
-        mockMvc.perform(get("/api/v1/workplaces/" + ID)
-                        .header(AUTHORIZATION, BEARER + token)
+        mockMvc.perform(get(URL + '/' + ID)
                         .param("officeId", OFFICE_ID_PARAM)
                 )
                 .andExpect(status().isNotFound());
@@ -136,11 +134,10 @@ public class WorkplaceControllerIT extends IntegrationTest {
     void create_SimpleValues_ReturningCreatedWorkplace() throws Exception {
         WorkplaceCreateRequest request = new WorkplaceCreateRequest(ID, FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/v1/workplaces")
+        MvcResult mvcResult = mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .param("officeId", OFFICE_ID_PARAM)
-                        .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isCreated())
                 .andReturn();
@@ -160,11 +157,10 @@ public class WorkplaceControllerIT extends IntegrationTest {
     void create_NoOffice_RetuningNotFound() throws Exception {
         WorkplaceCreateRequest request = new WorkplaceCreateRequest(ID, FLOOR, TYPE, COMPUTER_PRESENT, AVAILABLE);
 
-        mockMvc.perform(post("/api/v1/workplaces")
+        mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .param("officeId", OFFICE_ID_PARAM)
-                        .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isNotFound());
 
@@ -177,11 +173,10 @@ public class WorkplaceControllerIT extends IntegrationTest {
         WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(ID, ID,
                 NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE);
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/v1/workplaces/" + ID)
+        MvcResult mvcResult = mockMvc.perform(put(URL + '/' + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .param("officeId", OFFICE_ID_PARAM)
-                        .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isOk())
                 .andReturn();
@@ -203,11 +198,10 @@ public class WorkplaceControllerIT extends IntegrationTest {
         WorkplaceUpdateRequest request = new WorkplaceUpdateRequest(ID, ID,
                 NEW_FLOOR, NEW_TYPE, NEW_COMPUTER_PRESENT, NEW_AVAILABLE);
 
-        mockMvc.perform(put("/api/v1/workplaces/" + ID)
+        mockMvc.perform(put(URL + '/' + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .param("officeId", OFFICE_ID_PARAM)
-                        .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isNotFound());
 
@@ -217,9 +211,8 @@ public class WorkplaceControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_workplace.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/workplaces/" + ID)
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + '/' + ID)
                 .param("officeId", OFFICE_ID_PARAM)
-                .header(AUTHORIZATION, BEARER + token)
         ).andExpect(status().isOk());
 
         assertThat(workplaceRepository.findById(ID)).isEmpty();

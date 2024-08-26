@@ -2,6 +2,7 @@ package com.rc.mentorship.workplace_reservation.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rc.mentorship.workplace_reservation.container.BasePostgresContainerIT;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.OfficeUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.LocationResponse;
@@ -13,6 +14,7 @@ import com.rc.mentorship.workplace_reservation.service.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,7 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class OfficeControllerIT extends IntegrationTest {
+@WithMockUser(roles = {"USER", "ADMIN"})
+public class OfficeControllerIT extends BasePostgresContainerIT {
+    private static final String URL = "/api/v1/offices";
+
     private static final LocalTime START_TIME = LocalTime.of(8, 0);
     private static final LocalTime END_TIME = LocalTime.of(18, 0);
 
@@ -41,10 +46,9 @@ public class OfficeControllerIT extends IntegrationTest {
     @Autowired
     public OfficeControllerIT(MockMvc mockMvc,
                               ObjectMapper objectMapper,
-                              JwtService jwtService,
                               OfficeRepository officeRepository,
                               OfficeMapper officeMapper) {
-        super(mockMvc, objectMapper, jwtService);
+        super(mockMvc, objectMapper);
         this.officeRepository = officeRepository;
         this.officeMapper = officeMapper;
     }
@@ -52,8 +56,7 @@ public class OfficeControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_office.sql"})
     void findAll_NoFilters_ReturningPageOfOneOffice() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/offices")
-                        .header(AUTHORIZATION, BEARER + token))
+        MvcResult mvcResult = mockMvc.perform(get(URL))
                 .andExpect(status().isOk())
                 .andReturn();
         JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
@@ -66,12 +69,13 @@ public class OfficeControllerIT extends IntegrationTest {
     @Sql({"/sql/insert_offices_filter.sql"})
     void findAll_HasFilters_ReturningFilteredPageOfOneOffice() throws Exception {
         MvcResult mvcResult = mockMvc.perform(
-                get("/api/v1/offices")
-                        .header(AUTHORIZATION, BEARER + token)
+                get(URL)
                         .param("locationId", ID.toString())
                         .param("startTime", "gte/08:00:00")
                         .param("endTime", "lt/19:00:00")
-        ).andExpect(status().isOk()).andReturn();
+        )
+                .andExpect(status().isOk())
+                .andReturn();
         JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
         OfficeResponse[] result = objectMapper.treeToValue(contentNode, OfficeResponse[].class);
 
@@ -80,17 +84,15 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     void findAll_WrongFiltersFormat_ReturningBadRequest() throws Exception {
-        mockMvc.perform(get("/api/v1/offices")
-                .header(AUTHORIZATION, BEARER + token)
-                .param("startTime", "invalid")
-        ).andExpect(status().isBadRequest());
+        mockMvc.perform(get(URL)
+                        .param("startTime", "invalid"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @Sql({"/sql/insert_office.sql"})
     void findById_HasOfficeById_ReturningOffice() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/offices/" + ID)
-                        .header(AUTHORIZATION, BEARER + token))
+        MvcResult mvcResult = mockMvc.perform(get(URL + '/' + ID))
                 .andExpect(status().isOk())
                 .andReturn();
         OfficeResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
@@ -101,8 +103,7 @@ public class OfficeControllerIT extends IntegrationTest {
 
     @Test
     void findById_NoOfficeById_ReturningNotFound() throws Exception {
-        mockMvc.perform(get("/api/v1/offices/" + ID)
-                        .header(AUTHORIZATION, BEARER + token))
+        mockMvc.perform(get(URL + '/' + ID))
                 .andExpect(status().isNotFound());
     }
 
@@ -112,10 +113,9 @@ public class OfficeControllerIT extends IntegrationTest {
         OfficeCreateRequest request =
                 new OfficeCreateRequest(ID, START_TIME, END_TIME);
 
-        MvcResult mvcResult = mockMvc.perform(post("/api/v1/offices")
+        MvcResult mvcResult = mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .header(AUTHORIZATION, BEARER + token)
         )
                 .andExpect(status().isCreated())
                 .andReturn();
@@ -135,10 +135,9 @@ public class OfficeControllerIT extends IntegrationTest {
         OfficeCreateRequest request =
                 new OfficeCreateRequest(ID, START_TIME, END_TIME);
 
-        mockMvc.perform(post("/api/v1/offices")
+        mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isNotFound());
 
@@ -150,10 +149,9 @@ public class OfficeControllerIT extends IntegrationTest {
     void update_SimpleValues_ReturningUpdatedOffice() throws Exception {
         OfficeUpdateRequest request = new OfficeUpdateRequest(ID, ID, NEW_START_TIME, NEW_END_TIME);
 
-        MvcResult mvcResult = mockMvc.perform(put("/api/v1/offices/" + ID)
+        MvcResult mvcResult = mockMvc.perform(put(URL + '/' + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isOk())
                 .andReturn();
@@ -173,10 +171,9 @@ public class OfficeControllerIT extends IntegrationTest {
     void update_NoOfficeToUpdate_ReturningNotFound() throws Exception {
         OfficeUpdateRequest request = new OfficeUpdateRequest(ID, ID, NEW_START_TIME, NEW_END_TIME);
 
-        mockMvc.perform(put("/api/v1/offices/" + ID)
+        mockMvc.perform(put(URL + '/' + ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
-                        .header(AUTHORIZATION, BEARER + token)
                 )
                 .andExpect(status().isNotFound());
 
@@ -186,9 +183,8 @@ public class OfficeControllerIT extends IntegrationTest {
     @Test
     @Sql({"/sql/insert_office.sql"})
     void delete_SimpleValues_ReturningOk() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/offices/" + ID)
-                        .header(AUTHORIZATION, BEARER + token)
-        ).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.delete(URL + '/' + ID))
+                .andExpect(status().isOk());
 
         assertThat(officeRepository.findById(ID)).isEmpty();
     }

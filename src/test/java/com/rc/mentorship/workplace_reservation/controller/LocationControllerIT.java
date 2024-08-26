@@ -53,7 +53,8 @@ public class LocationControllerIT extends BasePostgresContainerIT {
     @Sql({"/sql/insert_location.sql"})
     void findAll_NoCityFilter_ReturningPageOfOneLocation() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get(URL))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andReturn();
         JsonNode contentNode = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("content");
         LocationResponse[] result = objectMapper.treeToValue(contentNode, LocationResponse[].class);
 
@@ -64,7 +65,8 @@ public class LocationControllerIT extends BasePostgresContainerIT {
     @Sql({"/sql/insert_location.sql"})
     void findById_HasLocationById_ReturningLocation() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get(URL + '/' + ID))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isOk())
+                .andReturn();
         LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                 LocationResponse.class);
 
@@ -107,7 +109,9 @@ public class LocationControllerIT extends BasePostgresContainerIT {
         MvcResult mvcResult = mockMvc.perform(put(URL + '/' + ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
-        ).andExpect(status().isOk()).andReturn();
+        )
+                .andExpect(status().isOk())
+                .andReturn();
         LocationResponse result = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                 LocationResponse.class);
         Optional<Location> actualInDB = locationRepository.findById(result.getId());
@@ -127,7 +131,8 @@ public class LocationControllerIT extends BasePostgresContainerIT {
         mockMvc.perform(put(URL + '/' + ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
-        ).andExpect(status().isNotFound());
+        )
+                .andExpect(status().isNotFound());
 
         assertThat(locationRepository.findById(ID)).isEmpty();
     }
