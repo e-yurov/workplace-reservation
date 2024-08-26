@@ -33,6 +33,13 @@ spring:
             issuer-uri: http://localhost:8180/realms/workplace_reservation
             jwk-set-uri: ${spring.security.oauth2.client.provider.keycloak.issuer-uri}/protocol/openid-connect/certs
             user-name-attribute: preferred_username
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      properties.spring.json.add.type.headers: false
+      client-id: "workplace-reservation"
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 springdoc:
   swagger-ui:
@@ -45,3 +52,7 @@ keycloak:
   realm: workplace_reservation
   username: admin
   password: admin
+
+kafka:
+  topics:
+    email-topic: email_topic

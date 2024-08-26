@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.service.impl;
 
+import com.rc.mentorship.workplace_reservation.dto.message.ReservationMessage;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
@@ -14,6 +15,7 @@ import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
 import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
+import com.rc.mentorship.workplace_reservation.service.KafkaProducerService;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import com.rc.mentorship.workplace_reservation.util.filter.specifications.ReservationSpecs;
@@ -35,6 +37,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final UserRepository userRepository;
     private final WorkplaceRepository workplaceRepository;
     private final ReservationMapper reservationMapper;
+    private final KafkaProducerService kafkaProducerService;
 
     @Override
     @Transactional(readOnly = true)
@@ -64,6 +67,15 @@ public class ReservationServiceImpl implements ReservationService {
                 toCreate.getUserId(), toCreate.getWorkplaceId(),
                 reservation.getDateTime());
         reservationRepository.save(reservation);
+        kafkaProducerService.sendMessage(
+                new ReservationMessage(
+//                        reservation.getUser().getEmail(),
+                        "yurov.evgeniy.0@yandex.ru",
+                        reservation.getDateTime().getStart(),
+                        reservation.getDateTime().getEnd(),
+                        reservation.getWorkplace().getId()
+                )
+        );
         return reservationMapper.toDto(reservation);
     }
 
