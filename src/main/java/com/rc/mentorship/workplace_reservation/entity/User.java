@@ -28,10 +28,4 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
-
-    public enum Role {
-        USER,
-        MANAGER,
-        ADMIN;
-    }
 }

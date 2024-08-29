@@ -16,13 +16,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(details);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorDetails> handleBadCredentialsException(BadCredentialsException ex) {
-        HttpStatus status = HttpStatus.UNAUTHORIZED;
-        ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
-        return ResponseEntity.status(status).body(details);
-    }
-
     @ExceptionHandler({
             BadReservationRequestException.class,
             BadReservationTimeException.class,
@@ -33,13 +26,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetails> handeBadRequest(
             RuntimeException ex) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
-        return ResponseEntity.status(status).body(details);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorDetails> handleAccessDeniedException(AccessDeniedException ex) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
         ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
         return ResponseEntity.status(status).body(details);
     }

@@ -4,6 +4,7 @@ import com.rc.mentorship.workplace_reservation.dto.message.ReservationMessage;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
+import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.ReservationDateTime;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
@@ -23,8 +24,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
 import java.util.Set;
@@ -48,15 +52,16 @@ public class ReservationServiceImpl implements ReservationService {
                 filters, Set.of("pageNumber", "pageSize"))
         );
         return reservationRepository.findAll(allSpecs, pageRequest)
-                .map(reservationMapper::toDto);
+                .map(this::convertToResponseWithUser);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReservationResponse findById(UUID id) {
-        return reservationMapper.toDto(reservationRepository.findById(id).orElseThrow(
+        Reservation res = reservationRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Reservation", id)
-        ));
+        );
+        return convertToResponseWithUser(res);
     }
 
     @Override
@@ -76,7 +81,7 @@ public class ReservationServiceImpl implements ReservationService {
                         reservation.getWorkplace().getId()
                 )
         );
-        return reservationMapper.toDto(reservation);
+        return convertToResponseWithUser(reservation);
     }
 
     @Override
@@ -90,7 +95,7 @@ public class ReservationServiceImpl implements ReservationService {
                 toUpdate.getUserId(), toUpdate.getWorkplaceId(),
                 reservation.getDateTime());
         reservationRepository.save(reservation);
-        return reservationMapper.toDto(reservation);
+        return convertToResponseWithUser(reservation);
     }
 
     @Override
@@ -123,5 +128,24 @@ public class ReservationServiceImpl implements ReservationService {
         if (!reservationRepository.checkReserved(workplaceId, id, dateTime.getStart(), dateTime.getEnd()).isEmpty()) {
             throw new BadReservationRequestException(workplaceId);
         }
+    }
+
+    private UserResponse getUserById(UUID id) {
+        Jwt token = (Jwt) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+        WebClient client = WebClient.builder().build();
+        return client
+                .get()
+                .uri("http://localhost:8082/api/v1/users/" + id)
+                .header("Authorization", "Bearer " + token.getTokenValue())
+                .retrieve()
+                .bodyToMono(UserResponse.class)
+                .block();
+    }
+
+    private ReservationResponse convertToResponseWithUser(Reservation reservation) {
+        UserResponse userResponse = getUserById(reservation.getUser().getId());
+        ReservationResponse response = reservationMapper.toDto(reservation);
+        response.setUserResponse(userResponse);
+        return response;
     }
 }
