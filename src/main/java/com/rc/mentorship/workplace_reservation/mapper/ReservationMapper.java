@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring",
-        uses = {UserMapper.class, WorkplaceMapper.class})
+        uses = {WorkplaceMapper.class})
 public interface ReservationMapper {
     @Mapping(source = "startDateTime", target = "dateTime.start")
     @Mapping(source = "endDateTime", target = "dateTime.end")
@@ -20,7 +20,6 @@ public interface ReservationMapper {
 
     @Mapping(source = "dateTime.start", target = "startDateTime")
     @Mapping(source = "dateTime.end", target = "endDateTime")
-    @Mapping(source = "user", target = "userResponse")
     @Mapping(source = "workplace", target = "workplaceResponse")
     ReservationResponse toDto(Reservation entity);
 }

@@ -21,7 +21,6 @@ public class GlobalExceptionHandler {
             BadReservationTimeException.class,
             WorkplaceNotAvailableException.class,
             FiltrationParamsFormatException.class,
-            UserAlreadyExistsException.class
     })
     public ResponseEntity<ErrorDetails> handeBadRequest(
             RuntimeException ex) {
