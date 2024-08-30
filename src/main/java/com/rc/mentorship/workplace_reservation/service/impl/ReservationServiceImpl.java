@@ -5,6 +5,7 @@ import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequ
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
+import com.rc.mentorship.workplace_reservation.entity.OfficeWorkTime;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.ReservationDateTime;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
@@ -105,13 +106,21 @@ public class ReservationServiceImpl implements ReservationService {
                                         UUID workplaceId,
                                         ReservationDateTime dateTime) {
         if (dateTime.getStart().isAfter(dateTime.getEnd())) {
-            throw new BadReservationTimeException();
+            throw new BadReservationTimeException("Time of start must be before time of end!");
         }
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(() -> new NotFoundException("Workplace", workplaceId));
+        checkOfficeWorkHours(workplace.getOffice().getWorkTime(), reservation.getDateTime());
         reservation.setWorkplace(workplace);
         checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, reservation.getId(), dateTime);
+    }
+
+    private void checkOfficeWorkHours(OfficeWorkTime workTime, ReservationDateTime dateTime) {
+        if (dateTime.getStart().toLocalTime().isBefore(workTime.getStartTime()) ||
+                dateTime.getEnd().toLocalTime().isAfter(workTime.getEndTime())) {
+            throw new BadReservationTimeException("Time must be within office work hours!");
+        }
     }
 
     private void checkAvailableAndNotReservedOrThrow(boolean available, UUID workplaceId,

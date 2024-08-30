@@ -1,9 +1,9 @@
 package com.rc.mentorship.workplace_reservation.exception;
 
 public class BadReservationTimeException extends RuntimeException {
-    private static final String MESSAGE = "Wrong reservation time! Time of start must be before time of end!";
+    private static final String MESSAGE = "Wrong reservation time! %s";
 
-    public BadReservationTimeException() {
-        super(MESSAGE);
+    public BadReservationTimeException(String messagePostfix) {
+        super(String.format(MESSAGE, messagePostfix));
     }
 }
