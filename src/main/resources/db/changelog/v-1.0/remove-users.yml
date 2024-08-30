@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: Evgeniy Yurov
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableSchemaName: workplace_reservation
+            baseTableName: reservation
+            constraintName: reservation_user_id_fkey
+        - dropTable:
+            schemaName: workplace_reservation
+            tableName: user

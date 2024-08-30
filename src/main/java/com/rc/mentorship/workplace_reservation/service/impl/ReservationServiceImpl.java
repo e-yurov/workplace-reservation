@@ -14,7 +14,6 @@ import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
 import com.rc.mentorship.workplace_reservation.exception.WorkplaceNotAvailableException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
-import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.KafkaProducerService;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
@@ -36,7 +35,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
-    private final UserRepository userRepository;
     private final WorkplaceRepository workplaceRepository;
     private final ReservationMapper reservationMapper;
     private final KafkaProducerService kafkaProducerService;
@@ -57,10 +55,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional(readOnly = true)
     public ReservationResponse findById(UUID id) {
-        Reservation res = reservationRepository.findById(id).orElseThrow(
+        Reservation result = reservationRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Reservation", id)
         );
-        return convertToResponseWithUser(res);
+        return convertToResponseWithUser(result);
     }
 
     @Override
@@ -68,7 +66,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponse create(ReservationCreateRequest toCreate) {
         Reservation reservation = reservationMapper.toEntity(toCreate);
         fillReservationOrThrow(reservation,
-                toCreate.getUserId(), toCreate.getWorkplaceId(),
+                toCreate.getWorkplaceId(),
                 reservation.getDateTime());
         reservationRepository.save(reservation);
         kafkaProducerService.sendMessage(
@@ -91,7 +89,7 @@ public class ReservationServiceImpl implements ReservationService {
         );
         Reservation reservation = reservationMapper.toEntity(toUpdate);
         fillReservationOrThrow(reservation,
-                toUpdate.getUserId(), toUpdate.getWorkplaceId(),
+                toUpdate.getWorkplaceId(),
                 reservation.getDateTime());
         reservationRepository.save(reservation);
         return convertToResponseWithUser(reservation);
@@ -104,7 +102,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private void fillReservationOrThrow(Reservation reservation,
-                                        UUID userId, UUID workplaceId,
+                                        UUID workplaceId,
                                         ReservationDateTime dateTime) {
         if (dateTime.getStart().isAfter(dateTime.getEnd())) {
             throw new BadReservationTimeException();
@@ -112,11 +110,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         Workplace workplace = workplaceRepository.findById(workplaceId)
                 .orElseThrow(() -> new NotFoundException("Workplace", workplaceId));
-        checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, reservation.getId(), dateTime);
-
-        reservation.setUser(userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User", userId)));
         reservation.setWorkplace(workplace);
+        checkAvailableAndNotReservedOrThrow(workplace.isAvailable(), workplaceId, reservation.getId(), dateTime);
     }
 
     private void checkAvailableAndNotReservedOrThrow(boolean available, UUID workplaceId,
@@ -130,7 +125,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private ReservationResponse convertToResponseWithUser(Reservation reservation) {
-        UserResponse userResponse = userService.getUserById(reservation.getUser().getId());
+        UserResponse userResponse = userService.getUserById(reservation.getUserId());
         ReservationResponse response = reservationMapper.toDto(reservation);
         response.setUserResponse(userResponse);
         return response;

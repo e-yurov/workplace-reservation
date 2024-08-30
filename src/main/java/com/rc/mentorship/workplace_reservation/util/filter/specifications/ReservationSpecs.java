@@ -19,7 +19,7 @@ public class ReservationSpecs {
         return Specification
                 .where(filterByStartDateTime(filterMap.get(ReservationDateTime_.START + "DateTime")))
                 .and(filterByEndDateTime(filterMap.get(ReservationDateTime_.END + "DateTime")))
-                .and(filterByUserId(filterMap.get(Reservation_.USER + "Id")))
+                .and(filterByUserId(filterMap.get(Reservation_.USER_ID)))
                 .and(filterByWorkplaceId(filterMap.get(Reservation_.WORKPLACE + "Id")));
     }
 
@@ -33,8 +33,8 @@ public class ReservationSpecs {
 
     private Specification<Reservation> filterByUserId(Filter filter) {
         return (root, query, builder) -> {
-            Expression<UUID> expr = root.get(Reservation_.user).get(User_.id);
-            return GlobalSpecs.buildByUuid(expr, builder, filter, Reservation_.USER + "Id");
+            Expression<UUID> expr = root.get(Reservation_.userId);
+            return GlobalSpecs.buildByUuid(expr, builder, filter, Reservation_.USER_ID);
         };
     }
 

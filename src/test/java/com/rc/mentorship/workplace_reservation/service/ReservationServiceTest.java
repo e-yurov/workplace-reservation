@@ -3,9 +3,9 @@ package com.rc.mentorship.workplace_reservation.service;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
 import com.rc.mentorship.workplace_reservation.dto.response.ReservationResponse;
+import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.ReservationDateTime;
-import com.rc.mentorship.workplace_reservation.entity.User;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
 import com.rc.mentorship.workplace_reservation.exception.BadReservationRequestException;
 import com.rc.mentorship.workplace_reservation.exception.BadReservationTimeException;
@@ -13,7 +13,6 @@ import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
 import com.rc.mentorship.workplace_reservation.exception.WorkplaceNotAvailableException;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
-import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.impl.ReservationServiceImpl;
 import com.rc.mentorship.workplace_reservation.util.filter.Filter;
@@ -43,11 +42,13 @@ public class ReservationServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
     @Mock
+    private WorkplaceRepository workplaceRepository;
+    @Mock
     private ReservationMapper reservationMapper;
     @Mock
-    private UserRepository userRepository;
+    private KafkaProducerService kafkaProducerService;
     @Mock
-    private WorkplaceRepository workplaceRepository;
+    private UserService userService;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
@@ -62,7 +63,6 @@ public class ReservationServiceTest {
 
     private Reservation reservation;
     private Workplace workplace;
-    private User user;
     private ReservationResponse reservationResponse;
 
     @BeforeEach
@@ -70,12 +70,10 @@ public class ReservationServiceTest {
         reservation = new Reservation();
         reservation.setId(mockId);
         reservation.setDateTime(dateTime);
+        reservation.setUserId(userMockId);
 
         workplace = new Workplace();
         workplace.setId(workplaceMockId);
-
-        user = new User();
-        user.setId(userMockId);
 
         reservationResponse = new ReservationResponse();
         reservationResponse.setId(mockId);
@@ -95,6 +93,7 @@ public class ReservationServiceTest {
             filterParamParserMock.when(() -> FilterParamParser.parseAllParams(eq(filters), anySet())).thenReturn(fieldFilterMap);
             reservationSpecsMock.when(() -> ReservationSpecs.build(fieldFilterMap)).thenReturn(allSpecs);
             when(reservationRepository.findAll(allSpecs, pageRequest)).thenReturn(reservationPage);
+            when(reservationMapper.toDto(any(Reservation.class))).thenReturn(reservationResponse);
 
             Page<ReservationResponse> result = reservationService.findAllWithFilters(pageRequest, filters);
 
@@ -131,7 +130,7 @@ public class ReservationServiceTest {
         when(workplaceRepository.findById(workplaceMockId)).thenReturn(Optional.of(workplace));
         when(reservationRepository.checkReserved(workplaceMockId, null, dateTime.getStart(), dateTime.getEnd()))
                 .thenReturn(Collections.emptyList());
-        when(userRepository.findById(userMockId)).thenReturn(Optional.of(user));
+        when(userService.getUserById(userMockId)).thenReturn(mock(UserResponse.class));
         when(reservationMapper.toDto(reservation)).thenReturn(reservationResponse);
 
         ReservationResponse result = reservationService.create(request);
@@ -163,7 +162,7 @@ public class ReservationServiceTest {
         when(workplaceRepository.findById(workplaceMockId)).thenReturn(Optional.of(workplace));
         when(reservationRepository.checkReserved(workplaceMockId, null, dateTime.getStart(), dateTime.getEnd()))
                 .thenReturn(Collections.emptyList());
-        when(userRepository.findById(userMockId)).thenReturn(Optional.empty());
+        when(userService.getUserById(userMockId)).thenThrow(new NotFoundException("User", mockId));
 
         assertThatThrownBy(() -> reservationService.create(request))
                 .isInstanceOf(NotFoundException.class)
@@ -220,7 +219,7 @@ public class ReservationServiceTest {
         when(workplaceRepository.findById(workplaceMockId)).thenReturn(Optional.of(workplace));
         when(reservationRepository.checkReserved(workplaceMockId, mockId, dateTime.getStart(), dateTime.getEnd()))
                 .thenReturn(Collections.emptyList());
-        when(userRepository.findById(userMockId)).thenReturn(Optional.of(user));
+        when(userService.getUserById(userMockId)).thenReturn(mock(UserResponse.class));
         when(reservationMapper.toDto(reservation)).thenReturn(reservationResponse);
 
         ReservationResponse result = reservationService.update(request);

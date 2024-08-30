@@ -2,7 +2,6 @@ package com.rc.mentorship.workplace_reservation.service.impl;
 
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;

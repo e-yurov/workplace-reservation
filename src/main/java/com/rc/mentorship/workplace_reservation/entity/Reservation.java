@@ -19,9 +19,8 @@ public class Reservation {
     @Embedded
     private ReservationDateTime dateTime;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @ManyToOne
     @JoinColumn(name = "workplace_id", referencedColumnName = "id")
