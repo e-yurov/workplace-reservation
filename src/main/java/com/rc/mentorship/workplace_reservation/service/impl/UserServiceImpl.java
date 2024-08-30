@@ -9,10 +9,14 @@ import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.service.KeycloakService;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -64,5 +68,19 @@ public class UserServiceImpl implements UserService {
         User user = userOptional.get();
         userRepository.delete(user);
         keycloakService.deleteUserById(user.getKeycloakId());
+    }
+
+    @Override
+    @Cacheable(key = "#id", value = "users")
+    public UserResponse getUserById(UUID id) {
+        Jwt token = (Jwt) SecurityContextHolder.getContext().getAuthentication().getCredentials();
+        WebClient client = WebClient.builder().build();
+        return client
+                .get()
+                .uri("http://localhost:8082/api/v1/users/" + id)
+                .header("Authorization", "Bearer " + token.getTokenValue())
+                .retrieve()
+                .bodyToMono(UserResponse.class)
+                .block();
     }
 }

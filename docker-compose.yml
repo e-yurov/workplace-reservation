@@ -50,7 +50,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - 22181:2181
+      - '22181:2181'
 
   kafka:
     image: confluentinc/cp-kafka:7.4.4
@@ -58,7 +58,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - 29092:29092
+      - '29092:29092'
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -72,7 +72,7 @@ services:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui
     ports:
-      - 8090:8080
+      - '8090:8080'
     restart: always
     depends_on:
       - kafka
@@ -80,8 +80,20 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
 
+  redis:
+    image: redis:7.4
+    restart: always
+    container_name: redis
+    ports:
+      - '6379:6379'
+    command: redis-server --save 60 1 --requirepass d29ya3BsYWNlUmVkaXNTZWNyZXQ=
+    volumes:
+      - cache:/data
+
+
 volumes:
   postgres_data:
+  cache:
 
 networks:
   keycloak-network:

@@ -18,17 +18,15 @@ import com.rc.mentorship.workplace_reservation.repository.UserRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
 import com.rc.mentorship.workplace_reservation.service.KafkaProducerService;
 import com.rc.mentorship.workplace_reservation.service.ReservationService;
+import com.rc.mentorship.workplace_reservation.service.UserService;
 import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import com.rc.mentorship.workplace_reservation.util.filter.specifications.ReservationSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final WorkplaceRepository workplaceRepository;
     private final ReservationMapper reservationMapper;
     private final KafkaProducerService kafkaProducerService;
+    private final UserService userService;
 
     @Override
     @Transactional(readOnly = true)
@@ -130,20 +129,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private UserResponse getUserById(UUID id) {
-        Jwt token = (Jwt) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-        WebClient client = WebClient.builder().build();
-        return client
-                .get()
-                .uri("http://localhost:8082/api/v1/users/" + id)
-                .header("Authorization", "Bearer " + token.getTokenValue())
-                .retrieve()
-                .bodyToMono(UserResponse.class)
-                .block();
-    }
-
     private ReservationResponse convertToResponseWithUser(Reservation reservation) {
-        UserResponse userResponse = getUserById(reservation.getUser().getId());
+        UserResponse userResponse = userService.getUserById(reservation.getUser().getId());
         ReservationResponse response = reservationMapper.toDto(reservation);
         response.setUserResponse(userResponse);
         return response;
