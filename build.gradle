@@ -60,10 +60,6 @@ dependencies {
 
 	compileOnly 'org.hibernate:hibernate-jpamodelgen:6.5.2.Final'
 	annotationProcessor 'org.hibernate:hibernate-jpamodelgen:6.5.2.Final'
-
-	implementation 'org.keycloak:keycloak-admin-client:25.0.2'
-
-	testImplementation("com.github.dasniko:testcontainers-keycloak:3.4.0")
 }
 
 tasks.named('test') {

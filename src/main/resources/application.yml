@@ -56,12 +56,6 @@ springdoc:
       client-id: ${spring.security.oauth2.client.registration.keycloak.client-id}
       client-secret: ${spring.security.oauth2.client.registration.keycloak.client-secret}
 
-keycloak:
-  server-url: http://localhost:8180
-  realm: workplace_reservation
-  username: admin
-  password: admin
-
 kafka:
   topics:
     email-topic: email_topic
