@@ -56,6 +56,20 @@ springdoc:
       client-id: ${spring.security.oauth2.client.registration.keycloak.client-id}
       client-secret: ${spring.security.oauth2.client.registration.keycloak.client-secret}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+
 kafka:
   topics:
     email-topic: email_topic
