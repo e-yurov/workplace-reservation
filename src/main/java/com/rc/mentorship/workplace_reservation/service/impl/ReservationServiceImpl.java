@@ -21,6 +21,8 @@ import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import com.rc.mentorship.workplace_reservation.util.filter.specifications.ReservationSpecs;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +30,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -40,6 +43,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper reservationMapper;
     private final KafkaProducerService kafkaProducerService;
     private final UserService userService;
+    private final MeterRegistry meterRegistry;
 
     @Override
     @Transactional(readOnly = true)
@@ -47,7 +51,7 @@ public class ReservationServiceImpl implements ReservationService {
                                                         Map<String, String> filters) {
         Specification<Reservation> allSpecs = ReservationSpecs.build(
                 FilterParamParser.parseAllParams(
-                filters, Set.of("pageNumber", "pageSize"))
+                        filters, Set.of("pageNumber", "pageSize"))
         );
         return reservationRepository.findAll(allSpecs, pageRequest)
                 .map(this::convertToResponseWithUser);
@@ -64,21 +68,16 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
+    @Timed(value = "reservation_creation_time")
     public ReservationResponse create(ReservationCreateRequest toCreate) {
         Reservation reservation = reservationMapper.toEntity(toCreate);
         fillReservationOrThrow(reservation,
                 toCreate.getWorkplaceId(),
                 reservation.getDateTime());
         reservationRepository.save(reservation);
-        kafkaProducerService.sendMessage(
-                new ReservationMessage(
-//                        reservation.getUser().getEmail(),
-                        "yurov.evgeniy.0@yandex.ru",
-                        reservation.getDateTime().getStart(),
-                        reservation.getDateTime().getEnd(),
-                        reservation.getWorkplace().getId()
-                )
-        );
+        sendNotification(reservation);
+        meterRegistry.counter("reservations_count")
+                .increment(getDuration(reservation.getDateTime()));
         return convertToResponseWithUser(reservation);
     }
 
@@ -131,6 +130,23 @@ public class ReservationServiceImpl implements ReservationService {
         if (!reservationRepository.checkReserved(workplaceId, id, dateTime.getStart(), dateTime.getEnd()).isEmpty()) {
             throw new BadReservationRequestException(workplaceId);
         }
+    }
+
+    private void sendNotification(Reservation reservation) {
+        kafkaProducerService.sendMessage(
+                new ReservationMessage(
+//                        reservation.getUser().getEmail(),
+                        "yurov.evgeniy.0@yandex.ru",
+                        reservation.getDateTime().getStart(),
+                        reservation.getDateTime().getEnd(),
+                        reservation.getWorkplace().getId()
+                )
+        );
+    }
+
+    private long getDuration(ReservationDateTime dateTime) {
+        Duration duration = Duration.between(dateTime.getStart(), dateTime.getEnd());
+        return duration.toMinutes();
     }
 
     private ReservationResponse convertToResponseWithUser(Reservation reservation) {

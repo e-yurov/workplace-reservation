@@ -94,6 +94,7 @@ services:
     image: prom/prometheus
     restart: always
     container_name: prometheus
+    command: "--web.enable-admin-api --config.file=/etc/prometheus/prometheus.yml"
     ports:
       - '9090:9090'
     volumes:
