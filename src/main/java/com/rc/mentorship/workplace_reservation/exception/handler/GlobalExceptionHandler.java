@@ -34,9 +34,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorDetails> handleFeignException(FeignException ex) {
+        if (ex.status() == -1) {
+            return handleInternalError(new InternalErrorException("User service is not responding!"));
+        }
+
         ErrorDetails errorDetails;
         try {
-            errorDetails = objectMapper.readValue("", ErrorDetails.class);
+            errorDetails = objectMapper.readValue(ex.contentUTF8(), ErrorDetails.class);
         } catch (JsonProcessingException e) {
             return handleInternalError(new InternalErrorException());
         }

@@ -1,6 +1,7 @@
 package com.rc.mentorship.workplace_reservation.service.impl;
 
 import com.rc.mentorship.workplace_reservation.apiclient.UserClient;
+import com.rc.mentorship.workplace_reservation.dto.response.OfficeIdResponse;
 import com.rc.mentorship.workplace_reservation.dto.response.UserResponse;
 import com.rc.mentorship.workplace_reservation.exception.InternalErrorException;
 import com.rc.mentorship.workplace_reservation.service.UserService;
@@ -18,20 +19,22 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserClient userClient;
 
+    private final static String BEARER = "Bearer ";
+
     @Override
     @Cacheable(key = "#id", value = "users")
     public UserResponse getUserById(UUID id) {
-        UserResponse userResponse;
-        try {
-            String token = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getCredentials())
-                    .getTokenValue();
-            userResponse = userClient.findById(id, "Bearer " + token).getBody();
-        } catch (FeignException e) {
-            if (e.status() == -1) {
-                throw new InternalErrorException("User service is not responding!");
-            }
-            throw e;
-        }
-        return userResponse;
+        return userClient.findById(id, BEARER + getTokenFromAuth()).getBody();
+    }
+
+    @Override
+    public OfficeIdResponse getOfficeIdByKeycloakId(UUID keycloakId) {
+        return userClient.findOfficeIdByKeycloakId(keycloakId, BEARER + getTokenFromAuth()).getBody();
+    }
+
+    private String getTokenFromAuth() {
+        return ((Jwt) SecurityContextHolder.getContext().getAuthentication()
+                .getCredentials())
+                .getTokenValue();
     }
 }
