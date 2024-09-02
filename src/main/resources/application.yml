@@ -49,6 +49,12 @@ spring:
       password: d29ya3BsYWNlUmVkaXNTZWNyZXQ=
       repositories:
         enabled: false
+  cloud:
+    openfeign:
+      client:
+        config:
+          user:
+            logger-level: headers
 
 springdoc:
   swagger-ui:
@@ -73,3 +79,8 @@ management:
 kafka:
   topics:
     email-topic: email_topic
+
+feign:
+  users:
+    name: user
+    url: http://localhost:8082/api/v1/users

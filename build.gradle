@@ -4,6 +4,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
+ext {
+	springCloudVersion = "2023.0.3"
+}
+
 group = 'com.rc.mentorship'
 version = '0.0.1-SNAPSHOT'
 
@@ -36,6 +40,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
@@ -62,6 +67,12 @@ dependencies {
 
 	compileOnly 'org.hibernate:hibernate-jpamodelgen:6.5.2.Final'
 	annotationProcessor 'org.hibernate:hibernate-jpamodelgen:6.5.2.Final'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+	}
 }
 
 tasks.named('test') {

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @SecurityScheme(
@@ -16,6 +17,7 @@ import org.springframework.cache.annotation.EnableCaching;
 		in = SecuritySchemeIn.HEADER
 )
 @EnableCaching
+@EnableFeignClients
 public class WorkplaceReservationApplication {
 
 	public static void main(String[] args) {

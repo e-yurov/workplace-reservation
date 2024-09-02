@@ -1,5 +1,6 @@
 package com.rc.mentorship.workplace_reservation.service.impl;
 
+import com.rc.mentorship.workplace_reservation.apiclient.UserClient;
 import com.rc.mentorship.workplace_reservation.dto.message.ReservationMessage;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationCreateRequest;
 import com.rc.mentorship.workplace_reservation.dto.request.ReservationUpdateRequest;
@@ -9,10 +10,7 @@ import com.rc.mentorship.workplace_reservation.entity.OfficeWorkTime;
 import com.rc.mentorship.workplace_reservation.entity.Reservation;
 import com.rc.mentorship.workplace_reservation.entity.ReservationDateTime;
 import com.rc.mentorship.workplace_reservation.entity.Workplace;
-import com.rc.mentorship.workplace_reservation.exception.BadReservationRequestException;
-import com.rc.mentorship.workplace_reservation.exception.BadReservationTimeException;
-import com.rc.mentorship.workplace_reservation.exception.NotFoundException;
-import com.rc.mentorship.workplace_reservation.exception.WorkplaceNotAvailableException;
+import com.rc.mentorship.workplace_reservation.exception.*;
 import com.rc.mentorship.workplace_reservation.mapper.ReservationMapper;
 import com.rc.mentorship.workplace_reservation.repository.ReservationRepository;
 import com.rc.mentorship.workplace_reservation.repository.WorkplaceRepository;
@@ -21,12 +19,15 @@ import com.rc.mentorship.workplace_reservation.service.ReservationService;
 import com.rc.mentorship.workplace_reservation.service.UserService;
 import com.rc.mentorship.workplace_reservation.util.filter.FilterParamParser;
 import com.rc.mentorship.workplace_reservation.util.filter.specifications.ReservationSpecs;
+import feign.FeignException;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final KafkaProducerService kafkaProducerService;
     private final UserService userService;
     private final MeterRegistry meterRegistry;
+    private final UserClient userClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -150,9 +152,27 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private ReservationResponse convertToResponseWithUser(Reservation reservation) {
-        UserResponse userResponse = userService.getUserById(reservation.getUserId());
+        UserResponse userResponse = getUserResponse(reservation);
         ReservationResponse response = reservationMapper.toDto(reservation);
         response.setUserResponse(userResponse);
         return response;
+    }
+
+    private UserResponse getUserResponse(Reservation reservation) {
+        UserResponse userResponse;
+        try {
+            String token = ((Jwt) SecurityContextHolder.getContext().getAuthentication().getCredentials())
+                    .getTokenValue();
+            userResponse = userClient.findById(
+                    reservation.getUserId(),
+                    "Bearer " + token
+            ).getBody();
+        } catch (FeignException e) {
+            if (e.status() == -1) {
+                throw new InternalErrorException("User service is not responding!");
+            }
+            throw e;
+        }
+        return userResponse;
     }
 }

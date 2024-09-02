@@ -1,19 +1,24 @@
 package com.rc.mentorship.workplace_reservation.exception.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rc.mentorship.workplace_reservation.exception.*;
 import com.rc.mentorship.workplace_reservation.exception.details.ErrorDetails;
+import feign.FeignException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final ObjectMapper objectMapper;
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorDetails> handleNotFoundException(NotFoundException ex) {
-        HttpStatus status = HttpStatus.NOT_FOUND;
-        ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
-        return ResponseEntity.status(status).body(details);
+        return buildErrorDetails(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler({
@@ -24,8 +29,27 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<ErrorDetails> handeBadRequest(
             RuntimeException ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ErrorDetails details = new ErrorDetails(status.value(), status.name(), ex.getMessage());
+        return buildErrorDetails(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ErrorDetails> handleFeignException(FeignException ex) {
+        ErrorDetails errorDetails;
+        try {
+            errorDetails = objectMapper.readValue("", ErrorDetails.class);
+        } catch (JsonProcessingException e) {
+            return handleInternalError(new InternalErrorException());
+        }
+        return ResponseEntity.status(errorDetails.getCode()).body(errorDetails);
+    }
+
+    @ExceptionHandler(InternalErrorException.class)
+    public ResponseEntity<ErrorDetails> handleInternalError(InternalErrorException ex) {
+        return buildErrorDetails(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
+    private ResponseEntity<ErrorDetails> buildErrorDetails(HttpStatus status, String message) {
+        ErrorDetails details = new ErrorDetails(status.value(), status.name(), message);
         return ResponseEntity.status(status).body(details);
     }
 }
