@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -208,7 +209,13 @@ public class ReservationController {
             )
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("""
+        hasRole('ADMIN') or 
+        (hasRole('MANAGER') and hasPermission(#updateRequest.workplaceId, 'workplaceId', 'manager'))
+    """)
+    @PostAuthorize("""
+        hasPermission(returnObject.getBody().workplaceResponse.officeResponse.id, 'manager')
+    """)
     public ResponseEntity<ReservationResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -237,7 +244,10 @@ public class ReservationController {
             )
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("""
+        hasRole('ADMIN') or 
+        (hasRole('MANAGER') and hasPermission(#id, 'reservationId', 'manager'))
+    """)
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")

@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -170,7 +171,10 @@ public class WorkplaceController {
             )
     })
     @PostMapping
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("""
+        hasRole('ADMIN') or 
+        (hasRole('MANAGER') and hasPermission(#createRequest.officeId, 'manager'))
+    """)
     public ResponseEntity<WorkplaceResponse> create(
             @RequestBody
             WorkplaceCreateRequest createRequest
@@ -205,7 +209,13 @@ public class WorkplaceController {
             )
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("""
+        hasRole('ADMIN') or 
+        (hasRole('MANAGER') and hasPermission(#updateRequest.officeId, 'manager'))
+    """)
+    @PostAuthorize("""
+        hasPermission(returnObject.getBody().officeResponse.id, 'manager')
+    """)
     public ResponseEntity<WorkplaceResponse> update(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")
@@ -234,7 +244,10 @@ public class WorkplaceController {
             )
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @PreAuthorize("""
+        hasRole('ADMIN') or 
+        (hasRole('MANAGER') and hasPermission(#id, 'workplaceId', 'manager'))
+    """)
     public ResponseEntity<Void> delete(
             @Parameter(name = "id", in = ParameterIn.PATH)
             @PathVariable("id")

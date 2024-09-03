@@ -3,8 +3,11 @@ package com.rc.mentorship.workplace_reservation.config;
 import com.rc.mentorship.workplace_reservation.exception.handler.CustomAccessDeniedHandler;
 import com.rc.mentorship.workplace_reservation.exception.handler.CustomAuthenticationEntryPoint;
 import com.rc.mentorship.workplace_reservation.util.JwtAuthConverter;
+import com.rc.mentorship.workplace_reservation.util.ManagerPermissionEvaluator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,5 +46,15 @@ public class SecurityConfig {
         });
 
         return http.build();
+    }
+
+    @Bean
+    public MethodSecurityExpressionHandler methodSecurityExpressionHandler(
+            ManagerPermissionEvaluator permissionEvaluator
+    ) {
+        DefaultMethodSecurityExpressionHandler expressionHandler =
+                new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setPermissionEvaluator(permissionEvaluator);
+        return expressionHandler;
     }
 }
