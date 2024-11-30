@@ -137,8 +137,7 @@ public class ReservationServiceImpl implements ReservationService {
     private void sendNotification(Reservation reservation) {
         kafkaProducerService.sendMessage(
                 new ReservationMessage(
-//                        reservation.getUser().getEmail(),
-                        "yurov.evgeniy.0@yandex.ru",
+                        reservation.getUser().getEmail(),
                         reservation.getDateTime().getStart(),
                         reservation.getDateTime().getEnd(),
                         reservation.getWorkplace().getId()
